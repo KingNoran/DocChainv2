@@ -63,7 +63,7 @@ const StudentOverview = ({
             Avatar
           </div>
           <div className='flex flex-col align-middle gap-3'>
-            <h1 className='font-bold text-2xl'>{lastName}, {firstName} {middleName[0]}.</h1>
+            <h1 className='font-bold text-2xl'>{lastName}, {firstName} {middleName === null ? "" : `${middleName[0]}.`}</h1>
             <h3 className='text-muted-foreground'>Cavite State University</h3>
             <h3 className='text-muted-foreground'>Bacoor Branch</h3>
           </div>

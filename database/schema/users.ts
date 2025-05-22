@@ -5,16 +5,17 @@ import students from './students';
 import admins from './admins';
 import registrars from './registrars';
 import ROLE_ENUM from '../enums/ROLE_ENUM';
+import transactions from './requests';
 
 const users = table("users",{
     userId: t.uuid("user_id").notNull().primaryKey().defaultRandom().unique(),
-    role: ROLE_ENUM("role").default("STUDENT"),
+    role: t.text("role").default("STUDENT"),
     password: t.text("password").notNull(),
     firstName: t.varchar("first_name", {length: 255}).notNull(),
-    middleName: t.varchar("middle_name", {length: 255}).notNull(),
+    middleName: t.varchar("middle_name", {length: 255}).default(""),
     lastName: t.varchar("last_name", {length: 255}).notNull(),
     email: t.text("email").notNull().unique(),
-    phone: t.text("phone").unique(),
+    phone: t.text("phone").notNull().unique(),
     emailVerified: t.boolean("email_verified").default(false),
     phoneVerified: t.boolean("phone_verified").default(false),
     lastActivityDate: t.date("last_activity_date").defaultNow(),
@@ -24,7 +25,11 @@ const users = table("users",{
     }).defaultNow(),
 });
 
-export const userRelations = relations(users, ({one})=>({
+export const userRelations = relations(users, ({one, many})=>({
+    transactions: many(transactions),
+    students: many(students),
+    registrars: many(registrars),
+    admins: many(admins),
     student: one(students, {
         fields: [users.userId],
         references: [students.userId],
@@ -37,6 +42,14 @@ export const userRelations = relations(users, ({one})=>({
         fields: [users.userId],
         references: [admins.userId],
     }),
+    requester: one(transactions, {
+        fields: [users.userId],
+        references: [transactions.requesterId]
+    }),
+    validator: one(transactions, {
+        fields: [users.userId],
+        references: [transactions.validatorId]
+    })
 }));
 
 export default users;

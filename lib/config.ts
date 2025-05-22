@@ -1,6 +1,7 @@
 const config= {
     env: {
         apiEndpoint: process.env.NEXT_PUBLIC_API_ENDPOINT! as string,
+        prodApiEndpoint: process.env.NEXT_PUBLIC_PROD_API_ENDPOINT! as string,
         imagekit:{
             publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY! as string,
             urlEndpoint: process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT! as string,
@@ -13,6 +14,13 @@ const config= {
             qstashUrl: process.env.QSTASH_URL! as string,
             qstashToken: process.env.QSTASH_TOKEN! as string,
         },
+        emailjs:{
+            publicKey: process.env.EMAILJS_PUBLIC_KEY! as string,
+            privateKey: process.env.EMAILJS_PRIVATE_KEY! as string,
+            serviceId: process.env.EMAILJS_SERVICE_ID! as string,
+            welcomeId: process.env.EMAILJS_WELCOME_TEMPLATE_ID! as string,
+            followId: process.env.EMAILJS_FOLLOWUP_TEMPLATE_ID! as string,
+        }
     },
 };
 

@@ -7,9 +7,9 @@ interface Student{
     torReady? : boolean | null;
     role: string | null;
     password: string;
-    firstName: string;
-    middleName: string;
-    lastName: string;
+    firstName: string | null;
+    middleName: string | null;
+    lastName: string | null;
     email: string;
     phone: string | null;
     emailVerified: boolean | null;
@@ -22,9 +22,28 @@ interface AuthCredentials{
     firstName: string;
     middleName: string;
     lastName: string;
+    phone: string;
     email: string;
     password: string;
     role: string;
+}
+
+interface UserParams{
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    phone: string;
+    email: string;
+    password: string;
+    role: string;
+}
+
+interface StudentParams{
+    year: number;
+    semester: number;
+    course: string;
+    finalGrade: number;
+    torReady: boolean;
 }
 
 interface TOR{

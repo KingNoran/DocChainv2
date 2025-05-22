@@ -32,7 +32,7 @@ const RootLayout = async ({children}: {children: ReactNode}) => {
           >
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="light"
           >{children}</ThemeProvider>
 
           <Toaster richColors />

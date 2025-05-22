@@ -3,9 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-
 @config "../tailwind.config.ts";
-
 
 @layer utilities{
   /* Root */
@@ -24,7 +22,7 @@
   }
 
   .auth-box {
-    @apply mx-auto flex max-w-xl flex-col gap-6 rounded-lg p-10 bg-dark-100;
+    @apply mx-auto flex max-w-xl flex-col gap-6 rounded-lg p-10 bg-secondary-foreground;
   }
 
   /* Header */
@@ -35,7 +33,6 @@
   .nav-container{
     @apply flex flex-row items-center gap-8;
   }
-
 
   /* Landing Page */
   .hero {
@@ -65,7 +62,7 @@
   .publicKeyButton{
     @apply max-w-full
   }
-  
+
   /* Footer */
 
   .footer-container{
@@ -83,10 +80,6 @@
   .footer-container li{
     @apply my-1
   }
-  
-
-  
-
 
   /* Miscellaneous */
   .active{
@@ -94,29 +87,11 @@
   }
 }
 
+/* Admin */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.admin-container{
+  @apply flex w-[calc(100%-264px)] flex-1 flex-col bg-light-300 p-5 md:p-10
+}
 
 /* Shadcn: DO NOT TOUCH */
 
@@ -228,7 +203,6 @@
   --sidebar-ring: oklch(0.527 0.154 150.069);
 }
 
-
 @layer base {
   :root {
     --radius: 0.5rem;
@@ -251,5 +225,14 @@
 
   .hide-scrollbar::-webkit-scrollbar-thumb:hover {
     background: transparent;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }

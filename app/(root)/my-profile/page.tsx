@@ -1,9 +1,7 @@
 import StudentOverview from '@/components/StudentOverview';
-import { Button } from '@/components/ui/button';
 import { db } from '@/database/drizzle';
 import { students, users } from '@/database/schema';
 import { eq } from 'drizzle-orm';
-import { signOut } from 'next-auth/react';
 import React from 'react'
 
 const Page = async () => {
