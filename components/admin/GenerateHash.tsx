@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { checkFileType } from '../utils/checkFileType';
-import { hashPdf } from '../utils/hashPdf';
+import { checkFileType } from '@/utils/checkFileType';
+import { hashPdf } from '@/utils/hashPdf';
 
 
 const GenerateHash = ({ onHashGenerated }) => {

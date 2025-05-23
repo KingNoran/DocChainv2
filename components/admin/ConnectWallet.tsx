@@ -13,8 +13,6 @@ const ConnectWallet = () => {
 				method: "eth_requestAccounts",
 			});
 
-      
-
 			setAccount(accounts[0]);
 		} catch (error) {
 			console.log(error);

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { getSmartContract } from "../utils/getSmartContract";
-import { EventLog } from "ethers";
+import React, { useState, useEffect } from 'react';
+import { getSmartContract } from '@/utils/getSmartContract';
+import { EventLog } from 'ethers';
 
 
 type Transaction = {

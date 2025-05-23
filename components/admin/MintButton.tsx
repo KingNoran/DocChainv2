@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getSmartContract } from '../utils/getSmartContract';
+import { getSmartContract } from '@/utils/getSmartContract';
 
 
 const MintButton = ({ tokenId, pdfHash}: { tokenId: number, pdfHash: string }) => {
