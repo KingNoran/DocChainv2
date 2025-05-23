@@ -1,3 +1,12 @@
+import { Eip1193Provider } from 'ethers';
+
+// window.ethereum
+declare global {
+  interface Window {
+    ethereum: Eip1193Provider;
+  }
+}
+
 interface Student{
     studentId : number;
     userId : string;
