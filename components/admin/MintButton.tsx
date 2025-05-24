@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { isCallException } from 'ethers'; 
 import { getSmartContract } from '@/utils/getSmartContract';
+import { handleRevertError } from '@/utils/handleRevertError';
 
 
 const MintButton = ({ tokenId, pdfHash}: { tokenId: number, pdfHash: string }) => {
@@ -23,6 +25,10 @@ const MintButton = ({ tokenId, pdfHash}: { tokenId: number, pdfHash: string }) =
       
       console.log(`Success - ${tokenizerHash.hash}`);
     } catch (error) {
+      if (isCallException(error)) {
+        console.log(handleRevertError(error));
+      }
+
       console.log(error);
     } finally {
       setLoading(false);
