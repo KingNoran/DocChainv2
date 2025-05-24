@@ -29,7 +29,7 @@ const Header = () => {
       return (
         <header className="header-container flex">
           <div className="flex items-center">
-            <span className="text-xl font-bold"></span>
+            <span className="text-xl font-bold">DocChain</span>
           </div>
           <div className="flex items-center gap-4">
             <ModeToggle />
