@@ -5,19 +5,24 @@ import React from 'react'
 
 const Page = () => {
   return (
-    <div>
-      <Hero />
+    <div className="min-h-screen flex flex-col bg-background text-foreground font-inter">
+      <main className="flex-1 flex flex-col justify-center items-center px-4">
+        <Hero />
 
-      TransactionTable
-      <form 
-        action={async () => {
-          "use server";
+        <div>
+          TransactionTable
+        </div>
 
-          await signOut();
-        }}
-      >
+        <form 
+          action={async () => {
+            "use server";
+
+            await signOut();
+          }}
+        >
           <Button className='cursor-pointer'>Logout</Button>
-      </form>
+        </form>
+      </main>
     </div>
   )
 }

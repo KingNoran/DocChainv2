@@ -1,5 +1,3 @@
-import { Box, Home, Inbox, Settings, Link } from "lucide-react";
-
 export const navigationLinks = [
     {
         href: "/my-profile",
@@ -13,42 +11,42 @@ export const navigationLinks = [
     }
 ];
 
-export const adminSidebarLinks = [
+export const adminSideBarLinks = [
     {
-      title: "Dashboard",
-      url: "/admin",
-      icon: Home,
-    }, 
-    {
-      title: "Create Account",
-      url: "/admin/create",
-      icon: Box
+        img: "/icons/admin/home.svg",
+        route: "/admin",
+        text: "Home",
     },
     {
-      title: "Request Validation",
-      url: "/admin/transaction",
-      icon: Inbox,
+        img: "icons/admin/students.svg",
+        route: "/admin/students",
+        text: "All Students",
     },
     {
-      title: "Insert to Chain",
-      url: "/admin/chain",
-      icon: Link,
+        img: "/icons/admin/tor.svg",
+        route: "/admin/tors",
+        text: "All TORs",
     },
     {
-      title: "Settings",
-      url: "/admin/settings",
-      icon: Settings,
+        img: "/icons/admin/bookmark.svg",
+        route: "/admin/book-requests",
+        text: "Borrow Requests",
     },
-  ];
+    {
+        img: "/icons/admin/user.svg",
+        route: "/admin/account-requests",
+        text: "Account Requests",
+    },
+];
 
 export const FIELD_NAMES = {
     firstName: "Full Name",
     middleName: "Middle Name (optional)",
     lastName: "Last Name",
     email: "Email",
-    phone: "Phone",
     role: "Role",
     password: "Password",
+    tor: "TOR",
 }
 
 export const FIELD_TYPES = {
@@ -56,9 +54,9 @@ export const FIELD_TYPES = {
     middleName: "text",
     lastName: "text",
     email: "email",
-    phone: "text",
     role: "text",
     password: "password",
+    tor: "boolean",
 }
 
 export const sampleStudents = [

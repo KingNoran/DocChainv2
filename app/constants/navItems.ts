@@ -8,10 +8,6 @@ export const navItems = [
         path: "/transactions",
       },
       {
-        name:"notifications",
-        path: "/notifications",
-      },
-      {
         name:"view tor",
         path: "/tor",
       }
@@ -20,6 +16,5 @@ export const navItems = [
 export const navItemsPaths = [
       "/my-profile",
       "/transactions",
-      "/notifications",
       "/tor",
     ];    
