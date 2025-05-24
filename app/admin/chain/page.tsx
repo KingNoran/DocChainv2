@@ -4,7 +4,7 @@ import GenerateHash from '@/components/admin/GenerateHash';
 import MintButton from '@/components/admin/MintButton';
 import BurnButton from '@/components/admin/BurnButton';
 import MintCount from '@/components/admin/MintCount';
-import LatestTransactions from '@/components/admin/LatestTransactions';
+import LatestTransactions from '@/components/LatestTransactions';
 
 import { checkMetaMask } from '@/utils/checkMetamask';
 

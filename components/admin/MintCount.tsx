@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getSmartContract } from '@/utils/getSmartContract';
 
+
 const MintCount = () => {
   const [tokenCount, setTokenCount] = useState();
   const [isLoading, setLoading] = useState(false);
