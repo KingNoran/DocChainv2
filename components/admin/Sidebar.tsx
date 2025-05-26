@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Button } from "../ui/button";
 import { signOut } from "@/auth";
-import { adminSidebarLinks } from "@/app/constants";
+import { adminSideBarLinks } from "@/app/constants";
 import Link from "next/link";
 import { cn, getInitials } from "@/lib/utils";
 import { usePathname } from "next/navigation";
@@ -51,16 +51,14 @@ const AppSidebar = ({session} : {session : Session}) => {
           <SidebarGroupLabel> Registrar </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="flex flex-col gap-3">
-              {adminSidebarLinks.map((item)=>{
+              {adminSideBarLinks.map((item) => {
+                const isSelected = (item.route !== "/admin" && pathname.includes(item.route)) || pathname === item.route;
 
-                const isSelected = (item.url !== "/admin" && pathname.includes(item.url)) || pathname === item.url;
-
-                return(
-                  <SidebarMenuItem key={item.title}>
+                return (
+                  <SidebarMenuItem key={item.text}>
                     <SidebarMenuButton asChild className={cn("link", isSelected && "bg-primary-admin shadow-sm")}>
-                      <Link href={item.url} className={cn(isSelected ? 'text-white font-bold' : 'text-dark')}>
-                        <item.icon />
-                        {item.title}
+                      <Link href={item.route} className={cn(isSelected ? 'text-white font-bold' : 'text-dark')}>
+                        {item.text}
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

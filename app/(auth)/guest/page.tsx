@@ -12,13 +12,13 @@ export default function GuestPage() {
 
   const handleCarouselFinish = () => {
     setShowCarousel(false);
-    router.push('/guest.transaction');
+    router.push('/guest/transaction');
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-inter relative">
       {/* Custom Header */}
-      <header className="w-full h-20 flex items-center justify-between px-8 border-b border-border bg-background/80 sticky top-0 z-10">
+      <header className="w-full h-20 flex items-center justify-between px-8 border-b border-border sticky top-0 z-10 bg-background">
         <div className="flex items-center gap-4">
           {/* Logo placeholder or add your logo here */}
           <span className="text-xl font-bold">DocChain</span>
@@ -40,7 +40,7 @@ export default function GuestPage() {
             Experience the future of academic credential verification with our blockchain-powered platform that ensures tamper-proof and instantly verifiable records.
           </p>
           <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-            <Link href="/guest.transaction">
+            <Link href="/guest/transaction">
               <button className="px-8 py-4 bg-emerald-400 rounded-lg text-black text-lg font-medium hover:bg-emerald-500 transition-colors w-full md:w-auto">View Transaction</button>
             </Link>
             <button onClick={() => setShowCarousel(true)} className="px-8 py-4 rounded-lg border border-foreground text-foreground text-lg font-medium hover:bg-foreground/10 transition-colors w-full md:w-auto">Learn More</button>
@@ -50,7 +50,7 @@ export default function GuestPage() {
       <Footer />
       {/* Modal Overlay for Carousel */}
       {showCarousel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
           <div className="w-full max-w-2xl">
             <InfoCarousel onFinish={handleCarouselFinish} />
           </div>
