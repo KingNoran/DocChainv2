@@ -1,33 +1,41 @@
 import React, { useState } from 'react';
+import { isCallException } from 'ethers'; 
 import { getSmartContract } from '@/utils/getSmartContract';
+import { handleRevertError } from '@/utils/handleRevertError';
 
 
-const VerifyButton = ({ tokenId, pdfHash}: { tokenId: number, pdfHash: string }) => {
+const VerifyButton = ({ tokenId, pdfHash }: { tokenId: number, pdfHash: string }) => {
   const [isLoading, setLoading] = useState(false);
-  const [isVerified, setVerified] = useState(false);
 
-  
   const verifyPdfHash = async () => {
+    setLoading(true);
+    
 		try {
 			const tokenizerContract = await getSmartContract();
 
       if (!tokenizerContract) return alert("Metamask Account not connected.");
 
-			setLoading(true);
-			const tokenTranscriptHash = await tokenizerContract.getTranscriptHash(tokenId);
+      const tokenTranscriptHash = await tokenizerContract.getTranscriptHash(tokenId);
+			const isHashVerified = await tokenizerContract.verifyTranscriptHash(tokenId, pdfHash);
 
 			console.log("Token ID:", tokenId);
 			console.log("Retrieved hash:", tokenTranscriptHash);
 			console.log(typeof pdfHash);
 			console.log(typeof tokenTranscriptHash);
 
-			if (pdfHash === tokenTranscriptHash) {
+			if (isHashVerified) {
 				console.log("MATCHED:", pdfHash, "==", tokenTranscriptHash);
 			} else {
 				console.log("NOT MATCHED", pdfHash, "!=", tokenTranscriptHash);
 			}
 		} catch (error) {
-			console.log(error);
+      if (isCallException(error)) {
+        const contract = await getSmartContract();
+
+        console.log(await handleRevertError(contract, error));
+      } else {
+        console.log(error);
+      }
 		} finally {
       setLoading(false);
     }
