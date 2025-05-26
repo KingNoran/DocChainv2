@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { getSmartContract } from '@/utils/getSmartContract';
-import { EventLog } from 'ethers';
+import React, { useState, useEffect } from "react";
+import { getSmartContract } from "@/utils/getSmartContract";
+import { EventLog, BytesLike } from "ethers";
 
 
 type Transaction = {
@@ -15,41 +15,55 @@ const LatestTransactions = () => {
   const [isLoading, setLoading] = useState(false);
 
   const loadLatestTransactions = async () => {
+    setLoading(true);
+
     try {
       const tokenizerContract = await getSmartContract();
 
       if (!tokenizerContract) return console.log("Metamask Account not connected.");
 
-      setLoading(true);
+      const checkIfHashStored = async (hash: BytesLike): Promise<boolean> => {
+        console.log(await tokenizerContract.getStoredHashValue(hash));
+        return await tokenizerContract.getStoredHashValue(hash);
+      } 
 
-      const contractEvents = await tokenizerContract.queryFilter("TokenMinted");
-      const transactionLogs = contractEvents.slice(-5).reverse();
+      const mintedTokenEvents = await tokenizerContract.queryFilter("TokenMinted");
+      const recentMintEvents = mintedTokenEvents.reverse();
 
-      const latestTransactions = transactionLogs.map((event) => {
+      const storedHashes = new Set();
+      const mintedTokenIds = new Set();
+
+      const latestTransactions: Transaction[] = [];
+
+      for (const event of recentMintEvents) {
         const { args, transactionHash } = event as EventLog;
 
         const [id, hash, timestamp] = args;
         const eventTransactionHash = transactionHash;
 
-        console.log(
-          id,
-          hash,
-          new Date(Number(timestamp) * 1000).toLocaleString()
-        );
+        if (!(await checkIfHashStored(hash))) continue;
 
         const convertedTimestamp = new Date(
           Number(timestamp) * 1000
         ).toLocaleString();
 
-        return {
-          studentId: id,
-          transcriptHash: hash,
-          eventTimestamp: convertedTimestamp,
-          eventHash: eventTransactionHash,
-        };
-      });
+        if (!storedHashes.has(hash) && !mintedTokenIds.has(id)) {
+          latestTransactions.push({
+            studentId: id,
+            transcriptHash: hash,
+            eventTimestamp: convertedTimestamp,
+            eventHash: eventTransactionHash,
+          });
+
+          storedHashes.add(hash);
+          mintedTokenIds.add(id);
+        }
+
+        if (latestTransactions.length == 5) break;
+      }
 
       setTransactions(latestTransactions);
+      console.log(latestTransactions)
     } catch (error) {
       console.log(error);
     } finally {
@@ -68,7 +82,16 @@ const LatestTransactions = () => {
           <ul>
             {transactions && transactions.map((transaction) => (
               <li key={transaction.eventHash}>
-                <p>Transaction Hash: {transaction.eventHash}</p>
+                <p>
+                  {"Transaction Hash: "}
+                  <a 
+                    href={`https://zksync-sepolia.blockscout.com/tx/${transaction.eventHash}`}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    {transaction.eventHash}
+                  </a>
+                </p>
                 <p>Token ID: {transaction.studentId}</p>
                 <p>PDF hash: {transaction.transcriptHash}</p>
                 <p>{transaction.eventTimestamp}</p> 
