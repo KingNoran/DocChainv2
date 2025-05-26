@@ -51,7 +51,7 @@ export default function InfoCarousel({ onFinish }: { onFinish?: () => void }) {
             <div className="flex items-center justify-center w-full mt-4 gap-4">
               <Button
                 variant="outline"
-                className="w-20 h-12 bg-muted text-foreground font-semibold rounded-lg opacity-50 disabled:opacity-30 border border-border"
+                className="w-20 h-12 cursor-pointer bg-muted text-foreground font-semibold rounded-lg opacity-50 disabled:opacity-30 border border-border"
                 disabled={current === 0}
                 onClick={() => setCurrent((c) => Math.max(0, c - 1))}
               >
@@ -67,14 +67,14 @@ export default function InfoCarousel({ onFinish }: { onFinish?: () => void }) {
               </div>
               {isLast ? (
                 <Button
-                  className="w-32 h-12 bg-primary text-primary-foreground font-semibold rounded-lg"
+                  className="w-32 h-12 bg-primary cursor-pointer text-primary-foreground font-semibold rounded-lg"
                   onClick={onFinish}
                 >
                   Let's Get Started
                 </Button>
               ) : (
                 <Button
-                  className="w-20 h-12 bg-primary text-primary-foreground font-semibold rounded-lg"
+                  className="w-20 h-12 bg-primary cursor-pointer text-primary-foreground font-semibold rounded-lg"
                   onClick={() => setCurrent((c) => Math.min(slides.length - 1, c + 1))}
                 >
                   Next

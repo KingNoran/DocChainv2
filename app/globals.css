@@ -14,15 +14,15 @@
   /* Auth */
 
   .auth-container {
-    @apply relative flex flex-col-reverse text-light-100 sm:flex-row;
+    @apply relative flex flex-col-reverse sm:flex-row;
   }
 
   .auth-form {
-    @apply my-auto flex h-full min-h-screen flex-1 items-center bg-cover bg-top px-5 py-10;
+    @apply my-auto flex h-full min-h-screen flex-1 items-center bg-cover bg-top;
   }
 
   .auth-box {
-    @apply mx-auto flex max-w-xl flex-col gap-6 rounded-lg p-10 bg-secondary-foreground;
+    @apply mx-auto flex w-full flex-col gap-6 rounded-lg bg-secondary-foreground;
   }
 
   /* Header */
@@ -66,7 +66,7 @@
   /* Footer */
 
   .footer-container{
-    @apply flex flex-col items-center bg-secondary px-12 pt-5 
+    @apply flex flex-col items-center bg-secondary px-12 pt-5 mt-15
   }
 
   .footer-container section{
@@ -145,7 +145,7 @@
   --primary: oklch(0.723 0.219 149.579);
   --primary-foreground: oklch(0.982 0.018 155.826);
   --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.967 0.001 286.375);
   --muted-foreground: oklch(0.552 0.016 285.938);
   --accent: oklch(0.967 0.001 286.375);
@@ -179,7 +179,7 @@
   --primary: oklch(0.696 0.17 162.48);
   --primary-foreground: oklch(0.393 0.095 152.535);
   --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
   --muted: oklch(0.274 0.006 286.033);
   --muted-foreground: oklch(0.705 0.015 286.067);
   --accent: oklch(0.274 0.006 286.033);

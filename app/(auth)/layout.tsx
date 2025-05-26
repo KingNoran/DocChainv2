@@ -11,9 +11,6 @@ const Layout = async ({children}:{children:ReactNode}) => {
     <main className="auth-container">
       <section className="auth-form">
         <div className="auth-box">
-          <div className="flex flex-row gap-3">
-            <h1 className="text-2xl font-bold text-white">DocChain</h1>
-          </div>
           <div>
             {children}
           </div>
