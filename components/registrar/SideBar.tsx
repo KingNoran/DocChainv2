@@ -10,11 +10,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarFooter,
 } from "@/components/ui/sidebar"
-import { Button } from "../ui/button";
-import { signOut } from "@/auth";
-import { adminSidebarLinks } from "@/app/constants";
+import { registrarSidebarLinks } from "@/app/constants";
 import Link from "next/link";
 import { cn, getInitials } from "@/lib/utils";
 import { usePathname } from "next/navigation";
@@ -29,7 +26,7 @@ interface Admin{
 
 
 
-const AppSidebar = ({session} : {session : Session}) => {
+const RegistrarSideBar = ({session} : {session : Session}) => {
 
   const pathname = usePathname();
 
@@ -48,12 +45,12 @@ const AppSidebar = ({session} : {session : Session}) => {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel> Admin </SidebarGroupLabel>
+          <SidebarGroupLabel> Registrar </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="flex flex-col gap-3">
-              {adminSidebarLinks.map((item)=>{
+              {registrarSidebarLinks.map((item)=>{
 
-                const isSelected = (item.url !== "/admin" && pathname.includes(item.url)) || pathname === item.url;
+                const isSelected = (item.url !== "/registrar" && pathname.includes(item.url)) || pathname === item.url;
 
                 return(
                   <SidebarMenuItem key={item.title}>
@@ -86,4 +83,4 @@ const AppSidebar = ({session} : {session : Session}) => {
   )
 }
 
-export default AppSidebar
+export default RegistrarSideBar

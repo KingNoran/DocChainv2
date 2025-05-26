@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from 'zod';
 import {
   Form,
@@ -14,12 +14,12 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useRouter } from 'next/navigation';
-import { roles, Student } from '@/app/(root)/types';
-import { studentSchema, userSchema } from '@/lib/validations';
+import { Student } from '@/app/(root)/types';
+import { userSchema } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
 import { createUser } from '@/lib/admin/actions/user';
 import { toast } from 'sonner';
-
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem, SelectLabel } from '@radix-ui/react-select';
 
 interface Props extends Partial<Student>{
   type?: 'create' | 'update';
@@ -66,17 +66,6 @@ const UserForms = ({
         lastName: "", 
         email: "", 
         phone: "",
-    }
-  });
-
-  const studentForm = useForm<z.infer<typeof studentSchema>>({
-    resolver: zodResolver(studentSchema),
-    defaultValues: {
-      year: 1,
-      semester: 1,
-      course: "",
-      finalGrade: 0,
-      torReady: false,
     }
   });
 
@@ -188,7 +177,7 @@ const UserForms = ({
             render={({field})=>(
                 <FormItem className='flex flex-col gap-1'>
                     <FormLabel className="text-base font-normal text-dark-500">
-                        Role
+                      Role
                     </FormLabel>
                     <FormControl>
                         <Input
