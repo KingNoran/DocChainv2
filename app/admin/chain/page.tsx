@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import ConnectWallet from '@/components/admin/ConnectWallet';
 import GenerateHash from '@/components/admin/GenerateHash';
 import MintButton from '@/components/admin/MintButton';
@@ -15,14 +15,19 @@ const Page = () => {
   const [mintTokenId, setMintTokenId] = useState(0);
   const [burnTokenId, setBurnTokenId] = useState(0);
   const [pdfHash, setPdfHash] = useState<string>('');
+  const [hasMetamask, setHasMetamask] = useState<boolean | null>(null);
 
   const handleHashGenerated = (hash: string) => {
     setPdfHash(hash);
   };
 
+  useEffect(() => {
+    setHasMetamask(checkMetaMask());
+  }, []);
+
   return (
     <div>
-      {checkMetaMask() ? 
+      {hasMetamask ? 
         (
           <>
             <ConnectWallet />

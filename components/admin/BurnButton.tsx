@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { isCallException } from 'ethers'; 
 import { getSmartContract } from '@/utils/getSmartContract';
@@ -14,7 +16,6 @@ const BurnButton = ({ tokenId }: { tokenId: number }) => {
       const tokenizerContract = await getSmartContract();
 
       if (!tokenizerContract) return alert("Metamask Account not connected.");
-      if (!tokenId) return alert("Invalid Token ID Input");
 
       const tokenizerHash = await tokenizerContract.burn(tokenId);
 
@@ -27,7 +28,7 @@ const BurnButton = ({ tokenId }: { tokenId: number }) => {
       if (isCallException(error)) {
         const contract = await getSmartContract();
         
-        console.log(await handleRevertError(contract, error));
+        await handleRevertError(contract, error);
       } else {
         console.log(error);
       }
