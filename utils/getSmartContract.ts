@@ -1,5 +1,5 @@
 import { BrowserProvider, JsonRpcSigner, Contract } from "ethers";
-import { contractABI, contractAddress } from "./contractDetails";
+import { contractABI, contractAddress } from "@/app/constants/contractDetails";
 
 export const getSmartContract = async (): Promise<Contract> => {
 	const ethProvider: BrowserProvider = new BrowserProvider(window.ethereum);

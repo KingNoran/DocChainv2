@@ -6,14 +6,14 @@ import { handleRevertError } from '@/utils/handleRevertError';
 
 const VerifyButton = ({ tokenId, pdfHash }: { tokenId: number, pdfHash: string }) => {
   const [isLoading, setLoading] = useState(false);
-  
+
   const verifyPdfHash = async () => {
+    setLoading(true);
+    
 		try {
 			const tokenizerContract = await getSmartContract();
 
       if (!tokenizerContract) return alert("Metamask Account not connected.");
-
-			setLoading(true);
 
       const tokenTranscriptHash = await tokenizerContract.getTranscriptHash(tokenId);
 			const isHashVerified = await tokenizerContract.verifyTranscriptHash(tokenId, pdfHash);
@@ -30,10 +30,12 @@ const VerifyButton = ({ tokenId, pdfHash }: { tokenId: number, pdfHash: string }
 			}
 		} catch (error) {
       if (isCallException(error)) {
-        handleRevertError(error);
-      }
+        const contract = await getSmartContract();
 
-			console.log(error);
+        console.log(await handleRevertError(contract, error));
+      } else {
+        console.log(error);
+      }
 		} finally {
       setLoading(false);
     }

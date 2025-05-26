@@ -7,12 +7,12 @@ const MintCount = () => {
   const [isLoading, setLoading] = useState(false);
 
   const checkMintedTokenCount = async () => {
+    setLoading(true);
+    
     try {
       const tokenizerContract = await getSmartContract();
 
       if (!tokenizerContract) return console.log("Metamask Account not connected.");
-
-      setLoading(true);
 
       const mintedCount = await tokenizerContract.getTokenMintedCount();
 

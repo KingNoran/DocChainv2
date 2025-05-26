@@ -6,9 +6,9 @@ const ConnectWallet = () => {
   const [isLoading, setLoading] = useState(false);
 
   const connectWallet = async () => {
-		try {
-      setLoading(true);
-
+		setLoading(true);
+    
+    try {
 			const accounts = await window.ethereum.request({
 				method: "eth_requestAccounts",
 			});
@@ -23,8 +23,6 @@ const ConnectWallet = () => {
 
   const checkIfWalletIsConnected = async () => {
 		try {
-      setLoading(true);
-
 			const accounts = await window.ethereum.request({
 				method: "eth_accounts",
 			});
@@ -37,9 +35,7 @@ const ConnectWallet = () => {
 			}
 		} catch (error) {
 			console.log(error);
-		} finally {
-      setLoading(false);
-    }
+		}
 	};
 
   useEffect(() => {
