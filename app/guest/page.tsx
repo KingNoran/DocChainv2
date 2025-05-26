@@ -1,4 +1,5 @@
 'use client';
+
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 import { ModeToggle } from '@/components/ui/toggle-mode';
@@ -18,7 +19,7 @@ export default function GuestPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-inter relative">
       {/* Custom Header */}
-      <header className="w-full h-20 flex items-center justify-between px-8 border-b border-border sticky top-0 z-10 bg-background">
+      <header className="w-full h-20 flex items-center justify-between px-8 border-b border-border bg-background/80 sticky top-0 z-10">
         <div className="flex items-center gap-4">
           {/* Logo placeholder or add your logo here */}
           <span className="text-xl font-bold">DocChain</span>
@@ -26,12 +27,12 @@ export default function GuestPage() {
         <div className="flex items-center gap-4">
           <ModeToggle />
           <Link href="/login">
-            <button className="px-6 py-2 rounded-lg border border-foreground text-foreground text-base font-medium hover:bg-foreground/10 transition-colors">Log In</button>
+            <button className="px-6 py-2 rounded-lg border border-foreground text-foreground text-base font-medium hover:bg-foreground/10 transition-colors cursor-pointer">Log In</button>
           </Link>
-          <button onClick={() => setShowCarousel(true)} className="px-6 py-2 bg-emerald-400 rounded-lg text-black text-base font-medium hover:bg-emerald-500 transition-colors">Get Started</button>
+          <button onClick={() => setShowCarousel(true)} className="px-6 py-2 bg-emerald-400 rounded-lg text-black text-base font-medium hover:bg-emerald-500 transition-colors cursor-pointer">Get Started</button>
         </div>
       </header>
-      <main className="flex-1 flex flex-col justify-center items-center px-4">
+      <main className="flex-1 flex flex-col justify-center items-center px-4 pt-10 pb-25">
         <div className="max-w-4xl w-full text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
             DocChain: Secure Academic<br />Records on the Blockchain
@@ -41,16 +42,16 @@ export default function GuestPage() {
           </p>
           <div className="flex flex-col md:flex-row items-center justify-center gap-6">
             <Link href="/guest/transaction">
-              <button className="px-8 py-4 bg-emerald-400 rounded-lg text-black text-lg font-medium hover:bg-emerald-500 transition-colors w-full md:w-auto">View Transaction</button>
+              <button className="px-8 py-4 bg-emerald-400 rounded-lg text-black text-lg font-medium hover:bg-emerald-500 transition-colors w-full md:w-auto cursor-pointer">View Transaction</button>
             </Link>
-            <button onClick={() => setShowCarousel(true)} className="px-8 py-4 rounded-lg border border-foreground text-foreground text-lg font-medium hover:bg-foreground/10 transition-colors w-full md:w-auto">Learn More</button>
+            <button onClick={() => setShowCarousel(true)} className="px-8 py-4 rounded-lg border border-foreground text-foreground text-lg font-medium cursor-pointer hover:bg-foreground/10 transition-colors w-full md:w-auto">Learn More</button>
           </div>
         </div>
       </main>
       <Footer />
       {/* Modal Overlay for Carousel */}
       {showCarousel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="w-full max-w-2xl">
             <InfoCarousel onFinish={handleCarouselFinish} />
           </div>

@@ -1,8 +1,10 @@
-import { course, Student, studentYear } from '@/app/(root)/types'
+import { Student} from '@/app/(root)/types'
 import React from 'react'
 import { Card, CardContent } from './ui/card'
 import { Button } from './ui/button'
 import { Separator } from './ui/separator'
+import { logout } from '@/app/actions'
+import { LogOut } from 'lucide-react'
 
 
 const StudentOverview = ({
@@ -69,11 +71,11 @@ const StudentOverview = ({
           </div>
         </CardContent>
         <CardContent>
-          <Button>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10.8687 2.86883C11.0163 2.71602 11.1928 2.59412 11.3881 2.51027C11.5833 2.42642 11.7932 2.38228 12.0057 2.38043C12.2181 2.37859 12.4288 2.41907 12.6254 2.49952C12.8221 2.57997 13.0007 2.69877 13.1509 2.849C13.3012 2.99923 13.42 3.17787 13.5004 3.37451C13.5809 3.57114 13.6214 3.78183 13.6195 3.99427C13.6177 4.20672 13.5735 4.41667 13.4897 4.61188C13.4058 4.80709 13.2839 4.98364 13.1311 5.13123L12.4967 5.76563L10.2343 3.50323L10.8687 2.86883ZM9.1031 4.63443L2.3999 11.3376V13.6H4.6623L11.3663 6.89683L9.1031 4.63443Z" fill="black"/>
-            </svg> Edit Profile
-          </Button>
+          <form action={logout}>
+            <Button type="submit" className="bg-red-500 hover:bg-red-600 text-white">
+              <LogOut className="mr-2 h-4 w-4" /> Logout
+            </Button>
+          </form>
         </CardContent>
       </Card>
 

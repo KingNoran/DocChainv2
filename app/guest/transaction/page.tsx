@@ -1,12 +1,27 @@
 'use client';
 
+import { ModeToggle } from '@/components/ui/toggle-mode';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 
 export default function GuestTransactionPage() {
   return (
     <div className="w-full min-h-screen flex flex-col bg-background text-foreground font-inter">
-      <div className="flex-1 flex flex-col items-center justify-center">
+      {/* Custom Header */}
+      <header className="w-full h-20 flex items-center justify-between px-8 border-b border-border bg-background/80 sticky top-0 z-10">
+        <div className="flex items-center gap-4">
+          {/* Logo placeholder or add your logo here */}
+          <span className="text-xl font-bold">DocChain</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <ModeToggle />
+          <Link href="/login">
+            <button className="px-6 py-2 rounded-lg border border-foreground text-foreground text-base font-medium hover:bg-foreground/10 transition-colors cursor-pointer">Log In</button>
+          </Link>
+          
+        </div>
+      </header>
+      <div className="flex-1 flex flex-col items-center justify-center my-15">
         <div className="text-emerald-400 text-9xl font-bold font-['Inter'] leading-[96px] mb-4">Doc. Chain</div>
         <div className="text-muted-foreground text-2xl font-normal font-['Inter'] leading-relaxed mb-12">Welcome to the future of document verification</div>
 
@@ -20,7 +35,7 @@ export default function GuestTransactionPage() {
         </div>
 
         <div className="mt-8">
-          <button className="w-56 h-14 py-4 bg-emerald-400 rounded-lg text-black text-base font-medium font-['Inter'] leading-normal hover:bg-emerald-500 transition-colors">
+          <button className="w-56 h-14 py-4 bg-emerald-400 rounded-lg text-black text-base font-medium font-['Inter'] leading-normal hover:bg-emerald-500 transition-colors cursor-pointer">
             Enter
           </button>
         </div>

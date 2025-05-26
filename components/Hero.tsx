@@ -23,7 +23,7 @@ const Hero = () => {
         
         <SearchBar />
         
-        <div className="flex justify-even gap-10 pt-10 md:hidden">
+        <div className="flex justify-even gap-10 pt-10 md:hidden cursor-pointer">
           { pathname==="/" ? <Button onClick={()=>redirect("/login")}>Log In</Button> : null}
           <div><ModeToggle /></div>
           <Button onClick={()=>redirect("/docs")} variant="secondary">Get Started</Button>

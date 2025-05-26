@@ -6,7 +6,7 @@ const SearchBar = () => {
   return (
       <div className="publicKeyContainer">
         <Input className="publicKeyInput" placeholder="Enter public key" />
-        <Button className="publicKeyButton">Search</Button>
+        <Button className="publicKeyButton cursor-pointer">Search</Button>
       </div>
   )
 }

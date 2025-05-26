@@ -1,9 +1,10 @@
 "use server";
 
-import { course, roles, StudentParams, UserParams } from "@/app/(root)/types";
+import { course, roles, StudentParams, TORParams, UserParams } from "@/app/(root)/types";
 import { db } from "@/database/drizzle";
-import { admins, registrars, students, users } from "@/database/schema";
+import { admins, record, registrars, students, users } from "@/database/schema";
 import { error } from "console";
+import { eq } from 'drizzle-orm';
 
 export const createUser = async (
     userparams: UserParams, 
@@ -46,6 +47,41 @@ export const createUser = async (
         return{
             success: false,
             message: "Error occurred while making User"
+        }
+    }
+}
+
+export const createTOR = async(
+    torParams: TORParams
+)=>{
+    try{
+        const student = await db
+        .select()
+        .from(students)
+        .where(eq(students.studentId, torParams.studentId!))
+        .limit(1);
+        
+        /* const user = await db
+        .select()
+        .from(users)
+        .where(eq(users.userId, student[0].userId!))
+        .limit(1); */
+
+        const course = student[0].course;
+
+        const newTOR = await db.insert(record).values({
+            ...torParams
+        }).returning();
+
+        return{
+            success: true,
+            data: JSON.parse(JSON.stringify(newTOR[0])),
+        }
+    } catch(error){
+        console.group(error);
+        return{
+            success: false,
+            message: "Error occurred while making TOR"
         }
     }
 }

@@ -67,7 +67,7 @@ const AuthForm = <T extends FieldValues>({
 
   return (
     <div className="flex flex-col items-center gap-6 w-full">
-      <h1 className="text-3xl font-bold text-center mt-8 mb-2">Welcome Back</h1>
+      <h1 className="text-3xl font-bold text-center mt-8 mb-2">Welcome Back!</h1>
       <p className="text-base text-neutral-400 text-center mb-4">Enter your credentials to access your account</p>
       <div className="w-full max-w-md bg-background text-foreground rounded-2xl p-8 flex flex-col gap-6 shadow-lg">
         <Form {...form}>
@@ -110,7 +110,7 @@ const AuthForm = <T extends FieldValues>({
                       />
                       <button
                         type="button"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-normal focus:outline-none"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-normal focus:outline-none cursor-pointer"
                         onClick={() => setShowPassword((v) => !v)}
                         tabIndex={-1}
                       >
@@ -125,20 +125,20 @@ const AuthForm = <T extends FieldValues>({
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between mt-2">
               <label className="flex items-center gap-2 text-sm text-muted-foreground">
-                <input type="checkbox" className="w-4 h-4 rounded-sm border border-border bg-background" />
+                <input type="checkbox" className="w-4 h-4 rounded-sm border border-border bg-background cursor-pointer" />
                 Remember me
               </label>
-              <button type="button" className="text-primary text-sm font-normal hover:underline">Forgot password?</button>
+              <button type="button" className="text-primary text-sm font-normal hover:underline cursor-pointer">Forgot password?</button>
             </div>
             {/* Submit Button */}
-            <Button type="submit" className="w-full h-9 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-emerald-500 transition-colors">Enter</Button>
+            <Button type="submit" className="w-full h-9 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-emerald-500 transition-colors cursor-pointer">Log In</Button>
           </form>
         </Form>
       </div>
       {/* Terms and Privacy */}
       <div className="flex gap-8 mt-2 text-sm text-neutral-400">
-        <button type="button" className="hover:underline">Terms of Service</button>
-        <button type="button" className="hover:underline">Privacy Policy</button>
+        <button type="button" className="hover:underline cursor-pointer">Terms of Service</button>
+        <button type="button" className="hover:underline cursor-pointer">Privacy Policy</button>
       </div>
       <Footer />
     </div>

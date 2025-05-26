@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import ConnectWallet from '@/components/admin/ConnectWallet';
 import GenerateHash from '@/components/admin/GenerateHash';

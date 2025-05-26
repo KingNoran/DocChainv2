@@ -55,14 +55,12 @@ interface StudentParams{
     torReady: boolean;
 }
 
-interface TOR{
-    course_name: string;
-    first_year: TOR_year;
-    second_year: TOR_year;
-    mid_year: TOR_year;
-    third_year: TOR_year;
-    fourth_year: TOR_year;
+interface TORParams{
+    name: string;
+    course: string;
+    studentId: number;
 }
+
 
 export type roles =
     "STUDENT"|
@@ -77,25 +75,52 @@ export type studentYear =
     "Fourth Year"|
     "Invalid Input";
 
-
-export type TOR_year = {
-    first_sem: TOR_sem;
-    second_sem: TOR_sem;
-}
-
-export type TOR_sem = {
-    subjects: TOR_subject[];
-}
-
-export type TOR_subject = {
+export type subject={
     id: number;
-    subjectCode: string;
-    subjectTitle: subject_names;
+    courseCode: string;
+    courseTitle: string;
     creditUnit: { lecture: number, laboratory: number };
-    contactHrs: { lecture: number, laboratory: number };
     preRequisite: string;
     finalGrade: number;
     instructor: string;
+}
+
+export type midSub={
+    id: number;
+    courseCode: string;
+    courseTitle: string;
+    creditUnit: { lecture: number, laboratory: number };
+    preRequisite: string;
+    finalGrade: number;
+    instructor: string;
+}
+
+interface TOR{
+        firstYear: {
+            firstSem: subject[];
+            secondSem: subject[];
+        },
+        secondYear: {
+            firstSem: subject[];
+            secondSem: subject[];
+        },
+        midYear?: {
+            midSem: subject[];
+        },
+        midYear1?:{
+            midSem: subject[]
+        },
+        midYear2?:{
+            midSem: subject[];
+        }
+        thirdYear: {
+            firstSem: subject[];
+            secondSem: subject[];
+        },
+        fourthYear: {
+            firstSem: subject[];
+            secondSem: subject[];
+        },
 }
 
 export type names = typeof subjectNames;

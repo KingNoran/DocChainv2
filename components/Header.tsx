@@ -35,7 +35,7 @@ const Header = () => {
             <ModeToggle />
             <Button
               className="cursor-pointer bg-primary text-primary-foreground font-medium rounded-lg hover:bg-emerald-500 transition-colors hidden md:block"
-              onClick={() => redirect("/docs")}
+              onClick={() => redirect("/guest")}
             >
               Get Started
             </Button>

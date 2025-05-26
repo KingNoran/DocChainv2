@@ -1,17 +1,16 @@
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import UserForms from '@/components/admin/forms/UserForms'
 import React from 'react'
 
 const Page = () => {
   return (
-    <section className="w-full rounded-2xl bg-white p-7">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-xl font-semibold">All Students</h2>
-        <Button className="bg-primary-admin hover:bg-muted-foreground" asChild>
-          <Link href="/admin/create/new">+ Create a New Student</Link>
-        </Button>
+    <div className="flex justify-end items-center min-h-screen main-container">
+      <div className="w-full max-w-md content-container">
+        <div className="form-container">
+          <h1 className="text-2xl font-bold mb-6 form-title">Create User Account</h1>
+          <UserForms />
+        </div>
       </div>
-    </section>
+    </div>
   )
 }
 

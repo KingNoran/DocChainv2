@@ -1,3 +1,5 @@
+import { Box, Home, Inbox, Settings, Link, CloudLightning, TablePropertiesIcon, LogOut } from "lucide-react";
+
 export const navigationLinks = [
     {
         href: "/my-profile",
@@ -11,31 +13,64 @@ export const navigationLinks = [
     }
 ];
 
-export const adminSideBarLinks = [
+export const registrarSidebarLinks = [
+  {
+    title: "Dashboard",
+    url: "/registrar",
+    icon: Home,
+  },
+  {
+    title: "Register Student",
+    url: "/registrar/create",
+    icon: Box,
+  },
+  {
+    title: "Issue TOR",
+    url: "/registrar/tor",
+    icon: CloudLightning,
+  },
+  {
+    title: "View Students",
+    url: "/registrar/students",
+    icon: TablePropertiesIcon,
+  },
+  {
+    title: "Settings",
+    url: "/registrar/settings",
+    icon: Settings,
+  },
+];
+
+export const adminSidebarLinks = [
     {
-        img: "/icons/admin/home.svg",
-        route: "/admin",
-        text: "Home",
+        icon: Home,
+        url: "/admin",
+        title: "Dashboard",
     },
     {
-        img: "icons/admin/students.svg",
-        route: "/admin/students",
-        text: "All Students",
+        icon: Box,
+        url: "/admin/create",
+        title: "Create Student",
     },
     {
-        img: "/icons/admin/tor.svg",
-        route: "/admin/tors",
-        text: "All TORs",
+        icon: Link,
+        url: "/admin/chain",
+        title: "Push to Chain",
     },
     {
-        img: "/icons/admin/bookmark.svg",
-        route: "/admin/book-requests",
-        text: "Borrow Requests",
+        icon: Inbox,
+        url: "/admin/transaction",
+        title: "See Requests",
     },
     {
-        img: "/icons/admin/user.svg",
-        route: "/admin/account-requests",
-        text: "Account Requests",
+        icon: Settings,
+        url: "/admin/settings",
+        title: "Settings",
+    },
+    {
+        icon: LogOut,
+        url: "#", // Placeholder URL, signOut is handled by form
+        title: "Exit",
     },
 ];
 
