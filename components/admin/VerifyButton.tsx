@@ -5,6 +5,8 @@ import { isCallException } from 'ethers';
 import { getSmartContract } from '@/utils/getSmartContract';
 import { handleRevertError } from '@/utils/handleRevertError';
 
+import { Button } from '@/components/ui/button';
+
 
 const VerifyButton = ({ tokenId, pdfHash }: { tokenId: number, pdfHash: string }) => {
   const [isLoading, setLoading] = useState(false);
@@ -45,9 +47,9 @@ const VerifyButton = ({ tokenId, pdfHash }: { tokenId: number, pdfHash: string }
   
   return (
     <div>
-      <button type="submit" onClick={verifyPdfHash} disabled={isLoading}>
+      <Button type="submit" onClick={verifyPdfHash} disabled={isLoading}>
 				{isLoading ? "Verifying..." : "Verify Hash"}
-			</button>
+			</Button>
     </div>
   );
 }

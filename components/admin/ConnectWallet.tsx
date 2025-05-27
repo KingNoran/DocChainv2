@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 
 
 const ConnectWallet = () => {
@@ -48,13 +49,14 @@ const ConnectWallet = () => {
     <div>
       <div>
 				{!account ? (
-					<button
+					<Button
+            className='bg-[#25388C] cursor-pointer'
 						type="button"
 						onClick={connectWallet}
             disabled={isLoading}
 					>
 						{isLoading ? "Connecting..." : "Connect Wallet"}
-					</button>
+					</Button>
 				) : (<p>Connected Wallet: {account}</p>)}
 			</div>
     </div>

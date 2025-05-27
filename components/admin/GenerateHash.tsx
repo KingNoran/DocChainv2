@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 import { checkFileType } from '@/utils/checkFileType';
 import { hashPdf } from '@/utils/hashPdf';
 
+import { Button } from '@/components/ui/button';
+import { Input } from '../ui/input';
+
 
 const GenerateHash = ({ onHashGenerated }: { onHashGenerated: Function }) => {
   const [file, setFile] = useState<File | null | undefined>(null);
@@ -38,16 +41,16 @@ const GenerateHash = ({ onHashGenerated }: { onHashGenerated: Function }) => {
   
   return (
     <div>
-      <input
+      <Input
 					type="file"
 					accept="application/pdf"
 					onChange={handleFileInput}
 			/>
       <br />
       <br />
-      <button type="submit" onClick={handleSubmit}>
+      <Button className='bg-[#25388C] cursor-pointer' type="submit" onClick={handleSubmit}>
 					{isLoading ? "Generating..." : "Generate Hash"}
-			</button>
+			</Button>
     </div>
   )
 }
