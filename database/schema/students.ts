@@ -23,4 +23,6 @@ export const studentsRelations = relations(students, ({one}) => ({
     }),
 }));
 
+export type students = typeof students;
+
 export default students;

@@ -51,7 +51,7 @@ export const createUser = async (
     }
 }
 
-export const createTOR = async(
+export const checkStudent = async(
     torParams: TORParams
 )=>{
     try{
@@ -60,28 +60,12 @@ export const createTOR = async(
         .from(students)
         .where(eq(students.studentId, torParams.studentId!))
         .limit(1);
-        
-        /* const user = await db
-        .select()
-        .from(users)
-        .where(eq(users.userId, student[0].userId!))
-        .limit(1); */
 
-        const course = student[0].course;
+        if(student.length < 1) throw error;
 
-        const newTOR = await db.insert(record).values({
-            ...torParams
-        }).returning();
+        return JSON.stringify(student[0]);
 
-        return{
-            success: true,
-            data: JSON.parse(JSON.stringify(newTOR[0])),
-        }
     } catch(error){
         console.group(error);
-        return{
-            success: false,
-            message: "Error occurred while making TOR"
-        }
     }
 }

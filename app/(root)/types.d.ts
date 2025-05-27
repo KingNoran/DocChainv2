@@ -27,6 +27,10 @@ interface Student{
     createdAt: string | null;
 }
 
+interface DatabaseStudent{
+    
+}
+
 interface AuthCredentials{
     firstName: string;
     middleName: string;
@@ -135,7 +139,6 @@ export type course =
     "BSED_M"|
     "BSED_E"|
     "BSBM_MM"|
-    "BSBM_HR"|
     null;
 
 export const subjectNames = [
