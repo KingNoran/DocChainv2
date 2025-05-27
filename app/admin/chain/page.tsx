@@ -8,6 +8,8 @@ import BurnButton from '@/components/admin/BurnButton';
 import MintCount from '@/components/admin/MintCount';
 import LatestTransactions from '@/components/LatestTransactions';
 
+import { Input } from '@/components/ui/input';
+
 import { checkMetaMask } from '@/utils/checkMetamask';
 
 
@@ -30,7 +32,7 @@ const Page = () => {
       {hasMetamask ? 
         (
           <>
-            <ConnectWallet />
+            <ConnectWallet  />
             <br />
             <div>
               <GenerateHash onHashGenerated={handleHashGenerated} />
@@ -40,7 +42,7 @@ const Page = () => {
             </div>
             <br />
             <div>
-              <input
+              <Input
                 type="number"
                 onChange={(event) => setMintTokenId(Number(event.target.value))}
               />
@@ -48,7 +50,7 @@ const Page = () => {
             </div>
             <br />
             <div>
-              <input
+              <Input
                 type="number"
                 onChange={(event) => setBurnTokenId(Number(event.target.value))}
               />

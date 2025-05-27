@@ -6,6 +6,9 @@ import { getSmartContract } from "@/utils/getSmartContract";
 import { handleRevertError } from "@/utils/handleRevertError";
 import { toast } from "sonner";
 
+import { Button } from '@/components/ui/button';
+
+
 const MintButton = ({
   tokenId,
   pdfHash,
@@ -70,9 +73,9 @@ const MintButton = ({
 
   return (
     <div>
-      <button type="submit" onClick={mintPdfHash} disabled={isLoading}>
+      <Button className='bg-[#25388C] cursor-pointer' type="submit" onClick={mintPdfHash} disabled={isLoading}>
         {isLoading ? "Minting..." : "Mint"}
-      </button>
+      </Button>
     </div>
   );
 };

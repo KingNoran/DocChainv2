@@ -19,13 +19,13 @@ export const POST = async (req: Request) => {
       .where(eq(students.studentId, tokenId));
   
     console.log("Student Query Result:", result);
+
+    if (!result) {
+        return NextResponse.json({ error: "Student ID not found" }, { status: 404 });
+    }
   
     const studentId = result[0]?.studentId;
     const studentUserId = result[0]?.userId;
-
-    if (!studentId) {
-        return NextResponse.json({ error: "Student ID not found" }, { status: 404 });
-    }
   
     const tokenizerContract = getSmartContractViewOnly();
   

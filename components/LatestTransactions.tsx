@@ -1,8 +1,10 @@
+'use client';
 
 import React, { useState, useEffect } from "react";
 import { getSmartContractViewOnly } from "@/utils/getSmartContractViewOnly";
 import { EventLog, BytesLike } from "ethers";
 import { toast } from "sonner";
+import { Card, CardContent } from './ui/card';
 
 
 type Transaction = {
@@ -83,24 +85,29 @@ const LatestTransactions = () => {
 
   return (
     <div>
-      <h2>Latest Transactions</h2>
+      <h2 className="text-center pb-10">Latest Transactions</h2>
 				{!isLoading ?
           <ul>
             {transactions && transactions.map((transaction) => (
               <li key={transaction.eventHash}>
-                <p>
-                  {"Transaction Hash: "}
-                  <a 
-                    href={`https://zksync-sepolia.blockscout.com/tx/${transaction.eventHash}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
-                    {transaction.eventHash}
-                  </a>
-                </p>
-                <p>Token ID: {transaction.studentId}</p>
-                <p>PDF hash: {transaction.transcriptHash}</p>
-                <p>Block Timestamp: {transaction.eventTimestamp}</p> 
+                <Card>
+                  <CardContent>
+                    <h2 className="font-bold mb-3">
+                      {"Transaction Hash: "}
+                      <a 
+                        className="text-green-500"
+                        href={`https://zksync-sepolia.blockscout.com/tx/${transaction.eventHash}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                      >
+                        {transaction.eventHash}
+                      </a>
+                    </h2>
+                    <p>Token ID: {transaction.studentId}</p>
+                    <p>PDF hash: {transaction.transcriptHash}</p>
+                    <p>Block Timestamp: {transaction.eventTimestamp}</p> 
+                  </CardContent>
+                </Card>
                 <br />
               </li>                 
             ))}

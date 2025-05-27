@@ -6,6 +6,8 @@ import { getSmartContract } from '@/utils/getSmartContract';
 import { handleRevertError } from '@/utils/handleRevertError';
 import { toast } from 'sonner';
 
+import { Button } from '@/components/ui/button';
+
 
 const BurnButton = ({ tokenId }: { tokenId: number }) => {
   const [isLoading, setLoading] = useState(false);
@@ -56,9 +58,9 @@ const BurnButton = ({ tokenId }: { tokenId: number }) => {
 
   return (
     <div>
-      <button type="submit" onClick={burnToken} disabled={isLoading}>
+      <Button className='bg-[#25388C] cursor-pointer' type="submit" onClick={burnToken} disabled={isLoading}>
         {isLoading ? "Burning..." : "Burn"}
-      </button>
+      </Button>
     </div>
   );
 };
