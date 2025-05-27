@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { checkFileType } from '@/utils/checkFileType';
 import { hashPdf } from '@/utils/hashPdf';
@@ -23,6 +25,7 @@ const GenerateHash = ({ onHashGenerated }: { onHashGenerated: Function }) => {
 
 		if (!file) {
 			alert("Please select a file first");
+      setLoading(false);
 			return;
 		}
 

@@ -1,6 +1,8 @@
+
 import React, { useState, useEffect } from "react";
-import { getSmartContract } from "@/utils/getSmartContract";
+import { getSmartContractViewOnly } from "@/utils/getSmartContractViewOnly";
 import { EventLog, BytesLike } from "ethers";
+import { toast } from "sonner";
 
 
 type Transaction = {
@@ -18,12 +20,18 @@ const LatestTransactions = () => {
     setLoading(true);
 
     try {
-      const tokenizerContract = await getSmartContract();
+      const tokenizerContract = getSmartContractViewOnly();
 
-      if (!tokenizerContract) return console.log("Metamask Account not connected.");
+      if (!tokenizerContract) 
+        return toast.error('Error: Fetching Contract.', {
+          description: 'There is a problem on fetching smart contract',
+          action: {
+            label: "Got it",
+            onClick: () => console.log("Error"),
+          },
+        });
 
       const checkIfHashStored = async (hash: BytesLike): Promise<boolean> => {
-        console.log(await tokenizerContract.getStoredHashValue(hash));
         return await tokenizerContract.getStoredHashValue(hash);
       } 
 
@@ -37,9 +45,7 @@ const LatestTransactions = () => {
 
       for (const event of recentMintEvents) {
         const { args, transactionHash } = event as EventLog;
-
         const [id, hash, timestamp] = args;
-        const eventTransactionHash = transactionHash;
 
         if (!(await checkIfHashStored(hash))) continue;
 
@@ -52,7 +58,7 @@ const LatestTransactions = () => {
             studentId: id,
             transcriptHash: hash,
             eventTimestamp: convertedTimestamp,
-            eventHash: eventTransactionHash,
+            eventHash: transactionHash,
           });
 
           storedHashes.add(hash);
@@ -78,7 +84,7 @@ const LatestTransactions = () => {
   return (
     <div>
       <h2>Latest Transactions</h2>
-				{!isLoading &&
+				{!isLoading ?
           <ul>
             {transactions && transactions.map((transaction) => (
               <li key={transaction.eventHash}>
@@ -94,11 +100,11 @@ const LatestTransactions = () => {
                 </p>
                 <p>Token ID: {transaction.studentId}</p>
                 <p>PDF hash: {transaction.transcriptHash}</p>
-                <p>{transaction.eventTimestamp}</p> 
+                <p>Block Timestamp: {transaction.eventTimestamp}</p> 
                 <br />
               </li>                 
             ))}
-				  </ul>
+				  </ul> : "Loading..."
         }
     </div>
   );

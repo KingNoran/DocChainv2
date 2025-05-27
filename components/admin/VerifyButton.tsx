@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { isCallException } from 'ethers'; 
 import { getSmartContract } from '@/utils/getSmartContract';
@@ -32,7 +34,7 @@ const VerifyButton = ({ tokenId, pdfHash }: { tokenId: number, pdfHash: string }
       if (isCallException(error)) {
         const contract = await getSmartContract();
 
-        console.log(await handleRevertError(contract, error));
+        await handleRevertError(contract, error);
       } else {
         console.log(error);
       }
