@@ -25,6 +25,7 @@ const GenerateHash = ({ onHashGenerated }: { onHashGenerated: Function }) => {
 
 		if (!file) {
 			alert("Please select a file first");
+      setLoading(false);
 			return;
 		}
 

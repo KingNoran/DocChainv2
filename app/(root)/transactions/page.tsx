@@ -1,11 +1,9 @@
 "use client";
 
-import { signOut } from "@/auth";
-
 import { toast } from "sonner";
 import React, { useState, useEffect } from "react";
 
-import { getSmartContract } from "@/utils/getSmartContract";
+import { getSmartContractViewOnly } from "@/utils/getSmartContractViewOnly";
 import { EventLog } from "ethers";
 
 import { EventLogs, columns } from "./columns";
@@ -19,10 +17,10 @@ const Page = () => {
     try {
       setLoading(true);
   
-      const tokenizerContract = await getSmartContract();
+      const tokenizerContract = getSmartContractViewOnly();
   
       if (!tokenizerContract)
-        return toast.error("Metamask Account not connected.", {
+        return toast.error("Smart contract not retrieved.", {
           description: "",
           action: {
             label: "Got it",

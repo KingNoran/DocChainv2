@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { getSmartContract } from '@/utils/getSmartContract';
+import { getSmartContractViewOnly } from '@/utils/getSmartContractViewOnly';
 
 
 const MintCount = () => {
@@ -12,7 +12,7 @@ const MintCount = () => {
     setLoading(true);
     
     try {
-      const tokenizerContract = await getSmartContract();
+      const tokenizerContract = getSmartContractViewOnly();
 
       if (!tokenizerContract) return console.log("Metamask Account not connected.");
 

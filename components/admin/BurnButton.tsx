@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { isCallException } from 'ethers'; 
 import { getSmartContract } from '@/utils/getSmartContract';
 import { handleRevertError } from '@/utils/handleRevertError';
+import { toast } from 'sonner';
 
 
 const BurnButton = ({ tokenId }: { tokenId: number }) => {
@@ -15,7 +16,23 @@ const BurnButton = ({ tokenId }: { tokenId: number }) => {
     try {
       const tokenizerContract = await getSmartContract();
 
-      if (!tokenizerContract) return alert("Metamask Account not connected.");
+      if (!tokenizerContract) 
+        return toast.error('Error: No Metamask installed.', {
+          description: 'Metamask is not installed',
+          action: {
+            label: "Got it",
+            onClick: () => console.log("Error"),
+          },
+        });
+        
+      if (!tokenId)
+        return toast.error('Error: Invalid token ID', {
+          description: '',
+          action: {
+            label: "Got it",
+            onClick: () => console.log("Error"),
+          },
+        });
 
       const tokenizerHash = await tokenizerContract.burn(tokenId);
 

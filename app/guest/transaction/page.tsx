@@ -1,10 +1,46 @@
 'use client';
 
+import React, { useState } from 'react';
 import { ModeToggle } from '@/components/ui/toggle-mode';
+
+import LatestTransactions from '@/components/LatestTransactions'
+import TransactionCard from '@/components/TransactionCard';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 
-export default function GuestTransactionPage() {
+
+type TransactionData = {
+  userId: string;
+  firstName: string;
+  middleName: string | null;
+  lastName: string;
+  pdfHash: string;
+  eventTimestamp: string;
+  eventHash: string;
+}
+
+const GuestTransactionPage = () => {
+  const [tokenId, setTokenId] = useState<number>(0);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [transactionData, setTransactionData] = useState<TransactionData | null>(null);
+
+  const handleFetchData = async () => {
+    setHasSearched(true);
+  
+    const res = await fetch('/api/fetch-data', {
+      method: 'POST',
+      body: JSON.stringify({ tokenId }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+  
+    const data = await res.json();
+    console.log(data);
+    setTransactionData(data);
+    setHasSearched(false);
+
+    console.log(transactionData);
+  };
+
   return (
     <div className="w-full min-h-screen flex flex-col bg-background text-foreground font-inter">
       {/* Custom Header */}
@@ -27,27 +63,35 @@ export default function GuestTransactionPage() {
 
         <div className="relative w-[480px]">
           <input
-            type="text"
-            placeholder="Enter transaction ID"
+            type="number"
+            placeholder="Enter student ID"
             className="w-full h-14 px-4 pt-6 pb-2 bg-card rounded-lg border border-border text-muted-foreground text-base font-normal font-['Inter'] focus:outline-none focus:border-emerald-400"
+            onChange={(event) => setTokenId(Number(event.target.value))}
           />
-          <label className="absolute top-2 left-4 text-muted-foreground text-sm font-normal font-['Inter'] leading-tight">Public Key</label>
+          <label className="absolute top-2 left-4 text-muted-foreground text-sm font-normal font-['Inter'] leading-tight">Student ID</label>
         </div>
 
         <div className="mt-8">
-          <button className="w-56 h-14 py-4 bg-emerald-400 rounded-lg text-black text-base font-medium font-['Inter'] leading-normal hover:bg-emerald-500 transition-colors cursor-pointer">
-            Enter
+          <button className="w-56 h-14 py-4 bg-emerald-400 rounded-lg text-black text-base font-medium font-['Inter'] leading-normal hover:bg-emerald-500 transition-colors cursor-pointer" onClick={handleFetchData}>
+            Search
           </button>
         </div>
 
-        <div className="mt-8 text-center">
-          <span className="text-muted-foreground text-sm font-normal font-['Inter'] leading-tight">Already have an account? </span>
-          <Link href="/login">
-            <span className="text-yellow-400 text-sm font-normal font-['Inter'] leading-tight cursor-pointer">Sign in</span>
-          </Link>
+        <div className='mt-20'>
+          {hasSearched && (
+            transactionData ? (
+              <TransactionCard data={transactionData} />
+            ) : ("No Transactions found ")
+          )}
+        </div>
+
+        <div className='mt-17'>
+          <LatestTransactions />
         </div>
       </div>
       <Footer />
     </div>
   );
 } 
+
+export default GuestTransactionPage;

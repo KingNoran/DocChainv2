@@ -59,7 +59,7 @@ const Page = () => {
             <br />
             <LatestTransactions />
           </>
-        ) : (<div>No Metamask account, No Access</div>)
+        ) : (<div>No Metamask installed, No Access</div>)
       }       
     </div>
   )

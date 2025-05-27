@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from "react";
-import { getSmartContract } from "@/utils/getSmartContract";
+import { getSmartContractViewOnly } from "@/utils/getSmartContractViewOnly";
 import { EventLog, BytesLike } from "ethers";
+import { toast } from "sonner";
 
 
 type Transaction = {
@@ -19,12 +20,18 @@ const LatestTransactions = () => {
     setLoading(true);
 
     try {
-      const tokenizerContract = await getSmartContract();
+      const tokenizerContract = getSmartContractViewOnly();
 
-      if (!tokenizerContract) return console.log("Metamask Account not connected.");
+      if (!tokenizerContract) 
+        return toast.error('Error: Fetching Contract.', {
+          description: 'There is a problem on fetching smart contract',
+          action: {
+            label: "Got it",
+            onClick: () => console.log("Error"),
+          },
+        });
 
       const checkIfHashStored = async (hash: BytesLike): Promise<boolean> => {
-        console.log(await tokenizerContract.getStoredHashValue(hash));
         return await tokenizerContract.getStoredHashValue(hash);
       } 
 
@@ -93,7 +100,7 @@ const LatestTransactions = () => {
                 </p>
                 <p>Token ID: {transaction.studentId}</p>
                 <p>PDF hash: {transaction.transcriptHash}</p>
-                <p>{transaction.eventTimestamp}</p> 
+                <p>Block Timestamp: {transaction.eventTimestamp}</p> 
                 <br />
               </li>                 
             ))}

@@ -21,7 +21,14 @@ const MintButton = ({
     try {
       const tokenizerContract = await getSmartContract();
 
-      if (!tokenizerContract) return alert("Metamask Account not connected.");
+      if (!tokenizerContract) 
+        return toast.error('Error: No Metamask installed.', {
+          description: 'Metamask is not installed',
+          action: {
+            label: "Got it",
+            onClick: () => console.log("Error"),
+          },
+        });
 
       if (!tokenId)
         return toast.error('Error: Invalid token ID', {
