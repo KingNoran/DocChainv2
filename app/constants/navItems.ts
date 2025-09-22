@@ -5,16 +5,16 @@ export const navItems = [
       },
       {
         name:"transactions",
-        path: "/transactions",
+        path: "/my-profile/transactions",
       },
       {
         name:"view tor",
-        path: "/tor",
+        path: "/my-profile/tor",
       }
     ];
 
 export const navItemsPaths = [
       "/my-profile",
-      "/transactions",
-      "/tor",
+      "/my-profile/transactions",
+      "/my-profile/tor",
     ];    

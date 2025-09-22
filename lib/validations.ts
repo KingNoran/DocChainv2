@@ -5,28 +5,41 @@ export const loginSchema = z.object({
     password: z.string().min(8),
 });
 
-export const userSchema = z.object({
+export const studentSchema = z.object({
+    firstName: z.string().min(1).max(50),
+    middleName: z.string().max(50),
+    lastName: z.string().min(1).max(50),
+    course: z.string().min(4).max(6),
+    phone: z.string(),
+    email: z.string().email(),
+    password: z.string().min(8),
+});
+
+export const registrarStudentSchema = z.object({
+    firstName: z.string().min(1).max(50),
+    middleName: z.string().max(50),
+    lastName: z.string().min(1).max(50),
+    course: z.string().min(4).max(6),
+    phone: z.string(),
+    email: z.string().email(),
+});
+
+export const registrarSchema = z.object({
     firstName: z.string().min(1).max(50),
     middleName: z.string().max(50),
     lastName: z.string().min(1).max(50),
     phone: z.string(),
     email: z.string().email(),
     password: z.string().min(8),
-    role: z.string(),
 });
 
-export const studentSchema = z.object({
-    year: z.number(),
-    semester: z.number(),
-    course: z.string().nonempty(),
-    finalGrade: z.number(),
-    torReady: z.boolean(),
-});
-
-export const registrarStep1Schema = z.object({
-    studentId: z.coerce.number(),
-    name: z.string(),
-    course: z.string(),
+export const adminSchema = z.object({
+    firstName: z.string().min(1).max(50),
+    middleName: z.string().max(50),
+    lastName: z.string().min(1).max(50),
+    phone: z.string(),
+    email: z.string().email(),
+    password: z.string().min(8),
 });
 
 export const creditUnit = z.object({

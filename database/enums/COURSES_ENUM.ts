@@ -8,7 +8,7 @@ const COURSES_ENUM = list ("course", [
     "BSP",
     "BSED_M",
     "BSED_E",
-    "BSBM_MM",
+    "BSBM_MM"
 ]);
 
 export default COURSES_ENUM;

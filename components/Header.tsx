@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import React, { useState, useEffect, ReactNode } from 'react'
-import { redirect, usePathname} from "next/navigation";
+import { redirect, usePathname, useRouter} from "next/navigation";
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { ModeToggle } from './ui/toggle-mode';
@@ -18,11 +18,19 @@ import { Bell } from 'lucide-react';
 
 import BurgerMenu from './BurgerMenu';
 import { navItems, navItemsPaths } from '@/app/constants/navItems';
-import { signOut } from '@/auth';
+import InfoCarousel from './carousel/InfoCarousel';
 
 const Header = () => {
 
     const pathname = usePathname();
+    const [showCarousel, setShowCarousel] = useState(false);
+        const router = useRouter();
+    
+    
+      const handleCarouselFinish = () => {
+        setShowCarousel(false);
+        router.push('/guest/transaction');
+      };
     
     // Show only project name, theme toggle, and Get Started on /login
     if (pathname === "/login") {
@@ -33,12 +41,7 @@ const Header = () => {
           </div>
           <div className="flex items-center gap-4">
             <ModeToggle />
-            <Button
-              className="cursor-pointer bg-primary text-primary-foreground font-medium rounded-lg hover:bg-emerald-500 transition-colors hidden md:block"
-              onClick={() => redirect("/guest")}
-            >
-              Get Started
-            </Button>
+            <button onClick={() => setShowCarousel(true)} className="px-6 py-2 bg-emerald-400 rounded-lg text-black text-base font-medium hover:bg-emerald-500 transition-colors cursor-pointer">Get Started</button>
           </div>
         </header>
       );
@@ -147,7 +150,15 @@ const Header = () => {
 
           : null
         }
+        
       </div>
+      {showCarousel && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="w-full max-w-2xl">
+            <InfoCarousel onFinish={handleCarouselFinish} />
+          </div>
+        </div>
+      )}
     </header>
   )
 }

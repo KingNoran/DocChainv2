@@ -1,5 +1,3 @@
-import { TOR } from "../(root)/types";
-
 export const subjectChecklists = {
   BSIT: {
     firstYear: {
@@ -518,7 +516,7 @@ export const subjectChecklists = {
         },
       ],
     },
-  } as TOR,
+  },
   BSCS: {
     firstYear: {
       firstSem: [
@@ -961,8 +959,8 @@ export const subjectChecklists = {
         },
       ],
     },
-    midyear: {
-      midsem: [
+    midYear: {
+      midSem: [
         {
           id: 1,
           courseCode: 'COSC 199',
@@ -1061,7 +1059,7 @@ export const subjectChecklists = {
         },
       ],
     },
-  } as TOR,
+  },
   BSCRIM: {
     firstYear: {
       firstSem: [
@@ -1644,7 +1642,7 @@ export const subjectChecklists = {
         },
       ],
     },
-  } as TOR,
+  },
   BSHM: {
     firstYear: {
       firstSem: [
@@ -2116,7 +2114,7 @@ export const subjectChecklists = {
         },
       ],
     },
-  } as TOR,
+  },
   BSP: {
     firstYear: {
       firstSem: [
@@ -2604,7 +2602,7 @@ export const subjectChecklists = {
         },
       ],
     },
-  } as TOR,
+  },
   BSED_M: {
     firstYear: {
       firstSem: [
@@ -3157,7 +3155,7 @@ export const subjectChecklists = {
         },
       ],
     },
-  } as TOR,
+  },
   BSED_E: {
     firstYear: {
       firstSem: [
@@ -3319,7 +3317,7 @@ export const subjectChecklists = {
         },
       ],
     },
-    midYear: {
+    midYear1: {
       midSem: [
         {
           id: 1,
@@ -3737,7 +3735,7 @@ export const subjectChecklists = {
         },
       ],
     },
-  } as TOR,
+  },
   BSBM_MM: {
     firstYear: {
       firstSem: [
@@ -4204,5 +4202,30 @@ export const subjectChecklists = {
         },
       ],
     },
-  } as TOR,
+  },
 };
+
+
+for (const program of Object.keys(subjectChecklists) as Array<keyof typeof subjectChecklists>) {
+  console.log(`Program: ${program}`);
+
+  const years = subjectChecklists[program];
+  for (const year of Object.keys(years) as Array<keyof typeof years>) {
+    console.log(`  Year: ${year}`);
+
+    const sems = years[year];
+    for (const sem of Object.keys(sems) as Array<keyof typeof sems>) {
+      console.log(`    Semester: ${sem}`);
+
+      const courses = sems[sem];
+
+      if (Array.isArray(courses)) {
+        for (const course of courses) {
+          console.log(`      ${course.courseCode} - ${course.courseTitle}`);
+        }
+      } else {
+        console.warn(`      ⚠️ Skipped: ${sem} is not an array`, courses);
+      }
+    }
+  }
+}

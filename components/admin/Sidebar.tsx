@@ -12,14 +12,15 @@ import {
   SidebarMenuItem,
   SidebarFooter,
 } from "@/components/ui/sidebar"
-import { Button } from "../ui/button";
-import { signOut } from "@/auth";
 import { adminSidebarLinks } from "@/app/constants";
 import Link from "next/link";
 import { cn, getInitials } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 import { Session } from "next-auth";
+import { LogOut } from "lucide-react";
+import { Button } from "../ui/button";
+import { logout } from "@/lib/actions/logout";
 
 interface Admin{
   firstName: string;
@@ -29,7 +30,7 @@ interface Admin{
 
 
 
-const AppSidebar = ({session} : {session : Session}) => {
+const AdminSidebar = ({session} : {session : Session}) => {
 
   const pathname = usePathname();
 
@@ -66,24 +67,17 @@ const AppSidebar = ({session} : {session : Session}) => {
                   </SidebarMenuItem>
                 )
               })}
+              <SidebarMenuItem>
+                    <Button onClick={logout} className="bg-red-500 hover:bg-red-600 text-white">
+                      <LogOut className="mr-2 h-4 w-4" /> Logout
+                    </Button>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      {/* <SidebarFooter>
-        <form 
-              className="flex justify-center"
-              action={async () => {
-                "use server";
-      
-                await signOut();
-              }}
-            >
-                <Button className='cursor-pointer' variant="destructive">Logout</Button>
-            </form>
-      </SidebarFooter> */}
     </Sidebar>
   )
 }
 
-export default AppSidebar
+export default AdminSidebar

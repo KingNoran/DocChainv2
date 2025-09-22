@@ -10,3 +10,4 @@ export { default as users } from './users';
 export { default as record } from "./record";
 export { default as requests } from "./requests";
 export { default as transactions } from "./transactions";
+export { default as semesters } from "./semester";

@@ -1,5 +1,5 @@
 {
-  "id": "021f7a07-bf31-4007-9dca-60d2587dd09c",
+  "id": "a6f3e180-79c1-4134-89c8-cd70e1555dae",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -8,11 +8,22 @@
       "name": "admins",
       "schema": "",
       "columns": {
-        "admin_id": {
-          "name": "admin_id",
-          "type": "serial",
+        "id": {
+          "name": "id",
+          "type": "integer",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "admins_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
         },
         "user_id": {
           "name": "user_id",
@@ -23,15 +34,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "admins_user_id_users_user_id_fk": {
-          "name": "admins_user_id_users_user_id_fk",
+        "admins_user_id_users_id_fk": {
+          "name": "admins_user_id_users_id_fk",
           "tableFrom": "admins",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
           "columnsTo": [
-            "user_id"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -39,11 +50,11 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "admins_admin_id_unique": {
-          "name": "admins_admin_id_unique",
+        "admins_id_unique": {
+          "name": "admins_id_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "admin_id"
+            "id"
           ]
         }
       },
@@ -55,56 +66,47 @@
       "name": "record",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
         "student_id": {
           "name": "student_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
-        "first_year_record": {
-          "name": "first_year_record",
-          "type": "json",
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "default": "now()"
         },
-        "second_year_record": {
-          "name": "second_year_record",
-          "type": "json",
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": false
-        },
-        "mid_year_record": {
-          "name": "mid_year_record",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "third_year_record": {
-          "name": "third_year_record",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "fourth_year_record": {
-          "name": "fourth_year_record",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "record_student_id_students_student_id_fk": {
-          "name": "record_student_id_students_student_id_fk",
+        "record_student_id_students_id_fk": {
+          "name": "record_student_id_students_id_fk",
           "tableFrom": "record",
           "tableTo": "students",
           "columnsFrom": [
             "student_id"
           ],
           "columnsTo": [
-            "student_id"
+            "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -118,11 +120,22 @@
       "name": "registrars",
       "schema": "",
       "columns": {
-        "registrar_id": {
-          "name": "registrar_id",
-          "type": "serial",
+        "id": {
+          "name": "id",
+          "type": "integer",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "registrars_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
         },
         "user_id": {
           "name": "user_id",
@@ -133,30 +146,178 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "registrars_user_id_users_user_id_fk": {
-          "name": "registrars_user_id_users_user_id_fk",
+        "registrars_user_id_users_id_fk": {
+          "name": "registrars_user_id_users_id_fk",
           "tableFrom": "registrars",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
           "columnsTo": [
-            "user_id"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "registrars_registrar_id_unique": {
-          "name": "registrars_registrar_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "registrar_id"
-          ]
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.requests": {
+      "name": "requests",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "requests_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "requester_id": {
+          "name": "requester_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "validator_id": {
+          "name": "validator_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "activity": {
+          "name": "activity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'PENDING'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "validated_at": {
+          "name": "validated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
         }
       },
+      "indexes": {},
+      "foreignKeys": {
+        "requests_requester_id_users_id_fk": {
+          "name": "requests_requester_id_users_id_fk",
+          "tableFrom": "requests",
+          "tableTo": "users",
+          "columnsFrom": [
+            "requester_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "requests_validator_id_users_id_fk": {
+          "name": "requests_validator_id_users_id_fk",
+          "tableFrom": "requests",
+          "tableTo": "users",
+          "columnsFrom": [
+            "validator_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.transcript_semesters": {
+      "name": "transcript_semesters",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "transcript_id": {
+          "name": "transcript_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "year": {
+          "name": "year",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "semester": {
+          "name": "semester",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "transcript_semesters_transcript_id_record_id_fk": {
+          "name": "transcript_semesters_transcript_id_record_id_fk",
+          "tableFrom": "transcript_semesters",
+          "tableTo": "record",
+          "columnsFrom": [
+            "transcript_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -165,11 +326,22 @@
       "name": "students",
       "schema": "",
       "columns": {
-        "student_id": {
-          "name": "student_id",
-          "type": "serial",
+        "id": {
+          "name": "id",
+          "type": "integer",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "students_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
         },
         "user_id": {
           "name": "user_id",
@@ -215,30 +387,22 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "students_user_id_users_user_id_fk": {
-          "name": "students_user_id_users_user_id_fk",
+        "students_user_id_users_id_fk": {
+          "name": "students_user_id_users_id_fk",
           "tableFrom": "students",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
           "columnsTo": [
-            "user_id"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "students_student_id_unique": {
-          "name": "students_student_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "student_id"
-          ]
-        }
-      },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -249,39 +413,56 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
-        "subjectTitle": {
-          "name": "subjectTitle",
-          "type": "subject",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'Pending'"
-        },
-        "lecture_credit": {
-          "name": "lecture_credit",
-          "type": "integer",
+        "transcript_id": {
+          "name": "transcript_id",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "laboratory_credit": {
-          "name": "laboratory_credit",
-          "type": "integer",
+        "semester_id": {
+          "name": "semester_id",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "total_credit": {
-          "name": "total_credit",
-          "type": "integer",
+        "course_code": {
+          "name": "course_code",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "course_title": {
+          "name": "course_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "credit_unit": {
+          "name": "credit_unit",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contact_hours": {
+          "name": "contact_hours",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pre_requisite": {
+          "name": "pre_requisite",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "final_grade": {
           "name": "final_grade",
-          "type": "numeric",
+          "type": "numeric(3, 1)",
           "primaryKey": false,
           "notNull": false,
           "default": "'0'"
@@ -295,9 +476,126 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "subjects_transcript_id_record_id_fk": {
+          "name": "subjects_transcript_id_record_id_fk",
+          "tableFrom": "subjects",
+          "tableTo": "record",
+          "columnsFrom": [
+            "transcript_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "subjects_semester_id_transcript_semesters_id_fk": {
+          "name": "subjects_semester_id_transcript_semesters_id_fk",
+          "tableFrom": "subjects",
+          "tableTo": "transcript_semesters",
+          "columnsFrom": [
+            "semester_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.transactions": {
+      "name": "transactions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "transactions_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hash": {
+          "name": "hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token_id": {
+          "name": "token_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pdf_hash": {
+          "name": "pdf_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "transactions_user_id_users_id_fk": {
+          "name": "transactions_user_id_users_id_fk",
+          "tableFrom": "transactions",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "transactions_hash_unique": {
+          "name": "transactions_hash_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "hash"
+          ]
+        },
+        "transactions_token_id_unique": {
+          "name": "transactions_token_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token_id"
+          ]
+        },
+        "transactions_pdf_hash_unique": {
+          "name": "transactions_pdf_hash_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "pdf_hash"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -306,8 +604,8 @@
       "name": "users",
       "schema": "",
       "columns": {
-        "user_id": {
-          "name": "user_id",
+        "id": {
+          "name": "id",
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
@@ -315,10 +613,10 @@
         },
         "role": {
           "name": "role",
-          "type": "user_role",
-          "typeSchema": "public",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false,
+          "default": "'STUDENT'"
         },
         "password": {
           "name": "password",
@@ -336,7 +634,8 @@
           "name": "middle_name",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false,
+          "default": "''"
         },
         "last_name": {
           "name": "last_name",
@@ -389,11 +688,11 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "users_user_id_unique": {
-          "name": "users_user_id_unique",
+        "users_id_unique": {
+          "name": "users_id_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "user_id"
+            "id"
           ]
         },
         "users_email_unique": {
@@ -428,8 +727,7 @@
         "BSP",
         "BSED_M",
         "BSED_E",
-        "BSBM_MM",
-        "BSBM_HR"
+        "BSBM_MM"
       ]
     },
     "public.user_role": {
@@ -439,6 +737,15 @@
         "STUDENT",
         "REGISTRAR",
         "ADMIN"
+      ]
+    },
+    "public.status": {
+      "name": "status",
+      "schema": "public",
+      "values": [
+        "PENDING",
+        "APPROVED",
+        "REJECTED"
       ]
     },
     "public.subject": {

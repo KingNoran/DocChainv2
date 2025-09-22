@@ -17,14 +17,9 @@ import { cn, getInitials } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 import { Session } from "next-auth";
-
-interface Admin{
-  firstName: string;
-  middleName: string | null;
-  lastName: string;
-}
-
-
+import { Button } from "../ui/button";
+import { LogOut } from "lucide-react";
+import { logout } from "@/lib/actions/logout";
 
 const RegistrarSideBar = ({session} : {session : Session}) => {
 
@@ -39,8 +34,8 @@ const RegistrarSideBar = ({session} : {session : Session}) => {
           </AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
-          <p className="font-bold text-center">{session?.user?.name}</p>
-          <p className="text-muted-foreground text-center">{session?.user?.email}</p>
+          <p className="font-bold text-center">{session.user.name}</p>
+          <p className="text-muted-foreground text-center">{session.user.email}</p>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -63,6 +58,13 @@ const RegistrarSideBar = ({session} : {session : Session}) => {
                   </SidebarMenuItem>
                 )
               })}
+              <SidebarMenuItem>
+                <form action={logout}>
+                    <Button type="submit" className="bg-red-500 hover:bg-red-600 text-white">
+                      <LogOut className="mr-2 h-4 w-4" /> Logout
+                    </Button>
+                </form>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

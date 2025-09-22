@@ -1,0 +1,49 @@
+"use server";
+
+import { UserParams } from "@/app/(root)/types";
+import { db } from "@/database/drizzle";
+import { admins, users } from "@/database/schema";
+import { hash } from "bcryptjs";
+import { eq } from 'drizzle-orm';
+
+export const createAdmin = async (
+    userparams: UserParams, 
+)=>{
+    try{
+        const existingUser = await db
+            .select()
+            .from(users)
+            .where(eq(users.email, userparams.email))
+            .limit(1)
+    
+        if(existingUser.length > 0){
+            return {success: false, error: "User already exists"}
+        }
+
+        const hashedPassword = await hash(userparams.password, 10);
+                
+        const newAdmin = await db.insert(users).values({
+            ...userparams,
+            role: "REGISTRAR",
+            password: hashedPassword
+        }).returning();
+
+        await db.insert(admins).values({
+                userId: newAdmin[0].userId,
+            });
+
+        return {
+            success: true,
+            data: JSON.parse(JSON.stringify(newAdmin[0])),
+        }
+
+
+    } catch(error){
+        console.group(error);
+
+        return{
+            success: false,
+            message: "Error occurred while making User"
+        }
+    }
+}

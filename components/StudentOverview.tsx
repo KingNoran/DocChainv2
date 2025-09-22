@@ -1,10 +1,11 @@
-import { Student} from '@/app/(root)/types'
+import { StudentOverviewTemplate } from '@/app/(root)/types'
 import React from 'react'
 import { Card, CardContent } from './ui/card'
 import { Button } from './ui/button'
 import { Separator } from './ui/separator'
-import { logout } from '@/app/actions'
 import { LogOut } from 'lucide-react'
+import { useSession } from 'next-auth/react'
+import { logout } from '@/lib/actions/logout'
 
 
 const StudentOverview = ({
@@ -25,8 +26,9 @@ const StudentOverview = ({
     phoneVerified,
     lastActivityDate,
     createdAt
-}: Student) => {
+}: StudentOverviewTemplate) => {
   
+  const {data: session} = useSession();
   const studentYear = (year: number)=>{
     switch(year!){
       case 1:
@@ -71,11 +73,9 @@ const StudentOverview = ({
           </div>
         </CardContent>
         <CardContent>
-          <form action={logout}>
-              <Button type="submit" className="bg-red-500 hover:bg-red-600 text-white">
-                <LogOut className="mr-2 h-4 w-4" /> Logout
-              </Button>
-          </form>
+          <Button onClick={logout} className="bg-red-500 hover:bg-red-600 text-white">
+            <LogOut className="mr-2 h-4 w-4" /> Logout
+          </Button>
         </CardContent>
       </Card>
 

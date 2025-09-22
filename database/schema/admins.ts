@@ -4,7 +4,7 @@ import users from './users';
 import { relations } from 'drizzle-orm';
 
 const admins = table("admins", {
-    adminId: t.serial("admin_id").notNull().primaryKey().unique(),
+    adminId: t.integer('id').generatedAlwaysAsIdentity().notNull().primaryKey().unique(),
     userId: t.uuid("user_id").references(()=>users.userId),
 });
 

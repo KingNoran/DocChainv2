@@ -7,28 +7,37 @@ declare global {
   }
 }
 
-interface Student{
-    studentId : number;
-    userId : string;
-    course: course;
-    year: number | null;
-    semester : number | null;
-    torReady? : boolean | null;
-    role: string | null;
-    password: string;
-    firstName: string | null;
-    middleName: string | null;
-    lastName: string | null;
-    email: string;
-    phone: string | null;
-    emailVerified: boolean | null;
-    phoneVerified: boolean | null;
-    lastActivityDate: string | null;
-    createdAt: string | null;
+declare module "next-auth" {
+  interface User extends DefaultUser {
+    id: string;
+    role: "student" | "registrar" | "admin";
+  }
+
+  interface Session {
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      role: "student" | "registrar" | "admin";
+    } & DefaultSession["user"];
+  }
 }
 
-interface DatabaseStudent{
-    
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: number;
+    role: "student" | "registrar" | "admin";
+  }
+}
+
+interface Student{
+    studentId: number;
+    userId: string;
+    year: number;
+    semester: number;
+    course: "BSIT" | "BSCS" | "BSCRIM" | "BSHM" | "BSP" | "BSED_M" | "BSED_E" | "BSBM_MM";
+    finalGrade: string;
+    torReady: boolean;
 }
 
 interface AuthCredentials{
@@ -41,6 +50,21 @@ interface AuthCredentials{
     role: string;
 }
 
+interface TOR{
+  id: string;
+  studentId: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface Semester{
+  id: string;
+  transcriptId: string;
+  year: string;
+  semester: string;
+  createdAt: Date;
+}
+
 interface UserParams{
     firstName: string;
     middleName: string;
@@ -48,7 +72,14 @@ interface UserParams{
     phone: string;
     email: string;
     password: string;
-    role: string;
+}
+
+interface RegistrarUserParams{
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    phone: string;
+    email: string;
 }
 
 interface StudentParams{
@@ -59,12 +90,25 @@ interface StudentParams{
     torReady: boolean;
 }
 
-interface TORParams{
-    name: string;
-    course: string;
-    studentId: number;
+interface StudentOverviewTemplate{
+  studentId: number;
+  userId: string;
+  course: course;
+  year: number;
+  semester: number;
+  torReady: boolean;
+  role: string;
+  password: string;
+  firstName: string;
+  middleName: string | null;
+  lastName: string;
+  email: string;
+  phone: string | null;
+  emailVerified: boolean;
+  phoneVerified: boolean;
+  lastActivityDate: string;
+  createdAt: string;
 }
-
 
 export type roles =
     "STUDENT"|
@@ -99,33 +143,15 @@ export type midSub={
     instructor: string;
 }
 
-interface TOR{
-        firstYear: {
-            firstSem: subject[];
-            secondSem: subject[];
-        },
-        secondYear: {
-            firstSem: subject[];
-            secondSem: subject[];
-        },
-        midYear?: {
-            midSem: subject[];
-        },
-        midYear1?:{
-            midSem: subject[]
-        },
-        midYear2?:{
-            midSem: subject[];
-        }
-        thirdYear: {
-            firstSem: subject[];
-            secondSem: subject[];
-        },
-        fourthYear: {
-            firstSem: subject[];
-            secondSem: subject[];
-        },
-}
+type Subject = {
+  contactHrs?: { lecture: number; laboratory: number; };
+  courseCode: string;
+  courseTitle: string;
+  creditUnit: { lecture: number; laboratory: number };
+  preRequisite: string;
+  finalGrade: number;
+  instructor: string;
+};
 
 export type names = typeof subjectNames;
 export type subject_names = names[number];

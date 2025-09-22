@@ -1,7 +1,10 @@
+"use client";
+
 import Hero from '@/components/Hero';
-import React from 'react'
+import React, { useEffect } from 'react'
 
 const Home = () => {
+  
   return (
     <>
       <Hero />

@@ -1,19 +1,19 @@
+'use server'
+
 import { signOut } from '@/auth';
 import { Button } from '@/components/ui/button';
+import { useSession } from 'next-auth/react';
 import React from 'react'
 
 const Page = () => {
+
   return (
     <div>
-      <form 
-        action={async () => {
-          "use server";
-
-          await signOut();
-        }}
-      >
-          <Button className='cursor-pointer'>Logout</Button>
-      </form>
+      <Button
+      onClick={() => signOut()}
+    >
+      Logout
+    </Button>
     </div>
   )
 }

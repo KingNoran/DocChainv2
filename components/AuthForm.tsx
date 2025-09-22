@@ -14,10 +14,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { FIELD_NAMES, FIELD_TYPES } from '@/app/constants';
 import { redirect, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Footer from '@/components/Footer';
+import { useSession } from 'next-auth/react';
+import { auth } from '@/auth';
 
 interface Props<T extends FieldValues> {
   schema: ZodType<T>;
@@ -35,6 +36,7 @@ const AuthForm = <T extends FieldValues>({
   const router = useRouter();
   const isLogIn = type === "LOG_IN";
   const [showPassword, setShowPassword] = useState(false);
+  const { update, status } = useSession();
 
   const form: UseFormReturn<T> = useForm({
     resolver: zodResolver(schema),
@@ -44,16 +46,18 @@ const AuthForm = <T extends FieldValues>({
   const handleSubmit: SubmitHandler<T> = async (data) => {
     const result = await onSubmit(data);
     const date = new Date().toUTCString();
-
+    const newSession = await update();
     if (result.success) {
       toast.success(isLogIn ? "Logged In Successfully!" : "User Registered Successfully!", {
-        description: `Date: ${date}`,
+        description: `Date: ${date}\n`,
         action: {
           label: "Got it",
           onClick: () => console.log("Success"),
         },
       });
-      router.push("/my-profile");
+    if(newSession?.user.role === "STUDENT") redirect("/my-profile");
+    if(newSession?.user.role === "REGISTRAR") redirect("/registrar");
+    if(newSession?.user.role === "ADMIN") redirect("/admin");
     } else {
       toast.error(`Error ${isLogIn ? "Logging In" : "Registering"}`, {
         description: `Date: ${date}`,
@@ -64,6 +68,8 @@ const AuthForm = <T extends FieldValues>({
       })
     }
   };
+
+  if(status === "loading") return <div>Loading...</div>;
 
   return (
     <div className="flex flex-col items-center gap-6 w-full">

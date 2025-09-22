@@ -8,21 +8,21 @@ import ROLE_ENUM from '../enums/ROLE_ENUM';
 import transactions from './requests';
 
 const users = table("users",{
-    userId: t.uuid("user_id").notNull().primaryKey().defaultRandom().unique(),
-    role: t.text("role").default("STUDENT"),
+    userId: t.uuid("id").notNull().primaryKey().defaultRandom().unique(),
+    role: t.text("role").default("STUDENT").notNull(),
     password: t.text("password").notNull(),
     firstName: t.varchar("first_name", {length: 255}).notNull(),
     middleName: t.varchar("middle_name", {length: 255}).default(""),
     lastName: t.varchar("last_name", {length: 255}).notNull(),
     email: t.text("email").notNull().unique(),
     phone: t.text("phone").notNull().unique(),
-    emailVerified: t.boolean("email_verified").default(false),
-    phoneVerified: t.boolean("phone_verified").default(false),
-    lastActivityDate: t.date("last_activity_date").defaultNow(),
+    emailVerified: t.boolean("email_verified").default(false).notNull(),
+    phoneVerified: t.boolean("phone_verified").default(false).notNull(),
+    lastActivityDate: t.date("last_activity_date").defaultNow().notNull(),
     createdAt: t.timestamp("created_at", {
         mode: "string",
         withTimezone: true,
-    }).defaultNow(),
+    }).defaultNow().notNull(),
 });
 
 export const userRelations = relations(users, ({one, many})=>({

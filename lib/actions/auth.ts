@@ -5,6 +5,7 @@ import { signIn } from "@/auth";
 import { headers } from "next/headers";
 import ratelimit from "@/lib/ratelimit";
 import { redirect } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 export const signInWithCredentials = async (
     params: Pick<AuthCredentials, "email" | "password">
@@ -24,7 +25,7 @@ export const signInWithCredentials = async (
         });
 
         if (result?.error){
-            return { success: false, error: result.error }
+            return { success: false, error: result.error, status: 401, url: null }
         }
 
         return { success: true };
@@ -33,4 +34,9 @@ export const signInWithCredentials = async (
         console.log(error, "Sign In error");
         return {success: false, error: "Sign In error"};
     }
+};
+
+export const handleLogout = async () => {
+  await signOut({ redirect: false });
+  window.location.href = "/"; 
 };

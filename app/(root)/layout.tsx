@@ -1,41 +1,41 @@
+
 import { auth } from '@/auth';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import { db } from '@/database/drizzle';
-import { transactions, users } from '@/database/schema';
-import { eq } from 'drizzle-orm';
+import { ThemeProvider } from '@/components/ThemeProvider';
 import { redirect } from 'next/navigation';
-import { after } from 'next/server';
 import React, { ReactNode } from 'react';
 
 
 const Layout = async ({children}:{children:ReactNode}) => {
   const session = await auth();
 
-  if (!session) redirect("/login");
+  if(!session) redirect("/");
 
-  after(async ()=> {
-    if(!session?.user?.id) return;
-
-    await db.update(users)
-      .set({
-        lastActivityDate: new Date().toISOString().slice(0, 10)
-      })
-      .where(eq(users.userId, session?.user?.id));
-  });
+  if(session.user.role !== "STUDENT"){
+    if(session.user.role === "ADMIN") redirect("/admin");
+    if(session.user.role === "REGISTRAR") redirect("/registrar");
+  }
 
   return (
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="light"
+    >
     <main className="root-container">
         <div className="flex flex-col mt-8 justify-between h-[100vh]">
           <Header />
 
             <div className="mt-20 pb-20">
+                  
                 {children}
+                
             </div>
 
           <Footer />
         </div>
     </main>
+    </ThemeProvider>
   );
 }
 

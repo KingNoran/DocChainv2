@@ -1,15 +1,11 @@
-import { auth } from '@/auth';
+"use client";
+
+import { useProfile } from '@/components/ProfileWrapper';
 import StudentOverview from '@/components/StudentOverview';
-import { db } from '@/database/drizzle';
-import { students, users } from '@/database/schema';
-import { eq } from 'drizzle-orm';
 import React from 'react'
 
-const Page = async () => {
-  const session = await auth();
-  const user = await db.select().from(users).where(eq(users.email, session?.user?.email!));
-  const student = await db.select().from(students).where(eq(students.userId, user[0]["userId"]));
-  const input = {...student[0], ...user[0]};
+const Page = () => {
+  const input = useProfile();
 
   return (
     <>

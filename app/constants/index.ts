@@ -50,7 +50,7 @@ export const adminSidebarLinks = [
     {
         icon: Box,
         url: "/admin/create",
-        title: "Create Student",
+        title: "Create Account",
     },
     {
         icon: Link,
