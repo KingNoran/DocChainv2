@@ -11,6 +11,7 @@ export const Home = () => {
     const [showCarousel, setShowCarousel] = useState(false);
     const router = useRouter();
     const {data: session, status} = useSession();
+    
     if(status === "authenticated" && session){
         if(session.user.role === "STUDENT") router.replace("/my-profile");
         if(session.user.role === "REGISTRAR") router.replace("/registrar");
@@ -48,7 +49,7 @@ export const Home = () => {
             Experience the future of academic credential verification with our blockchain-powered platform that ensures tamper-proof and instantly verifiable records.
           </p>
           <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-            <Link href="/guest/transaction">
+            <Link href="/transaction">
               <button className="px-8 py-4 bg-emerald-400 rounded-lg text-black text-lg font-medium hover:bg-emerald-500 transition-colors w-full md:w-auto cursor-pointer">View Transaction</button>
             </Link>
             <button onClick={() => setShowCarousel(true)} className="px-8 py-4 rounded-lg border border-foreground text-foreground text-lg font-medium cursor-pointer hover:bg-foreground/10 transition-colors w-full md:w-auto">Learn More</button>
