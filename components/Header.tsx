@@ -29,7 +29,7 @@ const Header = () => {
     
       const handleCarouselFinish = () => {
         setShowCarousel(false);
-        router.push('/guest/transaction');
+        router.push('/transaction');
       };
     
     // Show only project name, theme toggle, and Get Started on /login
@@ -41,7 +41,7 @@ const Header = () => {
           </div>
           <div className="flex items-center gap-4">
             <ModeToggle />
-            <button onClick={() => setShowCarousel(true)} className="px-6 py-2 bg-emerald-400 rounded-lg text-black text-base font-medium hover:bg-emerald-500 transition-colors cursor-pointer">Get Started</button>
+            <button onClick={() => (router.push('/'))} className="px-6 py-2 bg-emerald-400 rounded-lg text-black text-base font-medium hover:bg-emerald-500 transition-colors cursor-pointer">Get Started</button>
           </div>
         </header>
       );
