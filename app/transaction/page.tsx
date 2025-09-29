@@ -106,7 +106,7 @@ const GuestTransactionPage = () => {
                   <TransactionCard data={transactionData} />
                 ) : (showError && (
                   <Card className='w-full lg:w-auto md:w-auto p-4'>
-                    <CardContent className='font-bold px-2 lg:px-6 md:px-6 text-emerald-500 text-center'>No Transaction Found!<hr className='my-2'></hr>Student ID might be wrong or PDF is not yet verified.</CardContent>
+                    <CardContent className='font-bold px-2 lg:px-6 md:px-6 text-emerald-500 text-center'>No Transaction Found!<hr className='my-2' /><span className='text-[#25388C]'>Student ID might be wrong or PDF is not yet verified.</span></CardContent>
                   </Card>
                 ))
               )

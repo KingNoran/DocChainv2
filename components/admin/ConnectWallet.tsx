@@ -57,7 +57,7 @@ const ConnectWallet = () => {
 					>
 						{isLoading ? "Connecting..." : "Connect Wallet"}
 					</Button>
-				) : (<p>Connected Wallet: {account}</p>)}
+				) : (<p>Connected Wallet: <span className='font-bold text-[#25388C]'>{account}</span></p>)}
 			</div>
     </div>
   )
