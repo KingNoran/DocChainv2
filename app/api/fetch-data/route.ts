@@ -61,6 +61,7 @@ export const POST = async (req: Request) => {
     if (result.length > 0 && studentUserId && tokenId !== 0 && mintEvent) {
         const userResult = await db
             .select({
+                studentNumber: users.userId,
                 firstName: users.firstName,
                 middleName: users.middleName,
                 lastName: users.lastName,
@@ -79,12 +80,12 @@ export const POST = async (req: Request) => {
     
             console.log("Merged Data:", mergedData);
     
-            return NextResponse.json(mergedData);
+            return NextResponse.json({ data: mergedData, status: 200 });
         } else {
-            return NextResponse.json({ error: "User not found" }, { status: 404 });
+            return NextResponse.json({ error: "User not found", status: 404 });
         }
     }
   
-    return NextResponse.json({ error: "No matching event or student" }, { status: 404 });
+    return NextResponse.json({ error: "No matching event or student", status: 404 });
 }
   

@@ -21,7 +21,7 @@ export const Home = () => {
 
   const handleCarouselFinish = () => {
     setShowCarousel(false);
-    router.push('/guest/transaction');
+    router.push('/transaction');
   };
 
   return (
