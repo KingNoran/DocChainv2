@@ -1,20 +1,20 @@
 export const navItems = [
       {
         name:"profile",
-        path: "/my-profile",
+        path: "/student/my-profile",
       },
       {
         name:"requests",
-        path: "/my-profile/requests",
+        path: "/student/my-profile/requests",
       },
       {
         name:"view tor",
-        path: "/my-profile/tor",
+        path: "/student/my-profile/tor",
       }
     ];
 
 export const navItemsPaths = [
-      "/my-profile",
-      "/my-profile/transactions",
-      "/my-profile/tor",
+      "/student/my-profile",
+      "/student/my-profile/transactions",
+      "/student/my-profile/tor",
     ];    

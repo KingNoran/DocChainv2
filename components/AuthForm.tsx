@@ -73,7 +73,7 @@ const AuthForm = <T extends FieldValues>({
 
   return (
     <div className="flex flex-col items-center gap-6 w-full">
-      <h1 className="text-3xl font-bold text-center mt-8 mb-2">Welcome Back!</h1>
+      <h1 className="text-3xl font-bold text-center mt-22 mb-2">Welcome Back!</h1>
       <p className="text-base text-neutral-400 text-center mb-4">Enter your credentials to access your account</p>
       <div className="w-full max-w-md bg-background text-foreground rounded-2xl p-8 flex flex-col gap-6 shadow-lg">
         <Form {...form}>
