@@ -85,14 +85,14 @@ const LatestTransactions = () => {
 
   return (
     <div>
-      <h2 className="text-center pb-10">Latest Transactions</h2>
+      <h2 className="text-center text-emerald-500 text-4xl font-bold pb-10">Latest Transactions</h2>
 				{!isLoading ?
           <ul>
             {transactions && transactions.map((transaction) => (
               <li key={transaction.eventHash}>
                 <Card>
                   <CardContent>
-                    <h2 className="font-bold mb-3">
+                    <h2 className="font-bold mb-3 truncate w-90 lg:w-full md:w-full cursor-pointer">
                       {"Transaction Hash: "}
                       <a 
                         className="text-green-500"
@@ -103,15 +103,19 @@ const LatestTransactions = () => {
                         {transaction.eventHash}
                       </a>
                     </h2>
-                    <p>Token ID: {transaction.studentId}</p>
-                    <p>PDF hash: {transaction.transcriptHash}</p>
+                    <p className='w-full lg:my-0 md:my-0 my-3'>TOR hash: <span className='text-green-500 font-bold whitespace-normal break-all'>{transaction.transcriptHash}</span></p>
+                    <p>Token ID: {transaction.studentId}</p> 
                     <p>Block Timestamp: {transaction.eventTimestamp}</p> 
                   </CardContent>
                 </Card>
                 <br />
               </li>                 
             ))}
-				  </ul> : "Loading..."
+				  </ul> : (
+            <Card className='w-full lg:w-auto md:w-auto p-4'>
+              <CardContent className='font-bold text-center px-2 lg:px-6 md:px-6 text-emerald-500'>Loading...</CardContent>
+            </Card>
+          )
         }
     </div>
   );

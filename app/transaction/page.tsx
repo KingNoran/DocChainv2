@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ModeToggle } from '@/components/ui/toggle-mode';
 
 import LatestTransactions from '@/components/LatestTransactions'
 import TransactionCard from '@/components/TransactionCard';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
+import { Card, CardContent } from '@/components/ui/card';
 
 
 type TransactionData = {
@@ -22,11 +23,13 @@ type TransactionData = {
 const GuestTransactionPage = () => {
   const [tokenId, setTokenId] = useState<number>(0);
   const [hasSearched, setHasSearched] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showError, setShowError] = useState(false);
   const [transactionData, setTransactionData] = useState<TransactionData | null>(null);
 
   const handleFetchData = async () => {
-    setHasSearched(true);
-  
+    setLoading(true)
+
     const res = await fetch('/api/fetch-data', {
       method: 'POST',
       body: JSON.stringify({ tokenId }),
@@ -34,12 +37,31 @@ const GuestTransactionPage = () => {
     });
   
     const data = await res.json();
-    console.log(data);
-    setTransactionData(data);
-    setHasSearched(false);
+
+    console.log(`Data: ${data.data}`);
+    console.log(`Status: ${data.status}`)
+
+    if (data.status == 200) {
+      setTransactionData(data.data);  
+    }
+    else {
+      setTransactionData(null);
+    }
+
+    setHasSearched(true)
+    setLoading(false)
 
     console.log(transactionData);
   };
+
+  useEffect(() => {
+    if (hasSearched && !transactionData && !loading) {
+      setShowError(true);
+
+      const timer = setTimeout(() => setShowError(false), 3000);
+      return () => clearTimeout(timer); 
+    }
+  }, [hasSearched, transactionData, loading]);
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-background text-foreground font-inter">
@@ -57,18 +79,18 @@ const GuestTransactionPage = () => {
           
         </div>
       </header>
-      <div className="flex-1 flex flex-col items-center justify-center my-15">
-        <div className="text-emerald-400 text-9xl font-bold font-['Inter'] leading-[96px] mb-4">Doc. Chain</div>
-        <div className="text-muted-foreground text-2xl font-normal font-['Inter'] leading-relaxed mb-12">Welcome to the future of document verification</div>
+      <div className="flex-1 flex flex-col items-center justify-center my-15 mx-5">
+        <div className="text-emerald-400 text-7xl sm:text-8xl md:text-9xl lg:text-9xl font-bold font-['Inter'] leading-[96px] mb-0 md:mb-4">Doc. Chain</div>
+        <div className="text-muted-foreground text-center text-xl md:text-2xl lg:text-2xl font-normal font-['Inter'] leading-relaxed mb-12">Welcome to the future of document verification</div>
 
-        <div className="relative w-[480px]">
+        <div className="relative w-100 mx-5 px-6 lg:px-0 md:px-0">
           <input
             type="number"
             placeholder="Enter student ID"
             className="w-full h-14 px-4 pt-6 pb-2 bg-card rounded-lg border border-border text-muted-foreground text-base font-normal font-['Inter'] focus:outline-none focus:border-emerald-400"
             onChange={(event) => setTokenId(Number(event.target.value))}
           />
-          <label className="absolute top-2 left-4 text-muted-foreground text-sm font-normal font-['Inter'] leading-tight">Student ID</label>
+          <label className="absolute top-2 left-10 lg:left-4 md:left-4 text-muted-foreground text-sm font-normal font-['Inter'] leading-tight">Student ID</label>
         </div>
 
         <div className="mt-8">
@@ -77,15 +99,25 @@ const GuestTransactionPage = () => {
           </button>
         </div>
 
-        <div className='mt-20'>
-          {hasSearched && (
-            transactionData ? (
-              <TransactionCard data={transactionData} />
-            ) : ("No Transactions found ")
+        <div className='mt-10 md:mt-15 lg:mt-15'>
+          {!loading ? (
+              hasSearched && (
+                transactionData ? (
+                  <TransactionCard data={transactionData} />
+                ) : (showError && (
+                  <Card className='w-full lg:w-auto md:w-auto p-4'>
+                    <CardContent className='font-bold px-2 lg:px-6 md:px-6 text-emerald-500 text-center'>No Transaction Found!<hr className='my-2' /><span className='text-[#25388C]'>Student ID might be wrong or PDF is not yet verified.</span></CardContent>
+                  </Card>
+                ))
+              )
+            ) : (
+              <Card className='w-full lg:w-auto md:w-auto p-4'>
+                <CardContent className='font-bold px-2 lg:px-6 md:px-6 text-emerald-500'>Loading...</CardContent>
+              </Card>
           )}
         </div>
 
-        <div className='mt-17'>
+        <div className='mt-20'>
           <LatestTransactions />
         </div>
       </div>
