@@ -99,6 +99,7 @@ const LatestTransactions = () => {
                         href={`https://zksync-sepolia.blockscout.com/tx/${transaction.eventHash}`}
                         target='_blank'
                         rel='noopener noreferrer'
+                        title={transaction.eventHash}
                       >
                         {transaction.eventHash}
                       </a>

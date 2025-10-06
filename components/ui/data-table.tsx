@@ -52,15 +52,15 @@ export function DataTable<TData, TValue>({
     <div>
       <div className="w-full flex items-center justify-center mb-10">
         <Input
-          placeholder="Filter ids..."
+          placeholder="Filter ID"
           value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("id")?.setFilterValue(event.target.value)
           }
-          className="max-w-md text-4xl"
+          className="max-w-md text-xl"
         />
       </div>
-      <h2 className="mb-3">Transactions Table</h2>
+      <h1 className="font-bold mb-3 text-2xl">Transactions Table</h1>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -89,7 +89,7 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className='max-w-[140px] sm:max-w-[200px] truncate overflow-hidden whitespace-nowrap'>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

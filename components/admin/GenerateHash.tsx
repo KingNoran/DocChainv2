@@ -50,6 +50,7 @@ const GenerateHash = ({ onHashGenerated }: { onHashGenerated: Function }) => {
           accept="application/pdf"
           onChange={handleFileInput}
           className="hidden"
+          placeholder="Transcript PDF"
         />
         <Button
           className="bg-[#25388C] cursor-pointer text-white"

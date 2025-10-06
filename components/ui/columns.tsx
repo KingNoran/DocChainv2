@@ -31,6 +31,20 @@ export const columns: ColumnDef<EventLogs>[] = [
   {
     accessorKey: "eventHash",
     header: "Transaction Hash",
+    cell: ({ row }) => {
+      const hash = row.getValue("eventHash") as string;
+      return (
+        <a 
+          className="text-green-500"
+          href={`https://zksync-sepolia.blockscout.com/tx/${hash}`}
+          target='_blank'
+          rel='noopener noreferrer'
+          title={hash}
+        >
+          {hash}
+        </a>
+        );
+    }
   },
   {
     accessorKey: "eventTimestamp",

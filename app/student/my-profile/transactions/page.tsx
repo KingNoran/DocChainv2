@@ -6,8 +6,8 @@ import React, { useState, useEffect } from "react";
 import { getSmartContractViewOnly } from "@/utils/getSmartContractViewOnly";
 import { EventLog } from "ethers";
 
-import { EventLogs, columns } from "./columns";
-import { DataTable } from "./data-table";
+import { EventLogs, columns } from "@/components/ui/columns";
+import { DataTable } from "@/components/ui/data-table";
 
 const Page = () => {
   const [isLoading, setLoading] = useState(false);
