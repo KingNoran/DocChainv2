@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useRouter } from 'next/navigation';
-import { Student } from '@/app/(root)/types';
+import { Student } from '@/app/student/types';
 import { registrarSchema } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
 import { createRegistrar } from '@/lib/admin/actions/registrar';

@@ -7,7 +7,7 @@ const Layout = async ({children}:{children:ReactNode}) => {
   const session = await auth();
   
     if(session){
-      if(session.user.role === "STUDENT") redirect("my-profile");
+      if(session.user.role === "STUDENT") redirect("/student/my-profile");
       if(session.user.role === "REGISTRAR") redirect("/registrar");
       if(session.user.role === "ADMIN") redirect("/admin");
     }

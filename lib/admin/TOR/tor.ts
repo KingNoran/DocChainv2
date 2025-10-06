@@ -1,6 +1,6 @@
 "use server";
 
-import { Semester, Student, Subject, TORAction } from "@/app/(root)/types";
+import { Semester, Student, Subject, TORAction } from "@/app/student/types";
 import { subjectChecklists } from "@/app/constants/checklists";
 import { db } from "@/database/drizzle";
 import { record, semesters, subjects } from "@/database/schema";

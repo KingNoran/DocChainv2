@@ -7,7 +7,7 @@ import { users } from "./database/schema";
 
 export const publicRoutes = ["/", "/login", "/transaction"];
 export const authRoutes: {path: string; roles?: string[]}[] = [
-  { path: "/my-profile", roles: ["STUDENT"] },
+  { path: "/student", roles: ["STUDENT"] },
   { path: "/registrar", roles: ["REGISTRAR"] },
   { path: "/api", roles: ["REGISTRAR", "ADMIN"] }, // <-- separate strings
   { path: "/admin", roles: ["ADMIN"] },

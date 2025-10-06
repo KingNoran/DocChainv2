@@ -55,7 +55,7 @@ const AuthForm = <T extends FieldValues>({
           onClick: () => console.log("Success"),
         },
       });
-    if(newSession?.user.role === "STUDENT") redirect("/my-profile");
+    if(newSession?.user.role === "STUDENT") redirect("/student/my-profile");
     if(newSession?.user.role === "REGISTRAR") redirect("/registrar");
     if(newSession?.user.role === "ADMIN") redirect("/admin");
     } else {

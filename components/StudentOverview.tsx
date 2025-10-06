@@ -1,4 +1,4 @@
-import { StudentOverviewTemplate } from '@/app/(root)/types'
+import { StudentOverviewTemplate } from '@/app/student/types'
 import React from 'react'
 import { Card, CardContent } from './ui/card'
 import { Button } from './ui/button'

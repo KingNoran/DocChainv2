@@ -1,6 +1,6 @@
 "use server";
 
-import { AuthCredentials } from "@/app/(root)/types";
+import { AuthCredentials } from "@/app/student/types";
 import { signIn } from "@/auth";
 import { headers } from "next/headers";
 import ratelimit from "@/lib/ratelimit";

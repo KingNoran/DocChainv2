@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useRouter } from 'next/navigation';
-import { Student } from '@/app/(root)/types';
+import { Student } from '@/app/student/types';
 import { adminSchema } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
 import { createAdmin } from '@/lib/admin/actions/admin';
@@ -79,7 +79,7 @@ const AdminForms = ({
     }
     }, [formData.address]);
 
-    
+
   return (
       <Form {...adminForms}>
         <form 

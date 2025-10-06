@@ -1,6 +1,6 @@
 "use client";
 
-import { TOR, CourseGrade } from '@/app/(root)/types';
+import { TOR, CourseGrade } from '@/app/student/types';
 import { DataTable } from '@/components/registrar/table/DataTable'
 import { Student, studentColumns } from '@/components/registrar/table/students/columns';
 import React, { useEffect, useState } from 'react'

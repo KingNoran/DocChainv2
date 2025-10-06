@@ -1,6 +1,6 @@
 "use client";
 
-import { StudentOverviewTemplate } from "@/app/(root)/types";
+import { StudentOverviewTemplate } from "@/app/student/types";
 import React, { createContext, useContext } from "react";
 
 type ProfileContextType = StudentOverviewTemplate; // you can replace `any` with a proper type

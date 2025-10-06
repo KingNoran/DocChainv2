@@ -1,6 +1,6 @@
 "use client";
 
-import { course } from "@/app/(root)/types";
+import { course } from "@/app/student/types";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverTrigger, PopoverContent } from "@radix-ui/react-popover";

@@ -1,6 +1,6 @@
 "use client"
 
-import { TOR } from '@/app/(root)/types';
+import { TOR } from '@/app/student/types';
 import Paper from '@/components/registrar/Paper';
 import Transcript from '@/components/registrar/Transcript';
 import { useParams } from 'next/navigation';

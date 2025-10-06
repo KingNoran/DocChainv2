@@ -1,6 +1,6 @@
 "use server";
 
-import { UserParams } from "@/app/(root)/types";
+import { UserParams } from "@/app/student/types";
 import { db } from "@/database/drizzle";
 import { admins, users } from "@/database/schema";
 import { hash } from "bcryptjs";

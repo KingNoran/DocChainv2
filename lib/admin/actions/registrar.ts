@@ -1,6 +1,6 @@
 "use server";
 
-import { course, roles, StudentParams, UserParams } from "@/app/(root)/types";
+import { course, roles, StudentParams, UserParams } from "@/app/student/types";
 import { db } from "@/database/drizzle";
 import { registrars, students, users } from "@/database/schema";
 import { hash } from "bcryptjs";

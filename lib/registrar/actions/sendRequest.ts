@@ -1,6 +1,6 @@
 "use server";
 
-import { course, RegistrarUserParams } from "@/app/(root)/types";
+import { course, RegistrarUserParams } from "@/app/student/types";
 import { db } from "@/database/drizzle";
 import { registrars, requests, users } from "@/database/schema";
 import { eq, or, sql } from 'drizzle-orm';

@@ -2,7 +2,7 @@
 
 import { FC, useState, JSX } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { course, Semester, Subject, TOR, YearChecklist } from "@/app/(root)/types";
+import { course, Semester, Subject, TOR, YearChecklist } from "@/app/student/types";
 import { subjectChecklists } from "@/app/constants/checklists";
 import { Input } from "@/components/ui/input";
 import { Page } from "@react-pdf/renderer";
