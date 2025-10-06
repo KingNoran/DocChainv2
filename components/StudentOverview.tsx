@@ -25,7 +25,10 @@ const StudentOverview = ({
     emailVerified,
     phoneVerified,
     lastActivityDate,
-    createdAt
+    createdAt,
+    nationality,
+    address,
+    birthday,
 }: StudentOverviewTemplate) => {
   
   const {data: session} = useSession();
@@ -63,9 +66,6 @@ const StudentOverview = ({
     <div className="flex flex-col gap-5">
       <Card className='border-0 flex flex-row justify-between px-5 items-center'>
         <CardContent className='flex gap-5'>
-          <div>
-            Avatar
-          </div>
           <div className='flex flex-col align-middle gap-3'>
             <h1 className='font-bold text-2xl'>{lastName}, {firstName} {middleName === null ? "" : `${middleName[0]}.`}</h1>
             <h3 className='text-muted-foreground'>Cavite State University</h3>
@@ -89,16 +89,16 @@ const StudentOverview = ({
               <i>{studentYear(year!)}</i>
             </div>
             <div className="flex flex-col gap-5">
-              <h3 className='text-muted-foreground'>Course:</h3>
-              <i>{course}</i>
+              <h3 className='text-muted-foreground'>Nationality:</h3>
+              <i>{nationality}</i>
             </div>
             <div className='flex flex-col gap-5'>
               <h3 className='text-muted-foreground'>Semester:</h3>
               <i>{studentSemester(semester!)}</i>
             </div>
             <div className='flex flex-col gap-5'>
-              <h3 className='text-muted-foreground'>Section:</h3>
-              <i>{course}{year}{semester}1</i>
+              <h3 className='text-muted-foreground'>Address:</h3>
+              <i>{address}</i>
             </div>
           </div>
           <Separator />
@@ -122,7 +122,7 @@ const StudentOverview = ({
           </Card>
           <Card className="border-0 px-5">
             <h3 className='text-muted-foreground'>Last Activity:</h3>
-            <i>{lastActivity(lastActivityDate!)}</i>
+            <i>{lastActivity(lastActivityDate.toISOString()!)}</i>
           </Card>
         </div>
       </div>

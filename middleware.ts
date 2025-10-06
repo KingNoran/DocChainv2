@@ -9,7 +9,6 @@ export const publicRoutes = ["/", "/login", "/transaction"];
 export const authRoutes: {path: string; roles?: string[]}[] = [
   { path: "/student", roles: ["STUDENT"] },
   { path: "/registrar", roles: ["REGISTRAR"] },
-  { path: "/api", roles: ["REGISTRAR", "ADMIN"] }, // <-- separate strings
   { path: "/admin", roles: ["ADMIN"] },
   { path: "/" },
 ];

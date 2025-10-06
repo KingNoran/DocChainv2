@@ -30,7 +30,8 @@ const page = () => {
             throw new Error("Failed to fetch students");
           }
             const data = await studentRes.json();
-            setStudentData(data);
+            const filteredStudents = data.filter((s: Student) => !s.isArchived);
+            setStudentData(filteredStudents);
           } catch (err: any) {
             console.error("Fetch failed:", err);
           }

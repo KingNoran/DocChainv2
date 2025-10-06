@@ -20,6 +20,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { usePathname, useRouter } from "next/navigation"
 import { TablePagination } from "./TablePagination"
+import { Item } from "@radix-ui/react-dropdown-menu"
 
 interface DataTableProps<TData extends { studentId: number  }, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -34,7 +35,6 @@ export function DataTable<TData extends { studentId: number }, TValue>({
   const [rowSelection, setRowSelection] = useState({});
   const pathname = usePathname();
   const router = useRouter();
-
   const table = useReactTable({
     data,
     columns,

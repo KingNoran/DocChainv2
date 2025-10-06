@@ -2,7 +2,7 @@
 
 import { TOR } from '@/app/student/types';
 import Paper from '@/components/registrar/Paper';
-import Transcript from '@/components/registrar/Transcript';
+import Transcript from '@/components/Transcript';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 
@@ -22,6 +22,7 @@ interface Student {
   highschool: string;
   dateEntrance: Date;
   dateGraduated: Date;
+  isArchived: boolean;
 }
 
 type CourseGrade = {
@@ -110,9 +111,10 @@ const Page = () => {
     major: s.major ?? "",
     highSchool: s.highschool ?? "",
     address: s.address ?? "",
-    entrance: birthday.toLocaleDateString(),
+    entrance: dateEntrance.toLocaleDateString(),
     studentId: s.studentId
   });
+  
   const transcriptStudent = mapStudentToTranscript(studentData!);
   return (
     <div>

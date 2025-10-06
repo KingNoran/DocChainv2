@@ -34,6 +34,10 @@ export const registrarStudentSchema = z.object({
     address: z.string().max(50),
 });
 
+export const TORFormsSchema = z.object({
+  studentUUID: z.string().uuid({ message: "Invalid UUID format" }),
+});
+
 export const registrarSchema = z.object({
     firstName: z.string().min(1).max(50),
     middleName: z.string().max(50).optional(),
