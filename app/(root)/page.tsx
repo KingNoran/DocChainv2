@@ -3,7 +3,7 @@
 import Hero from '@/components/Hero';
 import React, { useEffect } from 'react'
 
-const Home = () => {
+const Page = () => {
   
   return (
     <>
@@ -12,4 +12,4 @@ const Home = () => {
   )
 }
 
-export default Home;
+export default Page;
