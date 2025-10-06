@@ -4,7 +4,6 @@ import { relations } from 'drizzle-orm';
 import students from './students';
 import admins from './admins';
 import registrars from './registrars';
-import ROLE_ENUM from '../enums/ROLE_ENUM';
 import transactions from './requests';
 
 const users = table("users",{
@@ -16,9 +15,14 @@ const users = table("users",{
     lastName: t.varchar("last_name", {length: 255}).notNull(),
     email: t.text("email").notNull().unique(),
     phone: t.text("phone").notNull().unique(),
+    nationality: t.text("nationality").default("Filipino"),
+    birthday: t.date("birthday"),
+    address: t.text("address"),
+    active: t.boolean("active").default(false).notNull(),
+    isArchived: t.boolean("archive").default(false).notNull(),
     emailVerified: t.boolean("email_verified").default(false).notNull(),
     phoneVerified: t.boolean("phone_verified").default(false).notNull(),
-    lastActivityDate: t.date("last_activity_date").defaultNow().notNull(),
+    lastActivityDate: t.timestamp("last_activity_date", {mode: "date"}).defaultNow().notNull(),
     createdAt: t.timestamp("created_at", {
         mode: "string",
         withTimezone: true,

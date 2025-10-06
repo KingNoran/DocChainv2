@@ -7,39 +7,59 @@ export const loginSchema = z.object({
 
 export const studentSchema = z.object({
     firstName: z.string().min(1).max(50),
-    middleName: z.string().max(50),
+    middleName: z.string().max(50).optional(),
     lastName: z.string().min(1).max(50),
     course: z.string().min(4).max(6),
-    phone: z.string(),
+    phone: z.string().regex(/^(09\d{9}|\+639\d{9})$/, {
+    message: "Invalid Filipino phone number",
+  }),
     email: z.string().email(),
     password: z.string().min(8),
+    nationality: z.string().default("Filipino"),
+    birthday: z.date(),
+    address: z.string().max(50),
 });
 
 export const registrarStudentSchema = z.object({
     firstName: z.string().min(1).max(50),
-    middleName: z.string().max(50),
+    middleName: z.string().max(50).optional(),
     lastName: z.string().min(1).max(50),
     course: z.string().min(4).max(6),
-    phone: z.string(),
+    phone: z.string().regex(/^(09\d{9}|\+639\d{9})$/, {
+    message: "Invalid Filipino phone number",
+  }),
     email: z.string().email(),
+    nationality: z.string().default("Filipino"),
+    birthday: z.date(),
+    address: z.string().max(50),
 });
 
 export const registrarSchema = z.object({
     firstName: z.string().min(1).max(50),
-    middleName: z.string().max(50),
+    middleName: z.string().max(50).optional(),
     lastName: z.string().min(1).max(50),
-    phone: z.string(),
+    phone: z.string().regex(/^(09\d{9}|\+639\d{9})$/, {
+    message: "Invalid Filipino phone number",
+  }),
     email: z.string().email(),
     password: z.string().min(8),
+    nationality: z.string().default("Filipino"),
+    birthday: z.date(),
+    address: z.string().max(50),
 });
 
 export const adminSchema = z.object({
     firstName: z.string().min(1).max(50),
-    middleName: z.string().max(50),
+    middleName: z.string().max(50).optional(),
     lastName: z.string().min(1).max(50),
-    phone: z.string(),
+    phone: z.string().regex(/^(09\d{9}|\+639\d{9})$/, {
+    message: "Invalid Filipino phone number",
+  }),
     email: z.string().email(),
     password: z.string().min(8),
+    nationality: z.string().default("Filipino"),
+    birthday: z.date(),
+    address: z.string().max(50),
 });
 
 export const creditUnit = z.object({
@@ -78,3 +98,25 @@ export const TORSchema = z.object({
     fourthYear: TOR_year,
 });
 
+export const transcriptFormSchema = z.object({
+  student: z.object({
+    name: z.string(),
+    nationality: z.string().optional(),
+    birthdate: z.string(),
+    graduation: z.string(),
+    degree: z.string(),
+    major: z.string().optional(),
+    highSchool: z.string().optional(),
+    address: z.string().optional(),
+    entrance: z.string(),
+  }),
+  grades: z.array(
+    z.object({
+      gradeKey: z.string(),
+      syTaken: z.string().optional(),
+      instructor: z.string().optional(),
+      finalRating: z.string().optional(),
+    })
+  ),
+});
+export type TranscriptFormValues = z.infer<typeof transcriptFormSchema>;

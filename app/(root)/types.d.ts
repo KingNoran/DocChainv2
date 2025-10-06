@@ -30,14 +30,21 @@ declare module "next-auth/jwt" {
   }
 }
 
-interface Student{
-    studentId: number;
-    userId: string;
-    year: number;
-    semester: number;
-    course: "BSIT" | "BSCS" | "BSCRIM" | "BSHM" | "BSP" | "BSED_M" | "BSED_E" | "BSBM_MM";
-    finalGrade: string;
-    torReady: boolean;
+interface Student {
+  studentId: number;
+  userId: string;
+  year: number;
+  semester: number;
+  course: course;           // enum or union type
+  finalGrade: string;
+  torReady: boolean;
+  nationality: string | null;
+  address: string | null;
+  birthday: Date | null; // optional
+  major: string | null;
+  highschool: string | null;
+  dateEntrance?: Date;    // optional
+  dateGraduated: Date | null;
 }
 
 interface AuthCredentials{
@@ -50,7 +57,7 @@ interface AuthCredentials{
     role: string;
 }
 
-interface TOR{
+interface TORAction{
   id: string;
   studentId: number;
   createdAt: Date;
@@ -67,7 +74,7 @@ interface Semester{
 
 interface UserParams{
     firstName: string;
-    middleName: string;
+    middleName?: string;
     lastName: string;
     phone: string;
     email: string;
@@ -76,7 +83,7 @@ interface UserParams{
 
 interface RegistrarUserParams{
     firstName: string;
-    middleName: string;
+    middleName?: string;
     lastName: string;
     phone: string;
     email: string;
@@ -123,35 +130,46 @@ export type studentYear =
     "Fourth Year"|
     "Invalid Input";
 
-export type subject={
-    id: number;
-    courseCode: string;
-    courseTitle: string;
-    creditUnit: { lecture: number, laboratory: number };
-    preRequisite: string;
-    finalGrade: number;
-    instructor: string;
+export interface CreditUnit {
+  lecture: number;
+  laboratory: number;
 }
 
-export type midSub={
-    id: number;
-    courseCode: string;
-    courseTitle: string;
-    creditUnit: { lecture: number, laboratory: number };
-    preRequisite: string;
-    finalGrade: number;
-    instructor: string;
-}
-
-type Subject = {
-  contactHrs?: { lecture: number; laboratory: number; };
+export interface Subject {
+  id: number;
   courseCode: string;
   courseTitle: string;
-  creditUnit: { lecture: number; laboratory: number };
-  preRequisite: string;
-  finalGrade: number;
+  creditUnit: CreditUnit;
+  preRequisite?: string;
+  finalGrade?: number;
+  instructor?: string;
+  syTaken?: Date;
+  contactHrs?: CreditUnit;
+}
+
+export interface Semester {
+  firstSem?: Subject[];
+  secondSem?: Subject[];
+  midSem?: Subject[];
+}
+
+export interface YearChecklist {
+  firstYear?: Semester[];
+  secondYear?: Semester[];
+  thirdYear?: Semester[];
+  fourthYear?: Semester[];
+  midYear1?: Semester[];
+  midYear2?: Semester[];
+}
+
+export type TOR = Record<string, YearChecklist>;
+
+interface CourseGrade {
+  gradeKey: string;
+  syTaken: string;
   instructor: string;
-};
+  finalRating: string;
+}
 
 export type names = typeof subjectNames;
 export type subject_names = names[number];

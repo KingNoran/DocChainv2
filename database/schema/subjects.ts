@@ -1,6 +1,5 @@
 import * as t from 'drizzle-orm/pg-core';
 import { pgTable as table } from "drizzle-orm/pg-core";
-import SUBJECTS_ENUM from '../enums/SUBJECTS_ENUM';
 import record from './record';
 import { relations } from 'drizzle-orm';
 import semesters from './semester';

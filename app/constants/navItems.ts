@@ -4,8 +4,8 @@ export const navItems = [
         path: "/my-profile",
       },
       {
-        name:"transactions",
-        path: "/my-profile/transactions",
+        name:"requests",
+        path: "/my-profile/requests",
       },
       {
         name:"view tor",

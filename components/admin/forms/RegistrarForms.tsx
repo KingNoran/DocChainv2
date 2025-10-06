@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from "react-hook-form";
 import { z } from 'zod';
@@ -31,6 +31,8 @@ const RegistrarForms = ({
 }: Props) => {
   const router = useRouter();
   const { formData, setFormData } = useRegistrarForms();
+  const [city, setCity] = useState("");
+    const [province, setProvince] = useState("");
 
   const onSubmit = async(values: z.infer<typeof registrarSchema>,)=>{
     const result = await createRegistrar(values);
@@ -47,7 +49,7 @@ const RegistrarForms = ({
 
       router.push(`/admin/create/${result.data.id}`)
     } else {
-      toast.error("Error Occured.", {
+      toast.error(result.error, {
         description: `Date: ${date}`,
         action: {
           label: "Got it",
@@ -65,7 +67,18 @@ const RegistrarForms = ({
   useEffect(()=>{
       registrarForms.reset(formData);
     }, [formData, registrarForms]);
-
+      useEffect(() => {
+        const mergedAddress = `${city}${city && province ? ", " : ""}${province}`;
+        setFormData({ address: mergedAddress });
+        registrarForms.setValue("address" , mergedAddress);
+      }, [city, province]);
+      useEffect(() => {
+      if (formData.address) {
+        const [savedCity, savedProvince] = formData.address.split(",").map(s => s.trim());
+        setCity(savedCity || "");
+        setProvince(savedProvince || "");
+      }
+      }, [formData.address]);
   
 
   return (
@@ -217,6 +230,83 @@ const RegistrarForms = ({
                 </FormItem>
               )} 
             />
+            <FormField 
+                              control={registrarForms.control}
+                              name={"nationality"}
+                              render={({field})=>(
+                                  <FormItem className='flex flex-col gap-1'>
+                                      <FormLabel className="text-base font-normal text-dark-500">
+                                          Nationality
+                                      </FormLabel>
+                                      <FormControl>
+                                          <Input
+                                              required
+                                              placeholder="Nationality"
+                                              {...field}
+                                              value={formData.nationality}
+                                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                field.onChange(e);
+                                                setFormData({nationality: e.target.value });
+                                              }}
+                                          />
+                                      </FormControl>
+                                      <FormMessage />
+                                  </FormItem>
+                                )} 
+                              />
+                            <FormField 
+                              control={registrarForms.control}
+                              name="birthday"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-col gap-1">
+                                  <FormLabel className="text-base font-normal text-dark-500">
+                                    Birthday
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      required
+                                      type="date"
+                                      {...field}
+                                      value={formData.birthday ? new Date(formData.birthday).toISOString().split("T")[0] : ""}
+                                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        const dateValue = e.target.value ? new Date(e.target.value) : new Date();
+                                        field.onChange(dateValue);
+                                        setFormData({ birthday: dateValue });
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField 
+                              control={registrarForms.control}
+                              name={"address"}
+                              render={({ field }) => (
+                                <FormItem className="flex flex-col gap-1">
+                                  <FormLabel className="text-base font-normal text-dark-500">
+                                    Address
+                                  </FormLabel>
+                                  <div className="flex flex-col sm:flex-row gap-3">
+                                    <Input
+                                      required
+                                      {...field}
+                                      placeholder="City"
+                                      value={city}
+                                      onChange={(e) => setCity(e.target.value)}
+                                    />
+                                    <Input
+                                      required
+                                      {...field}
+                                      placeholder="Province"
+                                      value={province}
+                                      onChange={(e) => setProvince(e.target.value)}
+                                    />
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />       
             <Button type="submit" className="bg-primary-admin text-white">
               Add User
             </Button>

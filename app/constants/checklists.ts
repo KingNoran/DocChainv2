@@ -4204,28 +4204,3 @@ export const subjectChecklists = {
     },
   },
 };
-
-
-for (const program of Object.keys(subjectChecklists) as Array<keyof typeof subjectChecklists>) {
-  console.log(`Program: ${program}`);
-
-  const years = subjectChecklists[program];
-  for (const year of Object.keys(years) as Array<keyof typeof years>) {
-    console.log(`  Year: ${year}`);
-
-    const sems = years[year];
-    for (const sem of Object.keys(sems) as Array<keyof typeof sems>) {
-      console.log(`    Semester: ${sem}`);
-
-      const courses = sems[sem];
-
-      if (Array.isArray(courses)) {
-        for (const course of courses) {
-          console.log(`      ${course.courseCode} - ${course.courseTitle}`);
-        }
-      } else {
-        console.warn(`      ⚠️ Skipped: ${sem} is not an array`, courses);
-      }
-    }
-  }
-}

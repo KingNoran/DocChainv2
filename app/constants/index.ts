@@ -25,11 +25,6 @@ export const registrarSidebarLinks = [
     icon: Box,
   },
   {
-    title: "Issue TOR",
-    url: "/registrar/tor",
-    icon: CloudLightning,
-  },
-  {
     title: "View Students",
     url: "/registrar/students",
     icon: TablePropertiesIcon,
@@ -59,7 +54,7 @@ export const adminSidebarLinks = [
     },
     {
         icon: Inbox,
-        url: "/admin/transaction",
+        url: "/admin/requests",
         title: "See Requests",
     },
     {

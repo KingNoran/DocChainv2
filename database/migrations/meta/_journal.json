@@ -15,6 +15,34 @@
       "when": 1758370117257,
       "tag": "0001_glamorous_demogoblin",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1758856699587,
+      "tag": "0002_minor_khan",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1759136602126,
+      "tag": "0003_reflective_lady_ursula",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1759717988855,
+      "tag": "0004_material_riptide",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1759719769527,
+      "tag": "0005_small_carmella_unuscione",
+      "breakpoints": true
     }
   ]
 }

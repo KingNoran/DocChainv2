@@ -38,7 +38,7 @@ export const createStudent = async (
         // Create new Student
         const [newStudent] = await db.insert(students).values({
             userId: newUser.userId,
-            course: courseValue as course
+            course: courseValue as course ?? "BSCS"
         }).returning({ studentId: students.studentId, course: students.course });
 
         // Create new TOR

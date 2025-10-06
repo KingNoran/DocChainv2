@@ -4,7 +4,6 @@ import { relations } from 'drizzle-orm';
 
 import users from './users';
 import COURSES_ENUM from '../enums/COURSES_ENUM';
-import record from './record';
 
 const students = table("students",{
     studentId: t.integer('id').generatedAlwaysAsIdentity().primaryKey(),
@@ -13,7 +12,11 @@ const students = table("students",{
     semester: t.integer("semester").default(1).notNull(),
     course: COURSES_ENUM("course").notNull(),
     finalGrade: t.decimal("final_grade").default("0").notNull(),
-    torReady: t.boolean().default(false).notNull(),
+    torReady: t.boolean("tor_ready").default(false).notNull(),
+    major: t.text("major"),
+    dateGraduated: t.date("date_graduated"),
+    highschool: t.text("highschool"),
+    dateEntrance: t.timestamp("date_entrace").defaultNow()
 });
 
 export const studentsRelations = relations(students, ({one}) => ({

@@ -11,6 +11,7 @@ const requests = table("requests", {
     validatorId: t.uuid("validator_id").references(()=>users.userId),
     activity: t.text("activity").notNull(),
     status: STATUS_ENUM("status").default("PENDING"),
+    isArchived: t.boolean("archive").default(false).notNull(),
     createdAt: t.timestamp("created_at", {
         mode: "string",
         withTimezone: true,

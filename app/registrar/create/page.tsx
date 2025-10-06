@@ -10,7 +10,7 @@ const Page = () => {
   
   return (
     <div>
-      <Button className='bg-primary-admin' onClick={()=>{redirect("/registrar/create/student")}}>+ Create Student</Button>=
+      <Button className='bg-primary-admin' onClick={()=>{redirect("/registrar/create/student")}}>+ Create Student</Button>
     </div>
   )
 }

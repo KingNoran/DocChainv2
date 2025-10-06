@@ -6,6 +6,9 @@ import { headers } from "next/headers";
 import ratelimit from "@/lib/ratelimit";
 import { redirect } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { db } from "@/database/drizzle";
+import { users } from "@/database/schema";
+import { eq } from "drizzle-orm";
 
 export const signInWithCredentials = async (
     params: Pick<AuthCredentials, "email" | "password">
@@ -27,6 +30,11 @@ export const signInWithCredentials = async (
         if (result?.error){
             return { success: false, error: result.error, status: 401, url: null }
         }
+
+        await db
+        .update(users)
+        .set({ active: true, lastActivityDate: new Date() })
+        .where(eq(users.email, email))
 
         return { success: true };
 

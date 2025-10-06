@@ -3,20 +3,22 @@ import Footer from '@/components/Footer';
 import Link from 'next/link';
 import { ModeToggle } from '@/components/ui/toggle-mode';
 import InfoCarousel from '@/components/carousel/InfoCarousel';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
 export const Home = () => {
-    const [showCarousel, setShowCarousel] = useState(false);
-    const router = useRouter();
-    const {data: session, status} = useSession();
-    
+  const [showCarousel, setShowCarousel] = useState(false);
+  const router = useRouter();
+  const {data: session, status} = useSession();
+  
+  useEffect(()=>{
     if(status === "authenticated" && session){
-        if(session.user.role === "STUDENT") router.replace("/my-profile");
-        if(session.user.role === "REGISTRAR") router.replace("/registrar");
-        if(session.user.role === "ADMIN") router.replace("/admin");
+      if(session.user.role === "STUDENT") router.replace("/my-profile");
+      if(session.user.role === "REGISTRAR") router.replace("/registrar");
+      if(session.user.role === "ADMIN") router.replace("/admin");
     }
+  }, [status, router])
 
 
   const handleCarouselFinish = () => {

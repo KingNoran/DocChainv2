@@ -19,9 +19,11 @@ const Layout = async ({ children } : { children: ReactNode }) => {
   return (
      <SidebarProvider >
       <AdminSidebar session={session!} />
-      <main className="flex min-h-screen w-full flex-col items-start px-5">
+      <main className="flex-1 min-h-screen w-full flex flex-col px-5 py-4">
         <SidebarTrigger />
-        {children}
+        <div className="w-full flex-1">
+          {children}
+        </div>
       </main>
     </SidebarProvider>
   )

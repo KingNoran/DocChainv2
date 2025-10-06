@@ -9,6 +9,9 @@ type RegistrarContext = {
     phone: string;
     email: string;
     password: string;
+    nationality: string,
+    birthday: Date,
+    address: string,
 }
 
 export const { Provider: RegistrarFormProvider, useForm: useRegistrarForms } =
@@ -19,4 +22,7 @@ export const { Provider: RegistrarFormProvider, useForm: useRegistrarForms } =
     phone: "",
     email: "",
     password: "",
+    nationality: "",
+    birthday: new Date,
+    address: "",
   });

@@ -9,6 +9,9 @@ type AdminFormContext = {
     phone: string;
     email: string;
     password: string;
+    nationality: string,
+    birthday: Date,
+    address: string,
 }
 
 export const { Provider: AdminFormProvider, useForm: useAdminForms } =
@@ -19,4 +22,7 @@ export const { Provider: AdminFormProvider, useForm: useAdminForms } =
     phone: "",
     email: "",
     password: "",
+    nationality: "",
+    birthday: new Date,
+    address: "",
   });

@@ -1,14 +1,20 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "@/auth"; // your NextAuth instance
+import { eq } from "drizzle-orm";
+import { db } from "./database/drizzle";
+import { users } from "./database/schema";
 
 export const publicRoutes = ["/", "/login", "/transaction"];
 export const authRoutes: {path: string; roles?: string[]}[] = [
-  {path: "/my-profile", roles:["STUDENT"]},
-  {path: "/registrar", roles: ["REGISTRAR"]},
-  {path: "/admin", roles: ["ADMIN"]},
-  {path: "/"},
+  { path: "/my-profile", roles: ["STUDENT"] },
+  { path: "/registrar", roles: ["REGISTRAR"] },
+  { path: "/api", roles: ["REGISTRAR", "ADMIN"] }, // <-- separate strings
+  { path: "/admin", roles: ["ADMIN"] },
+  { path: "/" },
 ];
+
+export const protectedApiPrefix = "/api";
 
 export async function middleware(req: NextRequest) {
   const session = await auth();
@@ -25,6 +31,13 @@ export async function middleware(req: NextRequest) {
   if (matchedRoute) {
     if (!session) {
       return NextResponse.redirect(new URL("/login", req.url));
+    }
+
+    if (session.user?.id) {
+      await db
+        .update(users)
+        .set({ lastActivityDate: new Date() })
+        .where(eq(users.userId, session.user.id))
     }
 
     const role = session.user?.role;

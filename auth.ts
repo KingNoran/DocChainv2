@@ -64,5 +64,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
         return session;
     }
+  },
+  events: {
+    async signOut(message) {
+        const session = (message as { session?: any }).session
+        const userId = session?.user?.id
+        if (!userId) return
+
+        await db
+        .update(users)
+        .set({ active: false })
+        .where(eq(users.userId, userId))
+    },
   }
 })

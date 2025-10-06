@@ -25,13 +25,9 @@ const Layout = async ({children}:{children:ReactNode}) => {
     <main className="root-container">
         <div className="flex flex-col mt-8 justify-between h-[100vh]">
           <Header />
-
             <div className="mt-20 pb-20">
-                  
                 {children}
-                
             </div>
-
           <Footer />
         </div>
     </main>

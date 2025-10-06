@@ -1,6 +1,6 @@
 "use server";
 
-import { Semester, Student, Subject, TOR } from "@/app/(root)/types";
+import { Semester, Student, Subject, TORAction } from "@/app/(root)/types";
 import { subjectChecklists } from "@/app/constants/checklists";
 import { db } from "@/database/drizzle";
 import { record, semesters, subjects } from "@/database/schema";
@@ -30,7 +30,7 @@ export const createTOR = async (student: Student) => {
         .returning();
 
       // Get the course data from checklist
-      const courseKey = student.course.toUpperCase() as keyof typeof subjectChecklists;
+      const courseKey = student.course!.toUpperCase() as keyof typeof subjectChecklists;
       const courseData = subjectChecklists[courseKey];
       if (!courseData) {
         return { success: false, message: "No checklist for this course" };
@@ -79,7 +79,7 @@ export const createTOR = async (student: Student) => {
 const setSubjectsFromData = async (
   tx: PgTransaction<any, any, any>,
   semData: Subject[],
-  newTOR: TOR,
+  newTOR: TORAction,
   newSem: Semester
 ) => {
     if (!semData || semData.length === 0) {

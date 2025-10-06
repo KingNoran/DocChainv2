@@ -10,6 +10,9 @@ type RegistrarStudentContext = {
     phone: string;
     email: string;
     password: string;
+    nationality: string,
+    birthday: Date,
+    address: string,
 }
 
 export const { Provider: RegistrarStudentFormProvider, useForm: useRegistrarStudentForms } =
@@ -21,4 +24,7 @@ export const { Provider: RegistrarStudentFormProvider, useForm: useRegistrarStud
     phone: "",
     email: "",
     password: "",
+    nationality: "",
+    birthday: new Date,
+    address: "",
   });
