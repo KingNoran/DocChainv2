@@ -16,6 +16,7 @@ export type Student = {
     semester: number,
     course: course,
     torReady: boolean
+    isArchived: boolean;
 }
 
 export const studentColumns: ColumnDef<Student>[] = [

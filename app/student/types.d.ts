@@ -113,8 +113,11 @@ interface StudentOverviewTemplate{
   phone: string | null;
   emailVerified: boolean;
   phoneVerified: boolean;
-  lastActivityDate: string;
+  lastActivityDate: Date;
   createdAt: string;
+  nationality: string | null;
+  address: string | null;
+  birthday: string | null;
 }
 
 export type roles =

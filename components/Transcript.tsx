@@ -32,6 +32,7 @@ interface TranscriptProps {
   initialStudent: Student;
   initialTranscript: TOR;
   initialGrades: CourseGrade[];
+  readOnly?: boolean;
 }
 
 // Utility
@@ -52,10 +53,11 @@ if (typeof window !== "undefined") {
 }
 
 // Header component
-const TranscriptHeader: FC<{ student: Student; control: any; isFirstPage?: boolean }> = ({
+const TranscriptHeader: FC<{ student: Student; control: any; isFirstPage?: boolean, readOnly?: boolean }> = ({
   student,
   control,
   isFirstPage = true,
+  readOnly = false,
 }) => {
   const courseNames = {
     BSIT: "BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY (BSIT)",
@@ -92,13 +94,21 @@ const TranscriptHeader: FC<{ student: Student; control: any; isFirstPage?: boole
                 <Controller
                   control={control}
                   name={`student.${key}`}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type={key.includes("date") ? "date" : "text"}
-                      value={key.includes("date") ? formatDateForInput(field.value) : field.value}
-                    />
-                  )}
+                  render={({ field }) =>
+                    readOnly ? (
+                      <span className="text-sm text-gray-800">
+                        {key.includes("date")
+                          ? formatDateForInput(field.value)
+                          : field.value || "—"}
+                      </span>
+                    ) : (
+                      <Input
+                        {...field}
+                        type={key.includes("date") ? "date" : "text"}
+                        value={key.includes("date") ? formatDateForInput(field.value) : field.value}
+                      />
+                    )
+                  }
                 />
               </div>
             );
@@ -118,7 +128,8 @@ const CourseTable: FC<{
   control: any;
   grades: Record<string, CourseGrade>;
   initialTranscript: TOR;
-}> = ({ courses, title, yearKey, semesterKey, control, grades, initialTranscript }) => (
+  readOnly: boolean;
+}> = ({ courses, title, yearKey, semesterKey, control, grades, initialTranscript, readOnly=false, }) => (
   <div className="mb-4 avoid-break">
     <h3 className="font-semibold mb-2 capitalize">{title.replace(/([A-Z])/g, " $1")}</h3>
     <table className="w-full border-collapse border text-xs">
@@ -163,8 +174,19 @@ const CourseTable: FC<{
                     control={control}
                     name={`grades.${gradeKey}.${field}`}
                     defaultValue={grade[field as keyof CourseGrade]}
-                    render={({ field }) => <Input {...field} className="w-full border-0 px-1 bg-transparent text-xs" />}
-                  />
+                    render={({ field }) =>
+                      readOnly ? (
+                        <span className="text-xs text-gray-800">
+                          {field.value || "—"}
+                        </span>
+                      ) : (
+                        <Input
+                          {...field}
+                          readOnly={readOnly}
+                          className="w-full border-0 px-1 bg-transparent text-xs"
+                        />
+                      )
+                    }/>
                 </td>
               ))}
             </tr>
@@ -176,13 +198,14 @@ const CourseTable: FC<{
 );
 
 // Main Transcript
-const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, initialGrades }) => {
+const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, initialGrades, readOnly = false }) => {
   const defaultValues = {
     student: initialStudent,
     grades: initialGrades.reduce((acc, g) => {
       acc[g.gradeKey] = g;
       return acc;
     }, {} as Record<string, CourseGrade>),
+    
   };
 
   const { handleSubmit, control, watch } = useForm({ defaultValues });
@@ -256,7 +279,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
   const maxPageHeight = 950;
   let pageNumber = 0;
 
-  currentPageContent.push(<TranscriptHeader key="header-0" student={student} control={control} isFirstPage={true} />);
+  currentPageContent.push(<TranscriptHeader key="header-0" student={student} control={control} isFirstPage={true} readOnly={readOnly} />);
   estimatedHeight = 350;
 
   if (courseData) {
@@ -265,7 +288,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
       if (estimatedHeight + 40 > maxPageHeight && currentPageContent.length > 1) {
         pages.push(<div key={`page-${pageNumber}`} className="page-container">{currentPageContent}</div>);
         pageNumber++;
-        currentPageContent = [<TranscriptHeader key={`header-${pageNumber}`} student={student} control={control} isFirstPage={false} />];
+        currentPageContent = [<TranscriptHeader key={`header-${pageNumber}`} student={student} control={control} isFirstPage={false} readOnly={readOnly} />];
         estimatedHeight = 150;
       }
 
@@ -278,7 +301,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
           pages.push(<div key={`page-${pageNumber}`} className="page-container">{currentPageContent}</div>);
           pageNumber++;
           currentPageContent = [
-            <TranscriptHeader key={`header-${pageNumber}`} student={student} control={control} isFirstPage={false} />,
+            <TranscriptHeader key={`header-${pageNumber}`} student={student} control={control} isFirstPage={false} readOnly={readOnly} />,
             <h2 key={`${year}-title-${pageNumber}`} className="font-bold mt-4 mb-2 uppercase">{year} (Continued)</h2>,
           ];
           estimatedHeight = 200;
@@ -294,6 +317,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
             control={control}
             grades={grades}
             initialTranscript={initialTranscript}
+            readOnly={readOnly}
           />
         );
         estimatedHeight += semesterHeight;

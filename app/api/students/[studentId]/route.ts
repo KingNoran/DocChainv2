@@ -37,9 +37,20 @@ export async function GET(
   { params }: { params: { studentId: string } }
 ) {
   const session = await auth();
-
-  if (!session || !["REGISTRAR", "ADMIN"].includes(session.user?.role || "")) {
+  
+  if (!session || !["REGISTRAR", "ADMIN", "STUDENT"].includes(session.user?.role || "")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (session.user.role === "STUDENT") {
+    const student = await db
+      .select({id: students.studentId})
+      .from(students)
+      .where(eq(students.userId, session.user.id))
+      .limit(1)
+
+      if (!student.length || String(student[0].id) !== params.studentId) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
   }
   const studentId = parseInt(params.studentId, 10);
     if (isNaN(studentId)) {

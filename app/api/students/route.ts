@@ -9,9 +9,22 @@ export async function GET(request: Request) {
   try {
     const session = await auth();
 
-  if (!session || !["REGISTRAR", "ADMIN"].includes(session.user?.role || "")) {
+  if (!session || !["REGISTRAR", "ADMIN", "STUDENT"].includes(session.user?.role || "")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  if (session.user.role === "STUDENT") {
+      const student = await db
+        .select({id: students.studentId})
+        .from(students)
+        .where(eq(students.userId, session.user.id))
+        .limit(1)
+  
+        const { searchParams } = new URL(request.url);
+        const studentIdParam = searchParams.get("studentId");
+        if (!student.length || String(student[0].id) !== studentIdParam){
+          return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+    }
     const { searchParams } = new URL(request.url);
     const studentIdParam = searchParams.get("studentId");
 
@@ -38,6 +51,7 @@ export async function GET(request: Request) {
           highschool: students.highschool,
           dateEntrance: students.dateEntrance,
           dateGraduated: students.dateGraduated,
+          isArchived: users.isArchived
         })
         .from(students)
         .innerJoin(users, eq(users.userId, students.userId))
@@ -67,6 +81,7 @@ export async function GET(request: Request) {
           highschool: students.highschool,
           dateEntrance: students.dateEntrance,
           dateGraduated: students.dateGraduated,
+          isArchived: users.isArchived
         })
         .from(students)
         .innerJoin(users, eq(users.userId, students.userId))
