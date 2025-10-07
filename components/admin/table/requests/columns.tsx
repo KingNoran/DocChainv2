@@ -15,6 +15,7 @@ export type Request = {
     status: string,
     createdAt: Date,
     validatedAt: Date | null | undefined,
+    isArchived: boolean;
 }
 
 function toTitleCase(str: string) {

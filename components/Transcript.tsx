@@ -344,7 +344,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
       </div>
       <div className="text-center mt-6">
         <button type="submit" className="bg-blue-600 text-white px-8 py-3 rounded hover:bg-blue-700 print:hidden">
-          Submit Transcript
+          Update Transcript
         </button>
       </div>6
       <style jsx>{`

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   ColumnDef,
@@ -6,8 +6,7 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-
+} from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -15,26 +14,28 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { usePathname, useRouter } from "next/navigation"
-import { TablePagination } from "./TablePagination"
-import { Item } from "@radix-ui/react-dropdown-menu"
+} from "@/components/ui/table";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { usePathname, useRouter } from "next/navigation";
+import { TablePagination } from "./TablePagination";
 
-interface DataTableProps<TData extends { studentId: number  }, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+interface DataTableProps<TData extends { studentId: number }, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  onArchive?: (ids: number[]) => Promise<void>;
 }
 
 export function DataTable<TData extends { studentId: number }, TValue>({
   columns,
   data,
+  onArchive,
 }: DataTableProps<TData, TValue>) {
-
   const [rowSelection, setRowSelection] = useState({});
+  const [isProcessing, setIsProcessing] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+
   const table = useReactTable({
     data,
     columns,
@@ -42,60 +43,69 @@ export function DataTable<TData extends { studentId: number }, TValue>({
       rowSelection,
       pagination: {
         pageIndex: 0,
-        pageSize: 10
-      }
+        pageSize: 10,
+      },
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-  })
+  });
 
   const selectedIds = table.getSelectedRowModel().rows.map(
     (row) => row.original.studentId
-  )
+  );
 
-  // Example validate handler
-  // TO BE HANDLED LATER
-  const handleValidate = () => {
-    console.log("Validate these IDs:", selectedIds)
-  }
+  // detect if on archive page
+  const isArchivePage = pathname.includes("/archive");
+
+  const handleArchive = async () => {
+    if (!onArchive) return;
+    setIsProcessing(true);
+    await onArchive(selectedIds);
+    setIsProcessing(false);
+    setRowSelection({});
+  };
 
   const handleViewStudent = () => {
     if (selectedIds.length !== 1) return;
-
     const studentId = selectedIds[0];
-    // Redirect to your dynamic page
     router.push(`/registrar/students/${studentId}`);
-  }
+  };
 
   return (
     <div className="p-6 w-full">
-      {
-        pathname === "/registrar/students"
-        ? 
+      {(pathname === "/registrar/students" || isArchivePage) && (
         <div className="flex justify-end mb-5 gap-4">
-        <Button
-          variant="default"
-          size="sm"
-          onClick={handleValidate}
-          disabled={selectedIds.length === 0}
-          className="bg-primary-admin"
-        >
-          Push to Chain
-        </Button>
-        <Button
-          variant="default"
-          size="sm"
-          onClick={handleViewStudent}
-          disabled={selectedIds.length === 0 || selectedIds.length > 1}
-          className="bg-primary-admin"
-        >
-          View Student
-        </Button>
-      </div> : null
-      }
-      
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={handleArchive}
+            disabled={selectedIds.length === 0 || isProcessing}
+          >
+            {isProcessing
+              ? isArchivePage
+                ? "Unarchiving..."
+                : "Archiving..."
+              : isArchivePage
+              ? "Unarchive Selected"
+              : "Archive Selected"}
+          </Button>
+
+          {!isArchivePage && (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={handleViewStudent}
+              disabled={selectedIds.length !== 1}
+              className="bg-primary-admin"
+            >
+              View Student
+            </Button>
+          )}
+        </div>
+      )}
+
       <div className="overflow-x-auto max-w-full rounded-md border bg-white shadow-sm">
         <Table className="min-w-full table-auto">
           <TableHeader>
@@ -117,6 +127,7 @@ export function DataTable<TData extends { studentId: number }, TValue>({
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
@@ -150,6 +161,7 @@ export function DataTable<TData extends { studentId: number }, TValue>({
           </TableBody>
         </Table>
       </div>
+
       <TablePagination table={table} />
     </div>
   );

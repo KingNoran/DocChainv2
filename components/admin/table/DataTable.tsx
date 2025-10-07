@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   ColumnDef,
@@ -6,8 +6,7 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-
+} from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -15,25 +14,29 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { TablePagination } from "./TablePagination"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { usePathname } from "next/navigation"
+} from "@/components/ui/table";
+import { TablePagination } from "./TablePagination";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { usePathname } from "next/navigation";
 
-interface DataTableProps<TData extends {id: number }, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+interface DataTableProps<TData extends { id: number }, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  onArchive?: (ids: number[]) => Promise<void>;
+  onValidate?: (ids: number[]) => Promise<void>; // ✅ new
 }
 
-export function DataTable<TData extends {id: number}, TValue>({
+export function DataTable<TData extends { id: number }, TValue>({
   columns,
   data,
+  onArchive,
+  onValidate,
 }: DataTableProps<TData, TValue>) {
-
   const [rowSelection, setRowSelection] = useState({});
+  const [isProcessing, setIsProcessing] = useState(false);
   const pathname = usePathname();
-
+  
   const table = useReactTable({
     data,
     columns,
@@ -41,41 +44,68 @@ export function DataTable<TData extends {id: number}, TValue>({
       rowSelection,
       pagination: {
         pageIndex: 0,
-        pageSize: 10
-      }
+        pageSize: 10,
+      },
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-  })
+  });
 
   const selectedIds = table.getSelectedRowModel().rows.map(
     (row) => row.original.id
-  )
+  );
+  const isArchivePage = pathname.includes("/archive");
+  const handleArchive = async () => {
+    if (!onArchive) return;
+    setIsProcessing(true);
+    await onArchive(selectedIds);
+    setIsProcessing(false);
+    setRowSelection({});
+  };
 
-  // Example validate handler
-  // TO BE HANDLED LATER
-  const handleValidate = () => {
-    console.log("Validate these IDs:", selectedIds)
-  }
+  const handleValidate = async () => {
+    if (!onValidate) return;
+    setIsProcessing(true);
+    await onValidate(selectedIds);
+    setIsProcessing(false);
+    setRowSelection({});
+  };
 
   return (
     <div className="p-6 w-full">
-      {
-        pathname === "/admin/requests"
-        ? <div className="flex justify-end mb-5">
-        <Button
-          variant="default"
-          size="sm"
-          onClick={handleValidate}
-          disabled={selectedIds.length === 0}
-        >
-          Validate Selected
-        </Button>
-      </div> : null
-      }
       
+{(pathname === "/admin/requests" || isArchivePage) && (
+  <div className="flex justify-end mb-5 gap-2">
+    <Button
+      variant="destructive"
+      size="sm"
+      onClick={handleArchive}
+      disabled={selectedIds.length === 0 || isProcessing}
+    >
+      {isProcessing
+        ? isArchivePage
+          ? "Unarchiving..."
+          : "Archiving..."
+        : isArchivePage
+        ? "Unarchive Selected"
+        : "Archive Selected"}
+    </Button>
+
+    {!isArchivePage && (
+      <Button
+        variant="default"
+        size="sm"
+        onClick={handleValidate}
+        disabled={selectedIds.length === 0 || isProcessing}
+      >
+        {isProcessing ? "Processing..." : "Validate Selected"}
+      </Button>
+    )}
+  </div>
+)}
+
       <div className="overflow-x-auto max-w-full rounded-md border bg-white shadow-sm">
         <Table className="min-w-full table-auto">
           <TableHeader>

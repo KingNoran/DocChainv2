@@ -1,49 +1,49 @@
 "use client";
 
-import { TOR, CourseGrade } from '@/app/student/types';
-import { DataTable } from '@/components/registrar/table/DataTable'
-import { Student, studentColumns } from '@/components/registrar/table/students/columns';
-import React, { useEffect, useState } from 'react'
+import { DataTable } from "@/components/registrar/table/DataTable";
+import { Student, studentColumns } from "@/components/registrar/table/students/columns";
+import { archiveStudents } from "@/lib/actions/archiveStudents";
+import React, { useEffect, useState } from "react";
 
-export async function getStudentTranscript(studentId: string) {
-  // Fetch student
-  const studentRes = await fetch(`http://localhost:3000/api/students/${studentId}`);
-  if (!studentRes.ok) throw new Error("Failed to fetch student");
-  const data = await studentRes.json();
+const Page = () => {
+  const [students, setStudents] = useState<Student[]>([]);
 
-  // Assuming your API returns { student, transcript, grades }
-  return {
-    student: data.student as Student,
-    transcript: data.transcript as TOR,
-    grades: data.grades as CourseGrade[],
+  // Fetch non-archived students
+  const fetchStudents = async () => {
+    try {
+      const res = await fetch("/api/students?archived=false");
+      if (!res.ok) throw new Error("Failed to fetch students");
+
+      const data = await res.json();
+      setStudents(data);
+    } catch (err) {
+      console.error("Fetch failed:", err);
+    }
   };
-}
 
-const page = () => {
-    const [studentData, setStudentData] = useState<any[]>([]);
+  useEffect(() => {
+    fetchStudents();
+  }, []);
 
-    useEffect(()=>{
-        const fetchStudents = async () => {
-        try {
-          const studentRes = await fetch("/api/students"); // <-- updated endpoint
-          if (!studentRes.ok) {
-            throw new Error("Failed to fetch students");
-          }
-            const data = await studentRes.json();
-            const filteredStudents = data.filter((s: Student) => !s.isArchived);
-            setStudentData(filteredStudents);
-          } catch (err: any) {
-            console.error("Fetch failed:", err);
-          }
-        };
-        fetchStudents();
-    },[])
+  // Handle archiving logic
+  const handleArchive = async (ids: number[]) => {
+    try {
+      await archiveStudents(ids);
+
+      // Optimistic UI update: remove archived students from view
+      setStudents((prev) => prev.filter((s) => !ids.includes(s.studentId)));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to archive students.");
+    }
+  };
 
   return (
-    <div>
-      <DataTable columns={studentColumns} data={studentData}/>
+    <div className="p-6 space-y-4">
+      <h1 className="text-xl font-bold">Active Students</h1>
+      <DataTable columns={studentColumns} data={students} onArchive={handleArchive} />
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default Page;

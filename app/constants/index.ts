@@ -69,7 +69,7 @@ export const adminSidebarLinks = [
     },
     {
         title: "Archive",
-        url: "/registrar/archive",
+        url: "/admin/archive",
         icon: Archive,
     },
 ];

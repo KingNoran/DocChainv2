@@ -14,7 +14,7 @@ export const Home = () => {
   
   useEffect(()=>{
     if(status === "authenticated" && session){
-      if(session.user.role === "STUDENT") router.replace("/my-profile");
+      if(session.user.role === "STUDENT") router.replace("/student/my-profile");
       if(session.user.role === "REGISTRAR") router.replace("/registrar");
       if(session.user.role === "ADMIN") router.replace("/admin");
     }

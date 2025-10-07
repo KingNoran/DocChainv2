@@ -1,52 +1,66 @@
 "use client";
-import { requestColumns } from '@/components/admin/table/requests/columns';
-import { DataTable } from '@/components/admin/table/DataTable';
-import React, { useEffect, useState } from 'react'
+
+import { DataTable } from "@/components/admin/table/DataTable";
+import { Request, requestColumns } from "@/components/admin/table/requests/columns";
+import { archiveRequests } from "@/lib/actions/archiveRequests";
+import { validateRequests } from "@/lib/actions/validateRequests";
+import React, { useEffect, useState } from "react";
 
 const Page = () => {
-  
-    const [data, setData] = useState<any[]>([]);
+  const [requests, setRequests] = useState<Request[]>([]);
 
-    useEffect(() => {
-      async function fetchData() {
-        try {
-          const [requestsRes, usersRes] = await Promise.all([
-            fetch("/api/requests").then((r) => r.json()),
-            fetch("/api/users").then((r) => r.json()),
-          ]);
+  // Fetch non-archived requests
+  const fetchRequests = async () => {
+    try {
+      const res = await fetch("/api/requests?archived=false");
+      if (!res.ok) throw new Error("Failed to fetch requests");
 
-          console.log("Requests API response:", requestsRes);
-          console.log("Users API response:", usersRes);
+      const data = await res.json();
+      setRequests(data);
+    } catch (err) {
+      console.error("Fetch failed:", err);
+    }
+  };
 
-          const userMap = Object.fromEntries(
-            usersRes.map((u: any) => [u.userId, `${u.firstName} ${u.lastName}`])
-          );
+  useEffect(() => {
+    fetchRequests();
+  }, []);
 
-          console.log("User map:", userMap);
+  // Handle validation (and automatic archiving)
+  const handleValidate = async (ids: number[]) => {
+    try {
+      await validateRequests(ids);
 
-          const parsed = requestsRes.map((req: any) => ({
-            ...req,
-            requesterId: userMap[req.requesterId] ?? req.requesterId,
-            validatorId: req.validatorId
-              ? userMap[req.validatorId] ?? req.validatorId
-              : "Not validated",
-          }));
+      // When validated, they’re automatically archived too
+      setRequests((prev) => prev.filter((req) => !ids.includes(req.id)));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to validate requests.");
+    }
+  };
 
-          console.log("Parsed:", parsed);
-          setData(parsed);
-        } catch (err) {
-          console.error("Fetch failed:", err);
-        }
-      }
+  // Handle manual archiving
+  const handleArchive = async (ids: number[]) => {
+    try {
+      await archiveRequests(ids);
+      setRequests((prev) => prev.filter((req) => !ids.includes(req.id)));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to archive requests.");
+    }
+  };
 
-      fetchData();
-    }, []);
-    
   return (
-    <div>
-      <DataTable columns={requestColumns} data={data} />
+    <div className="p-6 space-y-4">
+      <h1 className="text-xl font-bold">Pending Requests</h1>
+      <DataTable
+        columns={requestColumns}
+        data={requests}
+        onArchive={handleArchive}
+        onValidate={handleValidate}
+      />
     </div>
-  )
-}
+  );
+};
 
-export default Page
+export default Page;
