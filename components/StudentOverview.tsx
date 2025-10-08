@@ -1,10 +1,11 @@
+"use client";
+
 import { StudentOverviewTemplate } from '@/app/student/types'
 import React from 'react'
 import { Card, CardContent } from './ui/card'
 import { Button } from './ui/button'
 import { Separator } from './ui/separator'
 import { LogOut } from 'lucide-react'
-import { useSession } from 'next-auth/react'
 import { logout } from '@/lib/actions/logout'
 
 
@@ -30,8 +31,7 @@ const StudentOverview = ({
     address,
     birthday,
 }: StudentOverviewTemplate) => {
-  
-  const {data: session} = useSession();
+
   const studentYear = (year: number)=>{
     switch(year!){
       case 1:

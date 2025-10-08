@@ -1,3 +1,5 @@
+"use server";
+
 import { auth } from "@/auth";
 import { ProfileProvider } from "@/components/ProfileWrapper";
 import { db } from "@/database/drizzle";

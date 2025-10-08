@@ -5,7 +5,8 @@ import { useForm, Controller } from "react-hook-form";
 import { course, Semester, Subject, TOR, YearChecklist } from "@/app/student/types";
 import { subjectChecklists } from "@/app/constants/checklists";
 import { Input } from "@/components/ui/input";
-import { Page } from "@react-pdf/renderer";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 // Types
 interface Student {
@@ -218,7 +219,177 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
   });
 
   const handleDownloadPdf = async () => {
+    const pdf = new jsPDF("p", "mm", "a4");
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 20;
+  const contentWidth = pageWidth - 2 * margin;
+  
+  const courseNames = {
+    BSIT: "BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY (BSIT)",
+    BSCS: "BACHELOR OF SCIENCE IN COMPUTER SCIENCE (BSCoS)",
+    BSCRIM: "BACHELOR OF SCIENCE IN CRIMINOLOGY (BSCrim)",
+    BSHM: "BACHELOR OF SCIENCE IN HOSPITALITY MANAGEMENT (BSHM)",
+    BSP: "BACHELOR OF SCIENCE IN PSYCHOLOGY (BSP)",
+    BSED_M: "BACHELOR OF SECONDARY EDUCATION MAJOR IN MATHEMATICS (BSEd-Math)",
+    BSED_E: "BACHELOR OF SECONDARY EDUCATION MAJOR IN ENGLISH (BSEd-English)",
+    BSBM_MM: "BACHELOR OF SCIENCE IN BUSINESS MANAGEMENT MAJOR IN MARKETING MANAGEMENT (BSBM-MM)",
+    BSBM_HR: "BACHELOR OF SCIENCE IN BUSINESS MANAGEMENT MAJOR IN HUMAN RESOURCES (BSBM-HR)",
+  };
+
+  // Helper to add header
+  const addHeader = (isFirstPage = true) => {
+    pdf.setFontSize(12);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("CAVITE STATE UNIVERSITY", pageWidth / 2, margin, { align: "center" });
     
+    pdf.setFontSize(10);
+    pdf.setFont("helvetica", "normal");
+    pdf.text("BACOOR CAMPUS", pageWidth / 2, margin + 5, { align: "center" });
+    pdf.text("OFFICE OF THE REGISTRAR", pageWidth / 2, margin + 10, { align: "center" });
+    
+    pdf.setFontSize(11);
+    pdf.setFont("helvetica", "bold");
+    const courseTitle = courseNames[student.degree as keyof typeof courseNames] || student.degree;
+    const titleLines = pdf.splitTextToSize(`CHECKLIST FOR THE ${courseTitle}`, contentWidth);
+    pdf.text(titleLines, pageWidth / 2, margin + 18, { align: "center" });
+    
+    pdf.setFontSize(9);
+    pdf.setFont("helvetica", "normal");
+    pdf.text("Revised Curriculum SY 2013-2014", pageWidth / 2, margin + 28, { align: "center" });
+    
+    if (!isFirstPage) {
+      pdf.text("(Continued)", pageWidth / 2, margin + 33, { align: "center" });
+    }
+    
+    return isFirstPage ? margin + 38 : margin + 38;
+  };
+
+  // Add first page header and student info
+  let yPos = addHeader(true);
+  
+  // Add student information on first page
+  pdf.setFontSize(9);
+  pdf.setFont("helvetica", "normal");
+  
+  const studentInfo = [
+    [`Name: ${student.name}`, `Nationality: ${student.nationality}`],
+    [`Birthdate: ${formatDateForInput(student.birthdate)}`, `Graduation: ${formatDateForInput(student.graduation)}`],
+    [`Major: ${student.major}`, `High School: ${student.highSchool}`],
+    [`Address: ${student.address}`, `Entrance: ${formatDateForInput(student.entrance)}`],
+  ];
+  
+  studentInfo.forEach(([left, right]) => {
+    pdf.text(left, margin, yPos);
+    pdf.text(right, pageWidth / 2 + 5, yPos);
+    yPos += 5;
+  });
+  
+  yPos += 5;
+
+  const degreeKey = student.degree as course;
+  const courseData = degreeKey ? subjectChecklists[degreeKey] : null;
+
+  if (courseData) {
+    Object.entries(courseData).forEach(([year, semesters]) => {
+      // Check if we need a new page for the year title
+      if (yPos > pageHeight - 60) {
+        pdf.addPage();
+        yPos = addHeader(false);
+      }
+
+      // Add year title
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "bold");
+      pdf.text(year.toUpperCase(), margin, yPos);
+      yPos += 7;
+
+      Object.entries(semesters).forEach(([sem, courses]) => {
+        // Check if we need a new page for the semester
+        if (yPos > pageHeight - 50) {
+          pdf.addPage();
+          yPos = addHeader(false);
+          pdf.setFontSize(10);
+          pdf.setFont("helvetica", "bold");
+          pdf.text(`${year.toUpperCase()} (Continued)`, margin, yPos);
+          yPos += 7;
+        }
+
+        // Add semester title
+        pdf.setFontSize(9);
+        pdf.setFont("helvetica", "bold");
+        const semesterTitle = sem.replace(/([A-Z])/g, " $1").trim();
+        pdf.text(semesterTitle, margin, yPos);
+        yPos += 5;
+
+        // Prepare table data
+        const tableData = (courses as Subject[]).map((c) => {
+          const gradeKey = `${year}-${sem}-${c.courseCode}`;
+          const grade = grades[gradeKey] ?? {
+            syTaken: "",
+            instructor: "",
+            finalRating: "",
+          };
+
+          return [
+            c.courseCode,
+            c.courseTitle,
+            c.creditUnit.lecture.toString(),
+            c.creditUnit.laboratory.toString(),
+            Array.isArray(c.preRequisite) ? c.preRequisite.join(", ") : c.preRequisite || "—",
+            grade.syTaken || "—",
+            grade.instructor || "—",
+            grade.finalRating || "—",
+          ];
+        });
+
+        // Add table using autoTable
+        autoTable(pdf, {
+          startY: yPos,
+          head: [["Course No.", "Course Title", "Lec", "Lab", "Prerequisite(s)", "S.Y. Taken", "Instructor", "Final Rating"]],
+          body: tableData,
+          margin: { left: margin, right: margin },
+          styles: {
+            fontSize: 7,
+            cellPadding: 1,
+            overflow: "linebreak",
+          },
+          headStyles: {
+            fillColor: [255, 255, 255],
+            textColor: [0, 0, 0],
+            fontStyle: "bold",
+            lineWidth: 0.1,
+            lineColor: [0, 0, 0],
+          },
+          bodyStyles: {
+            lineWidth: 0.1,
+            lineColor: [0, 0, 0],
+          },
+          columnStyles: {
+            0: { cellWidth: 20 },
+            1: { cellWidth: 50 },
+            2: { cellWidth: 10 },
+            3: { cellWidth: 10 },
+            4: { cellWidth: 30 },
+            5: { cellWidth: 20 },
+            6: { cellWidth: 25 },
+            7: { cellWidth: 15 },
+          },
+          didDrawPage: (data) => {
+            // If table spans multiple pages, add header to new pages
+            if (data.pageNumber > 1 && data.cursor) {
+              // Header already added by autoTable pagination
+            }
+          },
+        });
+
+        // Update yPos after table
+        yPos = (pdf as any).lastAutoTable.finalY + 5;
+      });
+    });
+  }
+
+  pdf.save(`${student.name}-transcript.pdf`);
   }
 
   const onSubmit = async () => {
@@ -344,7 +515,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
       </div>
       <div className="text-center mt-6">
         <button type="submit" className="bg-blue-600 text-white px-8 py-3 rounded hover:bg-blue-700 print:hidden">
-          Submit Transcript
+          Update Transcript
         </button>
       </div>6
       <style jsx>{`
