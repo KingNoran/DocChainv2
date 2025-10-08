@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { DataTable } from "@/components/registrar/table/DataTable";
 import { Student, studentColumns } from "@/components/registrar/table/students/columns";
+import { deleteStudents } from "@/lib/actions/deleteStudents";
 import { unarchiveStudents } from "@/lib/actions/archiveStudents";
 
 const ArchivedStudentsPage = () => {
@@ -11,7 +12,6 @@ const ArchivedStudentsPage = () => {
   useEffect(() => {
     const fetchArchivedStudents = async () => {
       try {
-        // Fetch students where archived=true
         const res = await fetch("/api/students?archived=true");
         if (!res.ok) throw new Error("Failed to fetch archived students");
 
@@ -26,22 +26,27 @@ const ArchivedStudentsPage = () => {
   }, []);
 
   const handleUnarchive = async (ids: number[]) => {
-  try {
     await unarchiveStudents(ids);
-    // ✅ Remove unarchived students from the list
     setArchivedStudents((prev) => prev.filter((s) => !ids.includes(s.studentId)));
-  } catch (error) {
-    console.error("Failed to unarchive students:", error);
-    alert("Failed to unarchive selected students.");
-  }
-};
+  };
+
+  const handleDelete = async (ids: number[]) => {
+    if (!confirm("Are you sure you want to permanently delete these students?")) return;
+    await deleteStudents(ids);
+    setArchivedStudents((prev) => prev.filter((s) => !ids.includes(s.studentId)));
+  };
 
   return (
     <div className="p-6 space-y-4">
       <h1 className="text-xl font-bold">Archived Students</h1>
-      <p className="text-gray-500">These are students that have been archived.</p>
+      <p className="text-gray-500">These students have been archived.</p>
 
-      <DataTable onArchive={handleUnarchive} columns={studentColumns} data={archivedStudents} />
+      <DataTable
+        columns={studentColumns}
+        data={archivedStudents}
+        onArchive={handleUnarchive} // reuse existing archive button as unarchive
+        onDelete={handleDelete} // ✅ new delete handler
+      />
     </div>
   );
 };

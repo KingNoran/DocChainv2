@@ -19,17 +19,20 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from "next/navigation";
 import { TablePagination } from "./TablePagination";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData extends { studentId: number }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   onArchive?: (ids: number[]) => Promise<void>;
+  onDelete?: (ids: number[]) => Promise<void>;
 }
 
 export function DataTable<TData extends { studentId: number }, TValue>({
   columns,
   data,
   onArchive,
+  onDelete,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
   const [isProcessing, setIsProcessing] = useState(false);
@@ -73,6 +76,14 @@ export function DataTable<TData extends { studentId: number }, TValue>({
     router.push(`/registrar/students/${studentId}`);
   };
 
+  const handleDelete = async () => {
+    if (!onDelete) return;
+    setIsProcessing(true);
+    await onDelete(selectedIds);
+    setIsProcessing(false);
+    setRowSelection({});
+  }
+
   return (
     <div className="p-6 w-full">
       {(pathname === "/registrar/students" || isArchivePage) && (
@@ -90,6 +101,16 @@ export function DataTable<TData extends { studentId: number }, TValue>({
               : isArchivePage
               ? "Unarchive Selected"
               : "Archive Selected"}
+          </Button>
+
+          <Button
+            className={cn(!isArchivePage ? "hidden" : "")}
+            variant="destructive"
+            size="sm"
+            onClick={handleDelete}
+            disabled={selectedIds.length === 0 || isProcessing}
+          >
+            {isProcessing ? "Deleting..." : "Delete Permanently"}
           </Button>
 
           {!isArchivePage && (

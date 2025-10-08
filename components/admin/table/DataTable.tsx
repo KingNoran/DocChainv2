@@ -19,12 +19,14 @@ import { TablePagination } from "./TablePagination";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData extends { id: number }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   onArchive?: (ids: number[]) => Promise<void>;
-  onValidate?: (ids: number[]) => Promise<void>; // ✅ new
+  onValidate?: (ids: number[]) => Promise<void>;
+  onDelete?: (ids: number[]) => Promise<void>;
 }
 
 export function DataTable<TData extends { id: number }, TValue>({
@@ -32,6 +34,7 @@ export function DataTable<TData extends { id: number }, TValue>({
   data,
   onArchive,
   onValidate,
+  onDelete,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
   const [isProcessing, setIsProcessing] = useState(false);
@@ -73,11 +76,28 @@ export function DataTable<TData extends { id: number }, TValue>({
     setRowSelection({});
   };
 
+  const handleDelete = async () => {
+    if (!onDelete) return;
+    setIsProcessing(true);
+    await onDelete(selectedIds);
+    setIsProcessing(false);
+    setRowSelection({});
+  };
+
   return (
     <div className="p-6 w-full">
       
 {(pathname === "/admin/requests" || isArchivePage) && (
   <div className="flex justify-end mb-5 gap-2">
+    <Button
+        className={cn(!isArchivePage ? "hidden" : "")}
+        variant="destructive"
+        size="sm"
+        onClick={handleDelete}
+        disabled={selectedIds.length === 0 || isProcessing}
+      >
+        {isProcessing ? "Deleting..." : "Delete Permanently"}
+      </Button>
     <Button
       variant="destructive"
       size="sm"
