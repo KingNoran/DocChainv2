@@ -7,16 +7,19 @@ import { ColumnDef } from "@tanstack/react-table"
 
 
 export type Request = {
-    id:number,
-    requestContent: object,
-    requesterId: string,
-    validatorId: string | null | undefined,
-    activity: string,
-    status: string,
-    createdAt: Date,
-    validatedAt: Date | null | undefined,
-    isArchived: boolean;
-}
+  id: number;
+  requestContent: Record<string, string>;
+  requesterId: string;
+  requesterName: string;        // ✅ New
+  validatorId: string | null;
+  validatorName: string | null; // ✅ New
+  activity: string;
+  status: string;
+  createdAt: string;
+  validatedAt: string | null;
+  isArchived: boolean;
+};
+
 
 function toTitleCase(str: string) {
   return str
@@ -79,18 +82,22 @@ export const requestColumns: ColumnDef<Request>[] = [
         },
     },
     {
-        accessorKey: "requesterId",
-        header: "Requester"
+        accessorKey: "requesterName",
+        header: "Requester",
+        cell: ({ row }) => {
+            const name = row.getValue("requesterName") as string;
+            return name || <span className="text-gray-400 italic">Unknown</span>;
+        },
     },
     {
-        accessorKey: "validatorId",
+        accessorKey: "validatorName",
         header: "Validator",
         cell: ({ row }) => {
-            const value = row.getValue("validatedAt") as string | null;
-            if (!value) {
-                return <span className="text-gray-400 italic">Not validated</span>;
-            }
-        }
+            const name = row.getValue("validatorName") as string | null;
+            return name
+            ? name
+            : <span className="text-gray-400 italic">Not validated</span>;
+        },
     },
     {
         accessorKey: "activity",

@@ -7,6 +7,7 @@ import { subjectChecklists } from "@/app/constants/checklists";
 import { Input } from "@/components/ui/input";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { usePathname } from "next/navigation";
 
 // Types
 interface Student {
@@ -439,7 +440,8 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
 
   const student = watch("student");
   const grades = watch("grades");
-
+  const pathname = usePathname();
+  const isRegistrar = pathname.includes("/registrar");
   const degreeKey = student.degree as course;
   const courseData = degreeKey ? subjectChecklists[degreeKey] : null;
 
@@ -513,11 +515,12 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
           </div>
         ))}
       </div>
+      {isRegistrar ? 
       <div className="text-center mt-6">
         <button type="submit" className="bg-blue-600 text-white px-8 py-3 rounded hover:bg-blue-700 print:hidden">
           Update Transcript
         </button>
-      </div>6
+      </div> : null}
       <style jsx>{`
         .page-container {
           height: 100%;
