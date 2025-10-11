@@ -32,7 +32,7 @@ const MintCount = () => {
 
   return (
     <div>
-      <p className='font-bold text-xl'>Minted token count: <span className='text-green-500'>{!isLoading ? (tokenCount) : ("Loading...")}</span></p>
+      <p className='font-bold text-xl'>Verified TOR count: <span className='text-green-500'>{!isLoading ? (tokenCount) : ("Loading...")}</span></p>
     </div>
   );
 }
