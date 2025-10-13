@@ -67,7 +67,7 @@ const Page = () => {
     const fetchStudentTOR = async () => {
       try {
         // 1. Fetch student info
-        const studentRes = await fetch(`/api/students?studentId=${studentId}`);
+        const studentRes = await fetch(`/api/students/?studentId=${studentId}`);
         if (!studentRes.ok) throw new Error("Failed to fetch student");
         const studentArr: Student[] = await studentRes.json();
         if (studentArr.length === 0) {
