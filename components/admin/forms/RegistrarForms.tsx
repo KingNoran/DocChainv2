@@ -20,6 +20,8 @@ import { Button } from '@/components/ui/button';
 import { createRegistrar } from '@/lib/admin/actions/registrar';
 import { toast } from 'sonner';
 import { useRegistrarForms } from '../contexts/RegistrarFormContext';
+import NationalitySelect from '@/components/NationalitiesSelect';
+import AddressSelect from '@/components/AddressSelect';
 
 interface Props extends Partial<Student>{
   type?: 'create' | 'update';
@@ -231,84 +233,74 @@ const RegistrarForms = ({
               )} 
             />
             <FormField 
-                              control={registrarForms.control}
-                              name={"nationality"}
-                              render={({field})=>(
-                                  <FormItem className='flex flex-col gap-1'>
-                                      <FormLabel className="text-base font-normal text-dark-500">
-                                          Nationality
-                                      </FormLabel>
-                                      <FormControl>
-                                          <Input
-                                              required
-                                              placeholder="Nationality"
-                                              {...field}
-                                              value={formData.nationality}
-                                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                field.onChange(e);
-                                                setFormData({nationality: e.target.value });
-                                              }}
-                                          />
-                                      </FormControl>
-                                      <FormMessage />
-                                  </FormItem>
-                                )} 
-                              />
-                            <FormField 
-                              control={registrarForms.control}
-                              name="birthday"
-                              render={({ field }) => (
-                                <FormItem className="flex flex-col gap-1">
-                                  <FormLabel className="text-base font-normal text-dark-500">
-                                    Birthday
-                                  </FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      required
-                                      type="date"
-                                      {...field}
-                                      value={formData.birthday ? new Date(formData.birthday).toISOString().split("T")[0] : ""}
-                                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        const dateValue = e.target.value ? new Date(e.target.value) : new Date();
-                                        field.onChange(dateValue);
-                                        setFormData({ birthday: dateValue });
-                                      }}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField 
-                              control={registrarForms.control}
-                              name={"address"}
-                              render={({ field }) => (
-                                <FormItem className="flex flex-col gap-1">
-                                  <FormLabel className="text-base font-normal text-dark-500">
-                                    Address
-                                  </FormLabel>
-                                  <div className="flex flex-col sm:flex-row gap-3">
-                                    <Input
-                                      required
-                                      {...field}
-                                      placeholder="City"
-                                      value={city}
-                                      onChange={(e) => setCity(e.target.value)}
-                                    />
-                                    <Input
-                                      required
-                                      {...field}
-                                      placeholder="Province"
-                                      value={province}
-                                      onChange={(e) => setProvince(e.target.value)}
-                                    />
-                                  </div>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />       
+                            control={registrarForms.control}
+                            name="nationality"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-col gap-1">
+                                <FormLabel className="text-base font-normal text-dark-500">
+                                  Nationality
+                                </FormLabel>
+                                <FormControl>
+                                  <NationalitySelect
+                                    value={field.value}
+                                    onChange={(val) => {
+                                      field.onChange(val);
+                                      setFormData({ nationality: val });
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                            <FormField
+                                          control={registrarForms.control}
+                                          name="birthday"
+                                          render={({ field }) => (
+                                            <FormItem className="flex flex-col gap-1">
+                                              <FormLabel>
+                                                Birthday <span className="text-red-500">*</span>
+                                              </FormLabel>
+                                              <FormControl>
+                                                <Input
+                                                  type="date"
+                                                  value={
+                                                    field.value instanceof Date 
+                                                      ? field.value.toISOString().split("T")[0] 
+                                                      : field.value // if string, use as-is or fallback to ""
+                                                  }
+                                                  onChange={(e) => {
+                                                    const dateValue = e.target.value ? new Date(e.target.value) : undefined;
+                                                    field.onChange(dateValue);
+                                                    setFormData({ birthday: dateValue });
+                                                  }}
+                                                />
+                                              </FormControl>
+                                              <FormMessage />
+                                            </FormItem>
+                                          )}
+                                        />
+                            <FormField
+                                          control={registrarForms.control}
+                                          name={"address"}
+                                          render={({ field }) => (
+                                            <FormItem className="flex flex-col gap-1 w-full">
+                                              <FormLabel className="text-base font-normal text-dark-500">
+                                                Address
+                                              </FormLabel>
+                                              <AddressSelect
+                                                onChange={(fullAddress: string) => {
+                                                  field.onChange(fullAddress);
+                                                  setFormData({ address: fullAddress });
+                                                }}
+                                                defaultValue={field.value}
+                                              />
+                                              <FormMessage />
+                                            </FormItem>
+                                          )}
+                                        />
             <Button type="submit" className="bg-primary-admin text-white">
-              Add User
+              Add Registrar
             </Button>
         </form>
       </Form>

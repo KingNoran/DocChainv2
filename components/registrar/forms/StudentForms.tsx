@@ -21,6 +21,8 @@ import { toast } from 'sonner';
 import { useRegistrarStudentForms } from '../contexts/RegistrarStudentFormContext';
 import { Session } from "next-auth";
 import { sendRequest } from '@/lib/registrar/actions/sendRequest';
+import AddressSelect from '@/components/AddressSelect';
+import NationalitySelect from '@/components/NationalitiesSelect';
 
 interface Props extends Partial<Student>{
   type: 'create' | 'update';
@@ -237,29 +239,26 @@ const RegistrarStudentForms = (
                   />
               </div>
               <FormField 
-                  control={studentForms.control}
-                  name={"nationality"}
-                  render={({field})=>(
-                      <FormItem className='flex flex-col gap-1'>
-                          <FormLabel className="text-base font-normal text-dark-500">
-                              Nationality
-                          </FormLabel>
-                          <FormControl>
-                              <Input
-                                  required
-                                  placeholder="Nationality"
-                                  {...field}
-                                  value={formData.nationality}
-                                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                    field.onChange(e);
-                                    setFormData({nationality: e.target.value });
-                                  }}
-                              />
-                          </FormControl>
-                          <FormMessage />
-                      </FormItem>
-                    )} 
-                  />
+                              control={studentForms.control}
+                              name="nationality"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-col gap-1">
+                                  <FormLabel className="text-base font-normal text-dark-500">
+                                    Nationality
+                                  </FormLabel>
+                                  <FormControl>
+                                    <NationalitySelect
+                                      value={field.value}
+                                      onChange={(val) => {
+                                        field.onChange(val);
+                                        setFormData({ nationality: val });
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
                 <FormField 
                   control={studentForms.control}
                   name="birthday"
@@ -285,34 +284,25 @@ const RegistrarStudentForms = (
                     </FormItem>
                   )}
                 />
-                <FormField 
+                <FormField
                   control={studentForms.control}
                   name={"address"}
                   render={({ field }) => (
-                    <FormItem className="flex flex-col gap-1">
+                    <FormItem className="flex flex-col gap-1 w-full">
                       <FormLabel className="text-base font-normal text-dark-500">
                         Address
                       </FormLabel>
-                      <div className="flex flex-col sm:flex-row gap-3">
-                        <Input
-                          required
-                          {...field}
-                          placeholder="City"
-                          value={city}
-                          onChange={(e) => setCity(e.target.value)}
-                        />
-                        <Input
-                          required
-                          {...field}
-                          placeholder="Province"
-                          value={province}
-                          onChange={(e) => setProvince(e.target.value)}
-                        />
-                      </div>
+                      <AddressSelect
+                        onChange={(fullAddress: string) => {
+                          field.onChange(fullAddress);
+                          setFormData({ address: fullAddress });
+                        }}
+                        defaultValue={field.value}
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
-                />                
+                />        
             { /* Controls */}
             {/* <div className="flex gap-5">
               {step > 1 && (

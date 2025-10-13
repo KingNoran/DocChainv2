@@ -11,3 +11,7 @@ export { default as record } from "./record";
 export { default as requests } from "./requests";
 export { default as transactions } from "./transactions";
 export { default as semesters } from "./semester";
+export { default as barangays} from "./barangays";
+export { default as cities } from "./cities";
+export { default as provinces } from "./provinces";
+export { default as regions } from "./regions";
