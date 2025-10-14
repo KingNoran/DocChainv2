@@ -3,6 +3,7 @@ import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import config from "@/lib/config";
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,8 +22,7 @@ export async function POST(req: NextRequest) {
       process.env.EMAIL_VERIFICATION_SECRET!,
       { expiresIn: "1h" }
     );
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-    const verificationLink = `${baseUrl}/student/confirm-email?token=${token}`;
+    const verificationLink = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/student/confirm-email?token=${token}`;
 
     return NextResponse.json({ verificationLink });
   } catch (err) {
