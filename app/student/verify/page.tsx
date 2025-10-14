@@ -6,6 +6,8 @@ import emailjs from "@emailjs/browser";
 import { toast } from "sonner";
 import config from "@/lib/config";
 import { Button } from "@/components/ui/button";
+import { useRef } from "react";
+
 
 export default function VerifyPage() {
   const searchParams = useSearchParams();
@@ -13,16 +15,24 @@ export default function VerifyPage() {
   const name = searchParams.get("name");
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const sentRef = useRef(false);
 
   useEffect(() => {
     const sendVerification = async () => {
       if (!email || !name) {
         toast.error("Missing email or name");
+        setLoading(false);
         return;
       }
+      if (sentRef.current) return; 
+      sentRef.current = true;
+      const apiUrl = process.env.NODE_ENV === "production"
+      ? config.env.prodApiEndpoint
+      : config.env.apiEndpoint;
 
       try {
-        const res = await fetch("/api/email/verify", {
+        // Call backend to generate verification link
+        const res = await fetch(`${apiUrl}/api/email/verify`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email }),
@@ -31,16 +41,27 @@ export default function VerifyPage() {
 
         if (!data.verificationLink) throw new Error("No link returned");
 
-        await emailjs.send(
-          config.env.emailjs.serviceId,
-          config.env.emailjs.verifyTemplateId,
-          {
-            to_name: name,
-            to_email: email,
-            verification_link: data.verificationLink,
-          },
-          config.env.emailjs.publicKey
-        );
+        // Send email via EmailJS (client-side)
+        try {
+          await emailjs.send(
+            config.env.emailjs.serviceId,
+            config.env.emailjs.verifyTemplateId,
+            {
+              name: name,                        // matches {{name}}
+              email: email,                      // matches {{email}}
+              verification_link: data.verificationLink, // matches {{verification_link}}
+            },
+            config.env.emailjs.publicKey
+          );
+          toast.success("Verification email sent!");
+        } catch (err: any) {
+          console.error("EmailJS error:", err);
+          
+          // EmailJS sometimes throws an object without message
+          const message = err?.text || err?.message || JSON.stringify(err);
+          toast.error(`Failed to send verification email: ${message}`);
+        }
+
 
         toast.success("Verification email sent!");
       } catch (err) {
@@ -54,15 +75,13 @@ export default function VerifyPage() {
     sendVerification();
   }, [email, name]);
 
-  const backToPage = ()=>{
-    router.push("/student/my-profile")
-  }
+  const backToPage = () => {
+    router.push("/student/my-profile");
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-        <Button onClick={backToPage}>
-            Go back
-        </Button>
+      <Button onClick={backToPage}>Go back</Button>
       {loading ? (
         <h2>Sending verification email...</h2>
       ) : (
