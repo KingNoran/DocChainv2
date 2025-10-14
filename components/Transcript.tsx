@@ -11,7 +11,7 @@ import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 
 // Types
-interface Student {
+export interface Student {
   studentId: number;
   name: string;
   nationality: string;
@@ -23,6 +23,8 @@ interface Student {
   address: string;
   entrance: string;
 }
+
+
 
 interface CourseGrade {
   gradeKey: string;

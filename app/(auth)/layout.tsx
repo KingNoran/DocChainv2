@@ -19,7 +19,6 @@ const Layout = async ({children}:{children:ReactNode}) => {
         <div className="auth-box">
           <div>
             <ThemeProvider
-                attribute="class"
                 defaultTheme="light"
               >
             {children}
