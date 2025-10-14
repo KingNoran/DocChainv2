@@ -26,16 +26,13 @@ export default function VerifyPage() {
       }
       if (sentRef.current) return; 
       sentRef.current = true;
-      const apiUrl = process.env.NODE_ENV === "production"
-      ? config.env.prodApiEndpoint
-      : config.env.apiEndpoint;
 
       try {
         // Call backend to generate verification link
-        const res = await fetch(`${apiUrl}/api/email/verify`, {
+        const res = await fetch(`/api/email/verify`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
+          body: JSON.stringify({ email }),  
         });
         const data = await res.json();
 

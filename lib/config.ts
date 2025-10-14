@@ -2,7 +2,7 @@ const config = {
   env: {
     apiEndpoint: process.env.NEXT_PUBLIC_API_ENDPOINT! as string, // dev or fallback
     prodApiEndpoint: process.env.NEXT_PUBLIC_PROD_API_ENDPOINT! as string, // production
-    baseUrl: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
+    baseUrl: process.env.NEXT_PUBLIC_BASE_URL || "https://doc-chainv2.vercel.app/",
     imagekit: {
       publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY! as string,
       urlEndpoint: process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT! as string,
