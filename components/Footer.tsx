@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import React from "react";
@@ -148,8 +150,8 @@ const Footer = () => {
                       <br/><br/>
                       Note: These Terms are a general legal framework. If DocChain will be used in production or released widely, please have these Terms reviewed by legal counsel.
                       <br/><br/>
-                      <DialogClose  className="w-full pb-2">
-                        <Button className="px-auto cursor-pointer">I Agree</Button>
+                      <DialogClose  className="w-full pb-2" asChild>
+                        <Button className="w-25 cursor-pointer">I Agree</Button>
                       </DialogClose>
                     </DialogDescription>
                   </DialogHeader>
@@ -294,8 +296,8 @@ const Footer = () => {
                       <br/><br/>
                       If you are not satisfied with our response, you may refer the matter to the relevant data protection or supervisory authority in your jurisdiction.
                       <br/><br/>
-                      <DialogClose  className="w-full pb-2">
-                        <Button className="px-auto cursor-pointer">I Agree</Button>
+                      <DialogClose  className="w-full pb-2" asChild>
+                        <Button className="w-25 cursor-pointer">I Agree</Button>
                       </DialogClose>
                     </DialogDescription>
                   </DialogHeader>
