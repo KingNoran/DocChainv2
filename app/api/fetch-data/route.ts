@@ -17,8 +17,9 @@ export const POST = async (req: Request) => {
     const tokenizerContract = getSmartContractViewOnly();
   
     const mintedTokenEvents = await tokenizerContract.queryFilter("TokenMinted");
+    const recentMintedTokenEvents = mintedTokenEvents.reverse();
 
-    const matchedEvent = await mintedTokenEvents.find(event => {
+    const matchedEvent = recentMintedTokenEvents.find(event => {
         const { args } = event as EventLog;
         const [, hash] = args;
         return hash === pdfHash;
