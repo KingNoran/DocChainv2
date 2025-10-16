@@ -71,7 +71,6 @@ const LatestTransactions = () => {
       }
 
       setTransactions(latestTransactions);
-      console.log(latestTransactions)
     } catch (error) {
       console.log(error);
     } finally {
