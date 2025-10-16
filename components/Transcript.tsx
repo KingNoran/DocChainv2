@@ -8,9 +8,10 @@ import { Input } from "@/components/ui/input";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { usePathname } from "next/navigation";
+import { toast } from "sonner";
 
 // Types
-interface Student {
+export interface Student {
   studentId: number;
   name: string;
   nationality: string;
@@ -22,6 +23,8 @@ interface Student {
   address: string;
   entrance: string;
 }
+
+
 
 interface CourseGrade {
   gradeKey: string;
@@ -218,6 +221,10 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
     });
     return obj;
   });
+  
+  const handleFinalizeTOR = async() => {
+
+  }
 
   const handleDownloadPdf = async () => {
     const pdf = new jsPDF("p", "mm", "a4");
@@ -429,8 +436,23 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(changedGrades),
     });
-
+    
     const data = await res.json();
+    if (data.success) {
+      toast.success("Transcript Edited successfully", {
+        action: {
+          label: "Got it",
+          onClick: () => console.log("Success"),
+        },
+      });
+    } else {
+      toast.error("Error updating transcript", {
+        action: {
+          label: "Got it",
+          onClick: () => console.log("Error"),
+        }
+      })
+    }
     console.log(data);
   } catch (err) {
     console.error(err);
@@ -551,6 +573,18 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
       >
         Download PDF
       </button>
+      { isRegistrar ? 
+      <div className="mt-4">
+        <button
+        type="button"
+        onClick={handleFinalizeTOR}
+        className="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 print:hidden"
+      >
+        Finalize TOR
+      </button>
+      </div>
+      : null
+      }
     </div>
     </form>
     

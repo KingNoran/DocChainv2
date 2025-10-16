@@ -19,12 +19,15 @@ import { studentSchema } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
 import { createStudent } from '@/lib/admin/actions/student';
 import { toast } from 'sonner';
-import { useStudentForms } from '../contexts/StudentFormContext';
+import { CourseCode, useStudentForms } from '../contexts/StudentFormContext';
+import AddressSelect from "@/components/AddressSelect";
+import CourseSelect from '@/components/CourseSelect';
+import NationalitySelect from '@/components/NationalitiesSelect';
+import dynamic from "next/dynamic";
 
 interface Props extends Partial<Student>{
   type?: 'create' | 'update';
 }
-
 
 
 const StudentForms = ({
@@ -33,8 +36,6 @@ const StudentForms = ({
 }: Props) => {
   const router = useRouter();
   const { formData, setFormData } = useStudentForms();
-  const [city, setCity] = useState("");
-  const [province, setProvince] = useState("");
 
   const onSubmit = async(values: z.infer<typeof studentSchema>,)=>{
     const result = await createStudent(values, values.course as course);
@@ -64,25 +65,14 @@ const StudentForms = ({
 
   const studentForms = useForm<z.infer<typeof studentSchema>>({
     resolver: zodResolver(studentSchema),
-    defaultValues: formData,
+    defaultValues: {
+      ...formData,
+      birthday: formData.birthday ? new Date(formData.birthday) : undefined,
+    },
     mode: "onChange"
   });
 
-  useEffect(()=>{
-    studentForms.reset(formData);
-  }, [formData, studentForms]);
-  useEffect(() => {
-    const mergedAddress = `${city}${city && province ? ", " : ""}${province}`;
-    setFormData({ address: mergedAddress });
-    studentForms.setValue("address" , mergedAddress);
-  }, [city, province]);
-  useEffect(() => {
-  if (formData.address) {
-    const [savedCity, savedProvince] = formData.address.split(",").map(s => s.trim());
-    setCity(savedCity || "");
-    setProvince(savedProvince || "");
-  }
-  }, [formData.address]);
+
   
 
   return (
@@ -96,7 +86,7 @@ const StudentForms = ({
                   render={({field})=>(
                       <FormItem className='flex flex-col gap-1'>
                           <FormLabel className="text-base font-normal text-dark-500">
-                              Last Name
+                              Last Name <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                               <Input
@@ -120,7 +110,7 @@ const StudentForms = ({
                   render={({field})=>(
                       <FormItem className='flex flex-col gap-1'>
                           <FormLabel className="text-base font-normal text-dark-500">
-                              First Name
+                              First Name <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                               <Input
@@ -144,11 +134,10 @@ const StudentForms = ({
                   render={({field})=>(
                       <FormItem className='flex flex-col gap-1'>
                           <FormLabel className="text-base font-normal text-dark-500">
-                              Middle Name
+                              Middle Name <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                               <Input
-                                  required
                                   placeholder="Middle Name"
                                   {...field}
                                   value={formData.middleName}
@@ -162,29 +151,26 @@ const StudentForms = ({
                       </FormItem>
                     )} 
                   />
-                  <FormField 
-                  control={studentForms.control}
-                  name={"course"}
-                  render={({field})=>(
-                      <FormItem className='flex flex-col gap-1'>
-                          <FormLabel className="text-base font-normal text-dark-500">
-                              Course
-                          </FormLabel>
-                          <FormControl>
-                              <Input
-                                  required
-                                  placeholder="Course"
-                                  {...field}
-                                  value={formData.course}
-                                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                    field.onChange(e);
-                                    setFormData({course: e.target.value });
-                                  }}
-                              />
-                          </FormControl>
-                          <FormMessage />
+                  <FormField
+                    control={studentForms.control}
+                    name="course"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col gap-1">
+                        <FormLabel className="text-base font-normal text-dark-500">
+                          Course
+                        </FormLabel>
+                        <FormControl>
+                          <CourseSelect
+                            value={field.value}
+                            onChange={(val) => {
+                              field.onChange(val);
+                              setFormData({ course: val as CourseCode });
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
                       </FormItem>
-                    )} 
+                    )}
                   />
                   <FormField 
                   control={studentForms.control}
@@ -192,7 +178,7 @@ const StudentForms = ({
                   render={({field})=>(
                       <FormItem className='flex flex-col gap-1'>
                           <FormLabel className="text-base font-normal text-dark-500">
-                              Email
+                              Email <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                               <Input
@@ -216,7 +202,7 @@ const StudentForms = ({
                   render={({field})=>(
                       <FormItem className='flex flex-col gap-1'>
                           <FormLabel className="text-base font-normal text-dark-500">
-                              Password
+                              Password <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                               <Input
@@ -240,7 +226,7 @@ const StudentForms = ({
                   render={({field})=>(
                       <FormItem className='flex flex-col gap-1'>
                           <FormLabel className="text-base font-normal text-dark-500">
-                              Phone Number
+                              Phone Number <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                               <Input
@@ -260,82 +246,72 @@ const StudentForms = ({
                   />
               </div>
               <FormField 
-                                control={studentForms.control}
-                                name={"nationality"}
-                                render={({field})=>(
-                                    <FormItem className='flex flex-col gap-1'>
-                                        <FormLabel className="text-base font-normal text-dark-500">
-                                            Nationality
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                required
-                                                placeholder="Nationality"
-                                                {...field}
-                                                value={formData.nationality}
-                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                  field.onChange(e);
-                                                  setFormData({nationality: e.target.value });
-                                                }}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                  )} 
-                                />
-                              <FormField 
-                                control={studentForms.control}
-                                name="birthday"
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-col gap-1">
-                                    <FormLabel className="text-base font-normal text-dark-500">
-                                      Birthday
-                                    </FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        required
-                                        type="date"
-                                        {...field}
-                                        value={formData.birthday ? new Date(formData.birthday).toISOString().split("T")[0] : ""}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                          const dateValue = e.target.value ? new Date(e.target.value) : new Date();
-                                          field.onChange(dateValue);
-                                          setFormData({ birthday: dateValue });
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField 
-                                control={studentForms.control}
-                                name={"address"}
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-col gap-1">
-                                    <FormLabel className="text-base font-normal text-dark-500">
-                                      Address
-                                    </FormLabel>
-                                    <div className="flex flex-col sm:flex-row gap-3">
-                                      <Input
-                                        required
-                                        {...field}
-                                        placeholder="City"
-                                        value={city}
-                                        onChange={(e) => setCity(e.target.value)}
-                                      />
-                                      <Input
-                                        required
-                                        {...field}
-                                        placeholder="Province"
-                                        value={province}
-                                        onChange={(e) => setProvince(e.target.value)}
-                                      />
-                                    </div>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />       
+                control={studentForms.control}
+                name="nationality"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-1">
+                    <FormLabel className="text-base font-normal text-dark-500">
+                      Nationality
+                    </FormLabel>
+                    <FormControl>
+                      <NationalitySelect
+                        value={field.value}
+                        onChange={(val) => {
+                          field.onChange(val);
+                          setFormData({ nationality: val });
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            <FormField
+              control={studentForms.control}
+              name="birthday"
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-1">
+                  <FormLabel>
+                    Birthday <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      value={
+                        field.value instanceof Date 
+                          ? field.value.toISOString().split("T")[0] 
+                          : field.value // if string, use as-is or fallback to ""
+                      }
+                      onChange={(e) => {
+                        const dateValue = e.target.value ? new Date(e.target.value) : undefined;
+                        field.onChange(dateValue);
+                        setFormData({ birthday: dateValue });
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={studentForms.control}
+              name={"address"}
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-1 w-full">
+                  <FormLabel className="text-base font-normal text-dark-500">
+                    Address
+                  </FormLabel>
+                  <AddressSelect
+                    onChange={(fullAddress: string) => {
+                      field.onChange(fullAddress);
+                      setFormData({ address: fullAddress });
+                    }}
+                    defaultValue={field.value}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             { /* Controls */}
             {/* <div className="flex gap-5">
               {step > 1 && (
@@ -366,7 +342,7 @@ const StudentForms = ({
               className="bg-primary-admin text-white"
               type="submit"
               >
-              Submit
+              Add Student
             </Button>
         </form> 
       </Form>

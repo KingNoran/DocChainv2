@@ -1,3 +1,4 @@
+
 import { Eip1193Provider } from 'ethers';
 
 // window.ethereum
@@ -79,6 +80,8 @@ interface UserParams{
     phone: string;
     email: string;
     password: string;
+    address: string;
+    phone: string;
 }
 
 interface RegistrarUserParams{

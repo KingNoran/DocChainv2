@@ -5,8 +5,10 @@ import React from 'react'
 import { Card, CardContent } from './ui/card'
 import { Button } from './ui/button'
 import { Separator } from './ui/separator'
-import { LogOut } from 'lucide-react'
+import { LogOut, Verified, VerifiedIcon } from 'lucide-react'
 import { logout } from '@/lib/actions/logout'
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 
 const StudentOverview = ({
@@ -62,6 +64,13 @@ const StudentOverview = ({
     return new Date(lastActivityDate).toUTCString()
   }
 
+  const router = useRouter();
+  const {data: session} = useSession();
+
+  const goToValidatePage = () => {
+    router.push(`/student/verify?name=${encodeURIComponent(session?.user.name)}&email=${encodeURIComponent(session?.user.email)}`);
+  }
+
   return (
     <div className="flex flex-col gap-5">
       <Card className='border-0 flex flex-row justify-between px-5 items-center'>
@@ -72,9 +81,12 @@ const StudentOverview = ({
             <h3 className='text-muted-foreground'>Bacoor Branch</h3>
           </div>
         </CardContent>
-        <CardContent>
+        <CardContent className='flex gap-4'>
           <Button onClick={logout} className="bg-red-500 hover:bg-red-600 text-white">
             <LogOut className="mr-2 h-4 w-4" /> Logout
+          </Button>
+          <Button onClick={goToValidatePage} variant={"default"}>
+            <Verified className="mr-2 h-4 w-4" /> Verify Email
           </Button>
         </CardContent>
       </Card>

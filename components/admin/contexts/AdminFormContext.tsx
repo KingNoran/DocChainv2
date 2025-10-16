@@ -10,7 +10,7 @@ type AdminFormContext = {
     email: string;
     password: string;
     nationality: string,
-    birthday: Date,
+    birthday?: Date,
     address: string,
 }
 
@@ -23,6 +23,6 @@ export const { Provider: AdminFormProvider, useForm: useAdminForms } =
     email: "",
     password: "",
     nationality: "",
-    birthday: new Date,
+    birthday: new Date(),
     address: "",
   });

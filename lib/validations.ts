@@ -9,15 +9,15 @@ export const studentSchema = z.object({
     firstName: z.string().min(1).max(50),
     middleName: z.string().max(50).optional(),
     lastName: z.string().min(1).max(50),
-    course: z.string().min(4).max(6),
+    course: z.enum(["BSIT", "BSCS", "BSCRIM", "BSHM", "BSP", "BSED_M", "BSED_E", "BSBM_MM"]),
     phone: z.string().regex(/^(09\d{9}|\+639\d{9})$/, {
     message: "Invalid Filipino phone number",
   }),
     email: z.string().email(),
     password: z.string().min(8),
-    nationality: z.string().default("Filipino"),
+    nationality: z.string().min(1, "Nationality is required").default("Filipino"),
     birthday: z.date(),
-    address: z.string().max(50),
+    address: z.string().min(1, "Address is required"),
 });
 
 export const registrarStudentSchema = z.object({
@@ -31,7 +31,7 @@ export const registrarStudentSchema = z.object({
     email: z.string().email(),
     nationality: z.string().default("Filipino"),
     birthday: z.date(),
-    address: z.string().max(50),
+    address: z.string().min(1, "Address is required"),
 });
 
 export const TORFormsSchema = z.object({
@@ -49,7 +49,7 @@ export const registrarSchema = z.object({
     password: z.string().min(8),
     nationality: z.string().default("Filipino"),
     birthday: z.date(),
-    address: z.string().max(50),
+    address: z.string().min(1, "Address is required"),
 });
 
 export const adminSchema = z.object({
@@ -63,7 +63,7 @@ export const adminSchema = z.object({
     password: z.string().min(8),
     nationality: z.string().default("Filipino"),
     birthday: z.date(),
-    address: z.string().max(50),
+    address: z.string().min(1, "Address is required"),
 });
 
 export const creditUnit = z.object({
