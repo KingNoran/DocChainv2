@@ -28,6 +28,7 @@ interface Student {
   isArchived: boolean;
   email: string;
   emailVerified: boolean;
+  isTorVerified: boolean;
 }
 
 type CourseGrade = {
@@ -73,6 +74,7 @@ const Page = () => {
   const [otp, setOtp] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [otpMessage, setOtpMessage] = useState<string | null>(null);
+  const [isTorVerified, setIsTorVerified] = useState(false);
 
   const courseGrades = transcriptData ? mapTranscriptToGrades(transcriptData) : [];
 
@@ -99,6 +101,7 @@ const Page = () => {
       const studentRes = await fetch(`/api/students?studentId=${data.student.studentId}`);
       if (!studentRes.ok) throw new Error("Failed to fetch student");
       const studentArr: Student[] = await studentRes.json();
+
       if (studentArr.length === 0) {
         setError("Student not found");
         setLoading(false);
@@ -112,7 +115,8 @@ const Page = () => {
         setLoading(false);
         return;
       }
-      
+
+      setIsTorVerified(student.isTorVerified);
       setStudentData(student);
       setTranscriptData(data.transcript);
 
@@ -191,6 +195,7 @@ const Page = () => {
           initialStudent={mapStudentToTranscript(studentData)}
           initialTranscript={transcriptData}
           initialGrades={courseGrades}
+          isTorReady={isTorVerified}
           readOnly={true}
         />
       ) : loading ? (

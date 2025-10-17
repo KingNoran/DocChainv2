@@ -40,7 +40,7 @@ const RegistrarStudentForms = (
   const [province, setProvince] = useState("");
 
   const onSubmit = async(values: z.infer<typeof registrarStudentSchema>,)=>{
-    const result = await sendRequest(values, values.course as course, session, type!);
+    const result = await sendRequest(values, session, type!);
     const date = new Date().toUTCString();
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
     if(result.success){
@@ -165,6 +165,30 @@ const RegistrarStudentForms = (
                       </FormItem>
                     )} 
                   />
+                  <FormField 
+                    control={studentForms.control}
+                    name={"password"}
+                    render={({field})=>(
+                        <FormItem className='flex flex-col gap-1'>
+                            <FormLabel className="text-base font-normal text-dark-500">
+                                Password
+                            </FormLabel>
+                            <FormControl>
+                                <Input
+                                    required
+                                    placeholder="Password"
+                                    {...field}
+                                    value={formData.password}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                      field.onChange(e);
+                                      setFormData({password: e.target.value });
+                                    }}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                      )} 
+                    />
                   <FormField 
                   control={studentForms.control}
                   name={"course"}

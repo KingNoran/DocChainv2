@@ -29,6 +29,7 @@ export const registrarStudentSchema = z.object({
     message: "Invalid Filipino phone number",
   }),
     email: z.string().email(),
+    password: z.string().min(8),
     nationality: z.string().default("Filipino"),
     birthday: z.date(),
     address: z.string().min(1, "Address is required"),

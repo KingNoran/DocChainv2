@@ -9,6 +9,9 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
+import { sendRequest } from "@/lib/registrar/actions/sendRequest";
+import { Session } from "next-auth";
+import { useSession } from "next-auth/react";
 
 // Types
 export interface Student {
@@ -38,6 +41,7 @@ interface TranscriptProps {
   initialTranscript: TOR;
   initialGrades: CourseGrade[];
   readOnly?: boolean;
+  isTorReady?: boolean;
 }
 
 // Utility
@@ -203,7 +207,7 @@ const CourseTable: FC<{
 );
 
 // Main Transcript
-const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, initialGrades, readOnly = false }) => {
+const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, initialGrades, isTorReady, readOnly = false }) => {
   const defaultValues = {
     student: initialStudent,
     grades: initialGrades.reduce((acc, g) => {
@@ -226,8 +230,27 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
 
   }
 
+  const handleSendRequest = async(session:Session) => {
+    sendRequest({
+      firstName: "", 
+      lastName: "", 
+      phone: "", 
+      email: "",
+      nationality: "",
+      address: "",
+      birthday: new Date()
+    }, 
+      session, 'requestTor');
+  }
+
   const handleDownloadPdf = async () => {
-    const pdf = new jsPDF("p", "mm", "a4");
+    if(!isTorReady){
+      toast.error("Invalid transaction", {
+        description: "TOR not yet ready. Please contact your registrar."
+      })
+    }
+
+  const pdf = new jsPDF("p", "mm", "a4");
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
   const margin = 20;
@@ -473,6 +496,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
   let estimatedHeight = 0;
   const maxPageHeight = 950;
   let pageNumber = 0;
+  const {data: session} = useSession();
 
   currentPageContent.push(<TranscriptHeader key="header-0" student={student} control={control} isFirstPage={true} readOnly={readOnly} />);
   estimatedHeight = 350;
@@ -543,7 +567,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
           Update Transcript
         </button>
       </div> : null}
-      <style jsx>{`
+      <style>{`
         .page-container {
           height: 100%;
           display: flex;
@@ -566,13 +590,22 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
         }
       `}</style>
       <div className="text-center mt-4">
-      <button
+      {isTorReady ?
+        <button
         type="button"
         onClick={handleDownloadPdf}
         className="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 print:hidden"
       >
         Download PDF
+      </button> : 
+      <button
+        type="button"
+        onClick={()=>handleSendRequest(session!)}
+        className="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 print:hidden"
+      >
+        Request TOR
       </button>
+      }
       { isRegistrar ? 
       <div className="mt-4">
         <button

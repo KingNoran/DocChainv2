@@ -90,6 +90,10 @@ interface RegistrarUserParams{
     lastName: string;
     phone: string;
     email: string;
+    nationality: string;
+    phone: string;
+    address: string;
+    birthday: Date;
 }
 
 interface StudentParams{

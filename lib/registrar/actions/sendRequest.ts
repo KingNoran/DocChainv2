@@ -1,29 +1,28 @@
 "use server";
 
-import { course, RegistrarUserParams } from "@/app/student/types";
+import { RegistrarUserParams } from "@/app/student/types";
 import { db } from "@/database/drizzle";
-import { registrars, requests, users } from "@/database/schema";
+import { registrars, requests } from "@/database/schema";
 import { eq, or, sql } from 'drizzle-orm';
 import { Session } from "next-auth";
 
-type RequestType = "create" | "update";
+type RequestType = "create" | "update" | "requestTor";
 
 export const sendRequest = async (
     userparams: RegistrarUserParams, 
-    courseValue: course,
     session: Session,
     type: RequestType
 ) => {
     try {
         // Check if request already exists
-        const existingUser = await db
+        const existingRequest = await db
             .select()
             .from(requests)
             .where(or(
                 eq(sql`${requests.requestContent}->>'email'`, userparams.email),
                 eq(sql`${requests.requestContent}->>'phone'`, userparams.phone)
             ))
-        if(existingUser.length > 0) return{success: false, error: "Phone or Email already exists" }
+        if(existingRequest.length > 0) return{success: false, error: "Request already exists" }
         
         // Get Registrar id
         const registrarID = await db
