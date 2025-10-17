@@ -26,7 +26,14 @@ const config = {
       verifyTemplateId: process.env.EMAILJS_VERIFY_TEMPLATE_ID || "",
     },
     emailVerificationSecret: process.env.EMAIL_VERIFICATION_SECRET || "",
+    smtp: {
+      host: process.env.SMTP_HOST || "",
+      port: Number(process.env.SMTP_PORT) || 465,
+      user: process.env.SMTP_USER || "",
+      pass: process.env.SMTP_PASS || "",
   },
+  },
+  
 };
 
 export default config;

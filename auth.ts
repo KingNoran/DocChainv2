@@ -4,6 +4,7 @@ import { db } from "./database/drizzle";
 import { users } from "./database/schema";
 import { compare } from "bcryptjs";
 import { eq } from "drizzle-orm";
+import { Roles } from "./types/global";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     session:{
@@ -38,7 +39,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 id: user[0].userId.toString(),
                 email: user[0].email,
                 name: `${user[0].firstName} ${user[0].middleName} ${user[0].lastName}`,
-                role: user[0].role
+                role: user[0].role.toUpperCase()
             } as User;
         }
     })
@@ -47,14 +48,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/login",
   },
   callbacks: {
-    async jwt({token, user}){
-        if(user){
-            token.id = user.id;
-            token.name = user.name;
-            token.email = user.email;
-            token.role = user.role;
+    async jwt({ token, user }) {
+    if (user) {
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        // normalize to uppercase and store
+        const role = String(user.role).toUpperCase() as Roles;
+        token.role = role;
+
+        let expiresIn = 30 * 60;
+        switch (role) {
+        case "ADMIN":
+            expiresIn = 15 * 60;
+            break;
+        case "REGISTRAR":
+            expiresIn = 20 * 60;
+            break;
+        case "STUDENT":
+            expiresIn = 30 * 60;
+            break;
         }
-        return token;
+
+        token.iat = Math.floor(Date.now() / 1000);
+        token.exp = token.iat + expiresIn;
+    }
+    return token;
     },
     async session({session, token}){
         if(session.user){

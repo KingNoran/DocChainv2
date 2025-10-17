@@ -48,6 +48,7 @@ export async function GET(request: Request) {
         dateEntrance: students.dateEntrance,
         dateGraduated: students.dateGraduated,
         isArchived: users.isArchived,
+        email: users.email
       })
       .from(students)
       .innerJoin(users, eq(users.userId, students.userId))

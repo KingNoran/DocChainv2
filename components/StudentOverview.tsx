@@ -9,6 +9,7 @@ import { LogOut, Verified, VerifiedIcon } from 'lucide-react'
 import { logout } from '@/lib/actions/logout'
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { cn } from '@/lib/utils';
 
 
 const StudentOverview = ({
@@ -85,9 +86,13 @@ const StudentOverview = ({
           <Button onClick={logout} className="bg-red-500 hover:bg-red-600 text-white">
             <LogOut className="mr-2 h-4 w-4" /> Logout
           </Button>
-          <Button onClick={goToValidatePage} variant={"default"}>
-            <Verified className="mr-2 h-4 w-4" /> Verify Email
-          </Button>
+          {
+            emailVerified ?
+            null :
+            <Button onClick={goToValidatePage} variant={"default"}>
+              <Verified className="mr-2 h-4 w-4" /> Verify Email
+            </Button>
+          }
         </CardContent>
       </Card>
 
