@@ -4,9 +4,16 @@ import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import config from "@/lib/config";
+import { auth } from "@/auth";
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await auth();
+    
+      if (!session || !["REGISTRAR", "ADMIN", "STUDENT"].includes(session.user?.role || "")) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      
     const body = await req.json();
     const { email } = body;
 

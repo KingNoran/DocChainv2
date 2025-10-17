@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db } from "@/database/drizzle";
 import { users, students, record, subjects } from "@/database/schema";
 import { subjectChecklists } from "@/app/constants/checklists";
+import { auth } from "@/auth";
 
 const VerifyTORSchema = z.object({
   studentUUID: z.string().uuid(),
@@ -32,6 +33,12 @@ function mergeTranscript(baseChecklist: any, dbSubjects: any[]) {
 
 export async function POST(req: Request) {
   try {
+    const session = await auth();
+        
+    if (!session || !["REGISTRAR", "ADMIN"].includes(session.user?.role || "")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     const { studentUUID } = VerifyTORSchema.parse(body);
 

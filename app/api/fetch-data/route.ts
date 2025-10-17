@@ -4,9 +4,17 @@ import { students, users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { getSmartContractViewOnly } from "@/utils/getSmartContractViewOnly";
 import { BytesLike, EventLog } from "ethers";
+import { auth } from '@/auth';
 
 
 export const POST = async (req: Request) => {
+
+    const session = await auth();
+        
+    if (!session || !["REGISTRAR", "ADMIN"].includes(session.user?.role || "")) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    
     const { tokenId } = await req.json();
   
     if (!tokenId || tokenId === 0) {

@@ -1,10 +1,18 @@
 
+import { auth } from "@/auth";
 import { db } from "@/database/drizzle";
 import { requests } from "@/database/schema";
 import { eq, inArray } from "drizzle-orm";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
+    const session = await auth();
+        
+    if (!session || !["REGISTRAR", "ADMIN"].includes(session.user?.role || "")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { ids } = await req.json();
 
     if (!Array.isArray(ids) || ids.length === 0) {

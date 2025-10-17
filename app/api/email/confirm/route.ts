@@ -1,11 +1,19 @@
 // app/api/email/confirm/route.ts
+import { auth } from "@/auth";
 import { db } from "@/database/drizzle";
 import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import jwt from "jsonwebtoken";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
+    const session = await auth();
+        
+    if (!session || !["REGISTRAR", "ADMIN", "STUDENT"].includes(session.user?.role || "")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+          
     const body = await req.json();
     const { token } = body;
 
