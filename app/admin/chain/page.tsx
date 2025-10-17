@@ -48,9 +48,11 @@ const Page = () => {
       const burnedTokenEvents = await tokenizerContract.queryFilter("TokenBurned");
   
       const transactionMintedLogs = mintedTokenEvents.map((event) => {
-        const { args, transactionHash } = event as EventLog;
-        const [tokenId, hash, timestamp] = args;
+      const { args, transactionHash } = event as EventLog;
+      const [tokenId, hash, timestamp] = args;
   
+      
+
         return {
           eventType: "Token Minted",
           id: Number(tokenId),
@@ -64,7 +66,6 @@ const Page = () => {
       const transactionBurnedLogs = burnedTokenEvents.map((event) => {
         const { args, transactionHash } = event as EventLog;
         const [tokenId, hash, timestamp] = args;
-  
         return {
           eventType: "Token Burned",
           id: Number(tokenId),

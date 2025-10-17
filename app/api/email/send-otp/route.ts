@@ -10,13 +10,11 @@ export async function POST(req: NextRequest) {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
-    console.log("📩 Sending OTP to:", normalizedEmail);
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Store OTP in Redis with 5-minute expiry
     await redis.set(`otp:${normalizedEmail}`, otp, { ex: 300 });
-    console.log(`✅ Stored OTP for ${normalizedEmail}: ${otp}`);
 
     const transporter = nodemailer.createTransport({
       service: "gmail",

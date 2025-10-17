@@ -4,21 +4,14 @@ import { students, users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { getSmartContractViewOnly } from "@/utils/getSmartContractViewOnly";
 import { EventLog } from "ethers";
-import { auth } from '@/auth';
 
 
 export const POST = async (req: Request) => {
     const { pdfHash } = await req.json();
-    const session = await auth();
-
-    if (!session || !["REGISTRAR", "ADMIN"].includes(session.user?.role || "")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
     
     if (!pdfHash) {
         return NextResponse.json({ error: "Invalid File Input" }, { status: 400 });
     }
-  
 
     const tokenizerContract = getSmartContractViewOnly();
   

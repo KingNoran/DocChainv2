@@ -6,6 +6,7 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
+  PaginationState,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -36,6 +37,13 @@ export function DataTable<TData extends { studentId: number }, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // Add pagination state
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  
   const pathname = usePathname();
   const router = useRouter();
 
@@ -44,13 +52,11 @@ export function DataTable<TData extends { studentId: number }, TValue>({
     columns,
     state: {
       rowSelection,
-      pagination: {
-        pageIndex: 0,
-        pageSize: 10,
-      },
+      pagination, // Use the state variable
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination, // Add this handler
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });

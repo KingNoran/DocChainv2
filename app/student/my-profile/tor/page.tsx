@@ -29,6 +29,7 @@ interface Student {
   email: string;
   emailVerified: boolean;
   isTorVerified: boolean;
+  torHash: string;
 }
 
 type CourseGrade = {
@@ -186,6 +187,7 @@ const Page = () => {
     entrance: new Date(s.dateEntrance).toLocaleDateString(),
     studentId: s.studentId,
     email: s.email,
+    torHash: s.torHash
   });
 
   return (

@@ -50,6 +50,13 @@
       "when": 1760191999819,
       "tag": "0006_confused_white_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1760678560498,
+      "tag": "0007_eager_chamber",
+      "breakpoints": true
     }
   ]
 }
