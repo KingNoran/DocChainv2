@@ -1,6 +1,6 @@
 {
-  "id": "598a1717-a9ae-40e8-ae63-c97dfafc3c9a",
-  "prevId": "a962b031-9a02-4ceb-a735-6a9ab36f5753",
+  "id": "1f09adc0-8ecd-4e4e-98b0-84dab641ad5d",
+  "prevId": "598a1717-a9ae-40e8-ae63-c97dfafc3c9a",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -631,6 +631,13 @@
           "notNull": true,
           "default": false
         },
+        "tor_hash": {
+          "name": "tor_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
         "major": {
           "name": "major",
           "type": "text",
@@ -980,18 +987,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
-        },
-        "email_verification_token": {
-          "name": "email_verification_token",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "email_verification_expires": {
-          "name": "email_verification_expires",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
         },
         "created_at": {
           "name": "created_at",

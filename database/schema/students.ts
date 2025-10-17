@@ -13,6 +13,7 @@ const students = table("students",{
     course: COURSES_ENUM("course").notNull(),
     finalGrade: t.decimal("final_grade").default("0").notNull(),
     torReady: t.boolean("tor_ready").default(false).notNull(),
+    torHash: t.text("tor_hash").default(""),
     major: t.text("major"),
     dateGraduated: t.date("date_graduated"),
     highschool: t.text("highschool"),

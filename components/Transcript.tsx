@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState, JSX } from "react";
+import { FC, useState, JSX, useEffect, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { course, Semester, Subject, TOR, YearChecklist } from "@/app/student/types";
 import { subjectChecklists } from "@/app/constants/checklists";
@@ -12,6 +12,8 @@ import { toast } from "sonner";
 import { sendRequest } from "@/lib/registrar/actions/sendRequest";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
+import QRCode from "qrcode";
+import { StringHeaderIdentifier } from "@tanstack/react-table";
 
 // Types
 export interface Student {
@@ -25,9 +27,8 @@ export interface Student {
   highSchool: string;
   address: string;
   entrance: string;
+  torHash: string;
 }
-
-
 
 interface CourseGrade {
   gradeKey: string;
@@ -62,11 +63,18 @@ if (typeof window !== "undefined") {
 }
 
 // Header component
-const TranscriptHeader: FC<{ student: Student; control: any; isFirstPage?: boolean, readOnly?: boolean }> = ({
+const TranscriptHeader: FC<{ 
+  student: Student; 
+  control: any; 
+  isFirstPage?: boolean; 
+  readOnly?: boolean;
+  qrCodeDataUrl?: string;
+}> = ({
   student,
   control,
   isFirstPage = true,
   readOnly = false,
+  qrCodeDataUrl,
 }) => {
   const courseNames = {
     BSIT: "BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY (BSIT)",
@@ -82,7 +90,7 @@ const TranscriptHeader: FC<{ student: Student; control: any; isFirstPage?: boole
 
   return (
     <div>
-      <div className="text-center mb-6">
+      <div className="text-center mb-6 relative">
         <h2 className="font-bold text-lg">CAVITE STATE UNIVERSITY</h2>
         <h3 className="font-semibold">BACOOR CAMPUS</h3>
         <p>OFFICE OF THE REGISTRAR</p>
@@ -91,12 +99,23 @@ const TranscriptHeader: FC<{ student: Student; control: any; isFirstPage?: boole
         </h1>
         <p className="text-sm">Revised Curriculum SY 2013-2014</p>
         {!isFirstPage && <p className="text-sm font-semibold">(Continued)</p>}
+        
+        {/* QR Code in top-right corner */}
+        {isFirstPage && qrCodeDataUrl && (
+          <div className="absolute top-0 right-0">
+            <img 
+              src={qrCodeDataUrl} 
+              alt="Transcript QR Code" 
+              className="w-24 h-24"
+            />
+          </div>
+        )}
       </div>
 
       {isFirstPage && (
         <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm mb-6">
           {Object.entries(student).map(([key, value]) => {
-            if (key === "degree") return null; // skip degree field here, already in header
+            if (key === "degree") return null;
             return (
               <div key={key} className="flex gap-2 justify-between">
                 <span className="font-semibold">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
@@ -159,7 +178,7 @@ const CourseTable: FC<{
           const gradeKey = `${yearKey}-${semesterKey}-${c.courseCode}`;
           const yearChecklist = initialTranscript?.[yearKey as keyof TOR] as YearChecklist | undefined;
           const yearArray = yearChecklist?.firstYear || [];
-          const semesterObj = yearArray[0]; // defined here
+          const semesterObj = yearArray[0];
           const semesterArray = semesterObj?.[semesterKey as keyof Semester] as Subject[] | undefined;
           const initialCourse = semesterArray?.find(course => course.courseCode === c.courseCode);
 
@@ -214,7 +233,6 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
       acc[g.gradeKey] = g;
       return acc;
     }, {} as Record<string, CourseGrade>),
-    
   };
 
   const { handleSubmit, control, watch } = useForm({ defaultValues });
@@ -226,11 +244,43 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
     return obj;
   });
   
-  const handleFinalizeTOR = async() => {
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
+  const qrCodeRef = useRef<string>("");
 
+  // Generate QR Code
+  useEffect(() => {
+  const generateQRCode = async () => {
+    try {
+      // Replace with your blockchain transaction link
+      const hash = student.torHash; // Get this from your data
+      console.log(`TOR HASH NOTICE!!!: ${hash}`)
+      const verificationUrl = `https://zksync-sepolia.blockscout.com/tx/${hash}`;
+      
+      // Generate QR code as data URL
+      const dataUrl = await QRCode.toDataURL(verificationUrl, {
+        width: 200,
+        margin: 1,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+      
+      setQrCodeDataUrl(dataUrl);
+      qrCodeRef.current = dataUrl;
+    } catch (err) {
+      console.error('Error generating QR code:', err);
+    }
+  };
+
+  generateQRCode();
+}, [initialStudent.studentId]);
+
+  const handleFinalizeTOR = async() => {
+    // Your finalize logic here
   }
 
-  const handleSendRequest = async(session:Session) => {
+  const handleSendRequest = async(session: Session) => {
     sendRequest({
       firstName: "", 
       lastName: "", 
@@ -244,244 +294,224 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
   }
 
   const handleDownloadPdf = async () => {
-    if(!isTorReady){
+    /* if(!isTorReady && session?.user.role === "STUDENT"){
       toast.error("Invalid transaction", {
         description: "TOR not yet ready. Please contact your registrar."
-      })
-    }
+      })  
+      return;
+    } */
 
-  const pdf = new jsPDF("p", "mm", "a4");
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const margin = 20;
-  const contentWidth = pageWidth - 2 * margin;
-  
-  const courseNames = {
-    BSIT: "BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY (BSIT)",
-    BSCS: "BACHELOR OF SCIENCE IN COMPUTER SCIENCE (BSCoS)",
-    BSCRIM: "BACHELOR OF SCIENCE IN CRIMINOLOGY (BSCrim)",
-    BSHM: "BACHELOR OF SCIENCE IN HOSPITALITY MANAGEMENT (BSHM)",
-    BSP: "BACHELOR OF SCIENCE IN PSYCHOLOGY (BSP)",
-    BSED_M: "BACHELOR OF SECONDARY EDUCATION MAJOR IN MATHEMATICS (BSEd-Math)",
-    BSED_E: "BACHELOR OF SECONDARY EDUCATION MAJOR IN ENGLISH (BSEd-English)",
-    BSBM_MM: "BACHELOR OF SCIENCE IN BUSINESS MANAGEMENT MAJOR IN MARKETING MANAGEMENT (BSBM-MM)",
-    BSBM_HR: "BACHELOR OF SCIENCE IN BUSINESS MANAGEMENT MAJOR IN HUMAN RESOURCES (BSBM-HR)",
-  };
+      //later logic
 
-  // Helper to add header
-  const addHeader = (isFirstPage = true) => {
-    pdf.setFontSize(12);
-    pdf.setFont("helvetica", "bold");
-    pdf.text("CAVITE STATE UNIVERSITY", pageWidth / 2, margin, { align: "center" });
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 20;
+    const contentWidth = pageWidth - 2 * margin;
     
-    pdf.setFontSize(10);
-    pdf.setFont("helvetica", "normal");
-    pdf.text("BACOOR CAMPUS", pageWidth / 2, margin + 5, { align: "center" });
-    pdf.text("OFFICE OF THE REGISTRAR", pageWidth / 2, margin + 10, { align: "center" });
+    const courseNames = {
+      BSIT: "BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY (BSIT)",
+      BSCS: "BACHELOR OF SCIENCE IN COMPUTER SCIENCE (BSCoS)",
+      BSCRIM: "BACHELOR OF SCIENCE IN CRIMINOLOGY (BSCrim)",
+      BSHM: "BACHELOR OF SCIENCE IN HOSPITALITY MANAGEMENT (BSHM)",
+      BSP: "BACHELOR OF SCIENCE IN PSYCHOLOGY (BSP)",
+      BSED_M: "BACHELOR OF SECONDARY EDUCATION MAJOR IN MATHEMATICS (BSEd-Math)",
+      BSED_E: "BACHELOR OF SECONDARY EDUCATION MAJOR IN ENGLISH (BSEd-English)",
+      BSBM_MM: "BACHELOR OF SCIENCE IN BUSINESS MANAGEMENT MAJOR IN MARKETING MANAGEMENT (BSBM-MM)",
+      BSBM_HR: "BACHELOR OF SCIENCE IN BUSINESS MANAGEMENT MAJOR IN HUMAN RESOURCES (BSBM-HR)",
+    };
+
+    // Helper to add header
+    const addHeader = (isFirstPage = true) => {
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("CAVITE STATE UNIVERSITY", pageWidth / 2, margin, { align: "center" });
+      
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "normal");
+      pdf.text("BACOOR CAMPUS", pageWidth / 2, margin + 5, { align: "center" });
+      pdf.text("OFFICE OF THE REGISTRAR", pageWidth / 2, margin + 10, { align: "center" });
+      
+      pdf.setFontSize(11);
+      pdf.setFont("helvetica", "bold");
+      const courseTitle = courseNames[student.degree as keyof typeof courseNames] || student.degree;
+      const titleLines = pdf.splitTextToSize(`CHECKLIST FOR THE ${courseTitle}`, contentWidth);
+      pdf.text(titleLines, pageWidth / 2, margin + 18, { align: "center" });
+      
+      pdf.setFontSize(9);
+      pdf.setFont("helvetica", "normal");
+      pdf.text("Revised Curriculum SY 2013-2014", pageWidth / 2, margin + 28, { align: "center" });
+      
+      if (!isFirstPage) {
+        pdf.text("(Continued)", pageWidth / 2, margin + 33, { align: "center" });
+      }
+      
+      // Add QR code on first page
+      if (isFirstPage && qrCodeRef.current) {
+        const qrSize = 25; // 25mm
+        pdf.addImage(qrCodeRef.current, 'PNG', pageWidth - margin - qrSize, margin, qrSize, qrSize);
+      }
+      
+      return isFirstPage ? margin + 38 : margin + 38;
+    };
+
+    // Add first page header and student info
+    let yPos = addHeader(true);
     
-    pdf.setFontSize(11);
-    pdf.setFont("helvetica", "bold");
-    const courseTitle = courseNames[student.degree as keyof typeof courseNames] || student.degree;
-    const titleLines = pdf.splitTextToSize(`CHECKLIST FOR THE ${courseTitle}`, contentWidth);
-    pdf.text(titleLines, pageWidth / 2, margin + 18, { align: "center" });
-    
+    // Add student information on first page
     pdf.setFontSize(9);
     pdf.setFont("helvetica", "normal");
-    pdf.text("Revised Curriculum SY 2013-2014", pageWidth / 2, margin + 28, { align: "center" });
     
-    if (!isFirstPage) {
-      pdf.text("(Continued)", pageWidth / 2, margin + 33, { align: "center" });
-    }
+    const studentInfo = [
+      [`Name: ${student.name}`, `Nationality: ${student.nationality}`],
+      [`Birthdate: ${formatDateForInput(student.birthdate)}`, `Graduation: ${formatDateForInput(student.graduation)}`],
+      [`Major: ${student.major}`, `High School: ${student.highSchool}`],
+      [`Address: ${student.address}`, `Entrance: ${formatDateForInput(student.entrance)}`],
+    ];
     
-    return isFirstPage ? margin + 38 : margin + 38;
-  };
-
-  // Add first page header and student info
-  let yPos = addHeader(true);
-  
-  // Add student information on first page
-  pdf.setFontSize(9);
-  pdf.setFont("helvetica", "normal");
-  
-  const studentInfo = [
-    [`Name: ${student.name}`, `Nationality: ${student.nationality}`],
-    [`Birthdate: ${formatDateForInput(student.birthdate)}`, `Graduation: ${formatDateForInput(student.graduation)}`],
-    [`Major: ${student.major}`, `High School: ${student.highSchool}`],
-    [`Address: ${student.address}`, `Entrance: ${formatDateForInput(student.entrance)}`],
-  ];
-  
-  studentInfo.forEach(([left, right]) => {
-    pdf.text(left, margin, yPos);
-    pdf.text(right, pageWidth / 2 + 5, yPos);
+    studentInfo.forEach(([left, right]) => {
+      pdf.text(left, margin, yPos);
+      pdf.text(right, pageWidth / 2 + 5, yPos);
+      yPos += 5;
+    });
+    
     yPos += 5;
-  });
-  
-  yPos += 5;
 
-  const degreeKey = student.degree as course;
-  const courseData = degreeKey ? subjectChecklists[degreeKey] : null;
+    const degreeKey = student.degree as course;
+    const courseData = degreeKey ? subjectChecklists[degreeKey] : null;
 
-  if (courseData) {
-    Object.entries(courseData).forEach(([year, semesters]) => {
-      // Check if we need a new page for the year title
-      if (yPos > pageHeight - 60) {
-        pdf.addPage();
-        yPos = addHeader(false);
-      }
-
-      // Add year title
-      pdf.setFontSize(10);
-      pdf.setFont("helvetica", "bold");
-      pdf.text(year.toUpperCase(), margin, yPos);
-      yPos += 7;
-
-      Object.entries(semesters).forEach(([sem, courses]) => {
-        // Check if we need a new page for the semester
-        if (yPos > pageHeight - 50) {
+    if (courseData) {
+      Object.entries(courseData).forEach(([year, semesters]) => {
+        if (yPos > pageHeight - 60) {
           pdf.addPage();
           yPos = addHeader(false);
-          pdf.setFontSize(10);
-          pdf.setFont("helvetica", "bold");
-          pdf.text(`${year.toUpperCase()} (Continued)`, margin, yPos);
-          yPos += 7;
         }
 
-        // Add semester title
-        pdf.setFontSize(9);
+        pdf.setFontSize(10);
         pdf.setFont("helvetica", "bold");
-        const semesterTitle = sem.replace(/([A-Z])/g, " $1").trim();
-        pdf.text(semesterTitle, margin, yPos);
-        yPos += 5;
+        pdf.text(year.toUpperCase(), margin, yPos);
+        yPos += 7;
 
-        // Prepare table data
-        const tableData = (courses as Subject[]).map((c) => {
-          const gradeKey = `${year}-${sem}-${c.courseCode}`;
-          const grade = grades[gradeKey] ?? {
-            syTaken: "",
-            instructor: "",
-            finalRating: "",
-          };
+        Object.entries(semesters).forEach(([sem, courses]) => {
+          if (yPos > pageHeight - 50) {
+            pdf.addPage();
+            yPos = addHeader(false);
+            pdf.setFontSize(10);
+            pdf.setFont("helvetica", "bold");
+            pdf.text(`${year.toUpperCase()} (Continued)`, margin, yPos);
+            yPos += 7;
+          }
 
-          return [
-            c.courseCode,
-            c.courseTitle,
-            c.creditUnit.lecture.toString(),
-            c.creditUnit.laboratory.toString(),
-            Array.isArray(c.preRequisite) ? c.preRequisite.join(", ") : c.preRequisite || "—",
-            grade.syTaken || "—",
-            grade.instructor || "—",
-            grade.finalRating || "—",
-          ];
+          pdf.setFontSize(9);
+          pdf.setFont("helvetica", "bold");
+          const semesterTitle = sem.replace(/([A-Z])/g, " $1").trim();
+          pdf.text(semesterTitle, margin, yPos);
+          yPos += 5;
+
+          const tableData = (courses as Subject[]).map((c) => {
+            const gradeKey = `${year}-${sem}-${c.courseCode}`;
+            const grade = grades[gradeKey] ?? {
+              syTaken: "",
+              instructor: "",
+              finalRating: "",
+            };
+
+            return [
+              c.courseCode,
+              c.courseTitle,
+              c.creditUnit.lecture.toString(),
+              c.creditUnit.laboratory.toString(),
+              Array.isArray(c.preRequisite) ? c.preRequisite.join(", ") : c.preRequisite || "—",
+              grade.syTaken || "—",
+              grade.instructor || "—",
+              grade.finalRating || "—",
+            ];
+          });
+
+          autoTable(pdf, {
+            startY: yPos,
+            head: [["Course No.", "Course Title", "Lec", "Lab", "Prerequisite(s)", "S.Y. Taken", "Instructor", "Final Rating"]],
+            body: tableData,
+            margin: { left: margin, right: margin },
+            styles: {
+              fontSize: 7,
+              cellPadding: 1,
+              overflow: "linebreak",
+            },
+            headStyles: {
+              fillColor: [255, 255, 255],
+              textColor: [0, 0, 0],
+              fontStyle: "bold",
+              lineWidth: 0.1,
+              lineColor: [0, 0, 0],
+            },
+            bodyStyles: {
+              lineWidth: 0.1,
+              lineColor: [0, 0, 0],
+            },
+            columnStyles: {
+              0: { cellWidth: 20 },
+              1: { cellWidth: 50 },
+              2: { cellWidth: 10 },
+              3: { cellWidth: 10 },
+              4: { cellWidth: 30 },
+              5: { cellWidth: 20 },
+              6: { cellWidth: 25 },
+              7: { cellWidth: 15 },
+            },
+          });
+
+          yPos = (pdf as any).lastAutoTable.finalY + 5;
         });
-
-        // Add table using autoTable
-        autoTable(pdf, {
-          startY: yPos,
-          head: [["Course No.", "Course Title", "Lec", "Lab", "Prerequisite(s)", "S.Y. Taken", "Instructor", "Final Rating"]],
-          body: tableData,
-          margin: { left: margin, right: margin },
-          styles: {
-            fontSize: 7,
-            cellPadding: 1,
-            overflow: "linebreak",
-          },
-          headStyles: {
-            fillColor: [255, 255, 255],
-            textColor: [0, 0, 0],
-            fontStyle: "bold",
-            lineWidth: 0.1,
-            lineColor: [0, 0, 0],
-          },
-          bodyStyles: {
-            lineWidth: 0.1,
-            lineColor: [0, 0, 0],
-          },
-          columnStyles: {
-            0: { cellWidth: 20 },
-            1: { cellWidth: 50 },
-            2: { cellWidth: 10 },
-            3: { cellWidth: 10 },
-            4: { cellWidth: 30 },
-            5: { cellWidth: 20 },
-            6: { cellWidth: 25 },
-            7: { cellWidth: 15 },
-          },
-          didDrawPage: (data) => {
-            // If table spans multiple pages, add header to new pages
-            if (data.pageNumber > 1 && data.cursor) {
-              // Header already added by autoTable pagination
-            }
-          },
-        });
-
-        // Update yPos after table
-        yPos = (pdf as any).lastAutoTable.finalY + 5;
       });
-    });
-  }
+    }
 
-  pdf.save(`${student.name}-transcript.pdf`);
+    pdf.save(`${student.name}-transcript.pdf`);
   }
 
   const onSubmit = async () => {
-  // Get only grades that have changed
-  const changedGrades = Object.values(grades).filter(g => {
-    const initial = initialGradesMap[g.gradeKey];
-    return (
-      !initial ||
-      g.syTaken !== initial.syTaken ||
-      g.instructor !== initial.instructor ||
-      g.finalRating !== initial.finalRating
-    );
-  });
-
-  if (changedGrades.length === 0) {
-    console.log("No changes detected. Skipping PATCH request.");
-    return;
-  }
-
-  try {
-    /* const res = await fetch(`/api/students/${initialStudent.studentId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ grades: changedGrades }),
+    const changedGrades = Object.values(grades).filter(g => {
+      const initial = initialGradesMap[g.gradeKey];
+      return (
+        !initial ||
+        g.syTaken !== initial.syTaken ||
+        g.instructor !== initial.instructor ||
+        g.finalRating !== initial.finalRating
+      );
     });
 
-    const result = await res.json();
-
-    if (res.ok && result.success) {
-      console.log("Transcript updated successfully!");
-    } else {
-      console.error("Error updating transcript:", result.error);
-    } */
-   const res = await fetch(`/api/students/${initialStudent.studentId}/pdf`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(changedGrades),
-    });
-    
-    const data = await res.json();
-    if (data.success) {
-      toast.success("Transcript Edited successfully", {
-        action: {
-          label: "Got it",
-          onClick: () => console.log("Success"),
-        },
-      });
-    } else {
-      toast.error("Error updating transcript", {
-        action: {
-          label: "Got it",
-          onClick: () => console.log("Error"),
-        }
-      })
+    if (changedGrades.length === 0) {
+      console.log("No changes detected. Skipping PATCH request.");
+      return;
     }
-    console.log(data);
-  } catch (err) {
-    console.error(err);
-  }
-};
 
+    try {
+      const res = await fetch(`/api/students/${initialStudent.studentId}/pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(changedGrades),
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Transcript Edited successfully", {
+          action: {
+            label: "Got it",
+            onClick: () => console.log("Success"),
+          },
+        });
+      } else {
+        toast.error("Error updating transcript", {
+          action: {
+            label: "Got it",
+            onClick: () => console.log("Error"),
+          }
+        })
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const student = watch("student");
   const grades = watch("grades");
@@ -498,7 +528,16 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
   let pageNumber = 0;
   const {data: session} = useSession();
 
-  currentPageContent.push(<TranscriptHeader key="header-0" student={student} control={control} isFirstPage={true} readOnly={readOnly} />);
+  currentPageContent.push(
+    <TranscriptHeader 
+      key="header-0" 
+      student={student} 
+      control={control} 
+      isFirstPage={true} 
+      readOnly={readOnly}
+      qrCodeDataUrl={qrCodeDataUrl}
+    />
+  );
   estimatedHeight = 350;
 
   if (courseData) {
@@ -507,7 +546,15 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
       if (estimatedHeight + 40 > maxPageHeight && currentPageContent.length > 1) {
         pages.push(<div key={`page-${pageNumber}`} className="page-container">{currentPageContent}</div>);
         pageNumber++;
-        currentPageContent = [<TranscriptHeader key={`header-${pageNumber}`} student={student} control={control} isFirstPage={false} readOnly={readOnly} />];
+        currentPageContent = [
+          <TranscriptHeader 
+            key={`header-${pageNumber}`} 
+            student={student} 
+            control={control} 
+            isFirstPage={false} 
+            readOnly={readOnly}
+          />
+        ];
         estimatedHeight = 150;
       }
 
@@ -520,7 +567,13 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
           pages.push(<div key={`page-${pageNumber}`} className="page-container">{currentPageContent}</div>);
           pageNumber++;
           currentPageContent = [
-            <TranscriptHeader key={`header-${pageNumber}`} student={student} control={control} isFirstPage={false} readOnly={readOnly} />,
+            <TranscriptHeader 
+              key={`header-${pageNumber}`} 
+              student={student} 
+              control={control} 
+              isFirstPage={false} 
+              readOnly={readOnly}
+            />,
             <h2 key={`${year}-title-${pageNumber}`} className="font-bold mt-4 mb-2 uppercase">{year} (Continued)</h2>,
           ];
           estimatedHeight = 200;
@@ -590,7 +643,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
         }
       `}</style>
       <div className="text-center mt-4">
-      {isTorReady ?
+      {!isTorReady ?
         <button
         type="button"
         onClick={handleDownloadPdf}
@@ -620,7 +673,6 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
       }
     </div>
     </form>
-    
   );
 };
 

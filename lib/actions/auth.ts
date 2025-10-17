@@ -9,7 +9,6 @@ import { signOut } from "next-auth/react";
 import { db } from "@/database/drizzle";
 import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";
-import { error } from "console";
 
 export const signInWithCredentials = async (
     params: Pick<AuthCredentials, "email" | "password">
@@ -34,8 +33,7 @@ export const signInWithCredentials = async (
 
         const isArchived = await db.select().from(users).where(eq(users.email, email)).limit(1);
         if (!isArchived.length || isArchived[0].isArchived) {
-            console.log("Archived or User Not Found");
-            return { success: false, error: Error("Archived Account or User Not Found"), status: 401, url: null };
+            throw Error("User does not exist or is archived.");
         }
 
         await db
