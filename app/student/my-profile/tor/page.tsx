@@ -27,6 +27,7 @@ interface Student {
   dateGraduated: Date;
   isArchived: boolean;
   email: string;
+  emailVerified: boolean;
 }
 
 type CourseGrade = {
@@ -105,6 +106,13 @@ const Page = () => {
       }
 
       const student = studentArr[0];
+
+      if (!student.emailVerified){
+        setError("Email is not Verified. Please verify your Email first.")
+        setLoading(false);
+        return;
+      }
+      
       setStudentData(student);
       setTranscriptData(data.transcript);
 
