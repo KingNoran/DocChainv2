@@ -3,37 +3,39 @@ import { db } from "@/database/drizzle";
 import { students, users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { getSmartContractViewOnly } from "@/utils/getSmartContractViewOnly";
-import { EventLog } from "ethers";
-import { auth } from '@/auth';
+import { EventLog, JsonRpcProvider } from "ethers";
 
 
+// THIS IS A PUBLIC API ENDPOINT
 export const POST = async (req: Request) => {
     const { pdfHash } = await req.json();
-    const session = await auth();
-
-    if (!session || !["REGISTRAR", "ADMIN"].includes(session.user?.role || "")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
     
     if (!pdfHash) {
         return NextResponse.json({ error: "Invalid File Input" }, { status: 400 });
     }
-  
 
     const tokenizerContract = getSmartContractViewOnly();
+
+    const provider = tokenizerContract.runner?.provider as JsonRpcProvider;
+    const latestBlock = await provider.getBlockNumber();
+    const fromBlock = Math.max(latestBlock - 5000, 0);
   
-    const mintedTokenEvents = await tokenizerContract.queryFilter("TokenMinted");
-    const recentMintedTokenEvents = mintedTokenEvents.reverse();
+    const mintedTokenEvents = await tokenizerContract.queryFilter("TokenMinted", fromBlock, latestBlock);
 
-    const matchedEvent = recentMintedTokenEvents.find(event => {
-        const { args } = event as EventLog;
+    let matchedEvent = null;
+
+    for (let i = mintedTokenEvents.length - 1; i >= 0; i--) {
+        const { args } = mintedTokenEvents[i] as EventLog;
         const [, hash] = args;
-        return hash === pdfHash;
-      });
-
-      let verificationResult = null;
+        if (hash === pdfHash) {
+          matchedEvent = mintedTokenEvents[i];
+          break;
+        }
+    }
+    
+    let verificationResult = null;
       
-      if (matchedEvent) {
+    if (matchedEvent) {
         const { args, transactionHash } = matchedEvent as EventLog;
         const [tokenId, hash, timestamp] = args;
       
