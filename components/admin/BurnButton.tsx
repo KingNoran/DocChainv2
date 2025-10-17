@@ -43,6 +43,13 @@ const BurnButton = ({ tokenId }: { tokenId: number }) => {
       await tokenizerHash.wait();
 
       console.log(`Success - ${tokenizerHash.hash}`);
+
+      await fetch("/api/burn-update-tor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studentId: tokenId }),
+      });
+
     } catch (error) {
       if (isCallException(error)) {
         const contract = await getSmartContract();
