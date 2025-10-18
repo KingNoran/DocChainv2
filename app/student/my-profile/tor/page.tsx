@@ -225,7 +225,7 @@ const Page = () => {
               View Your Transcript of Records
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground leading-normal mb-6">
-              Enter your TOR Hash to access your official TOR securely.
+              Enter your StudentUUID to access your official TOR securely.
             </p>
           </div>
           <TORForm onSubmit={verifyTOR} />

@@ -53,7 +53,7 @@ const TORForm = ({ onSubmit }: TORFormProps) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-muted-foreground text-xs sm:text-sm font-normal leading-tight">
-                TOR Hash
+                StudentUUID
               </FormLabel>
               <FormControl>
                 <div className="relative">
@@ -118,13 +118,6 @@ const TORForm = ({ onSubmit }: TORFormProps) => {
           >
             View TOR
           </Button>
-          <button
-            type="button"
-            onClick={() => form.reset()}
-            className="text-muted-foreground text-base font-normal leading-normal hover:underline w-full sm:w-auto"
-          >
-            Cancel
-          </button>
         </div>
       </form>
     </Form>
