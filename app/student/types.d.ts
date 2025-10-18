@@ -127,6 +127,8 @@ interface StudentOverviewTemplate{
   nationality: string | null;
   address: string | null;
   birthday: string | null;
+  highschool: string | null;
+  major: string | null;
 }
 
 export type roles =

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { ModeToggle } from '@/components/ui/toggle-mode';
 
 import LatestTransactions from '@/components/LatestTransactions'
 import TransactionCard from '@/components/TransactionCard';
@@ -95,7 +94,6 @@ const GuestTransactionPage = () => {
           <span className="text-xl font-bold">DocChain</span>
         </div>
         <div className="flex items-center gap-4">
-          <ModeToggle />
           <Link href="/login">
             <button className="px-6 py-2 rounded-lg border border-foreground text-foreground text-base font-medium hover:bg-foreground/10 transition-colors cursor-pointer">Log In</button>
           </Link>

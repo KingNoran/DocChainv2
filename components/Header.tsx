@@ -5,7 +5,6 @@ import React, { useState, useEffect, ReactNode } from 'react'
 import { redirect, usePathname, useRouter} from "next/navigation";
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
-import { ModeToggle } from './ui/toggle-mode';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -40,7 +39,6 @@ const Header = () => {
             <span className="text-xl font-bold">DocChain</span>
           </div>
           <div className="flex items-center gap-4">
-            <ModeToggle />
             <button onClick={() => (router.push('/'))} className="px-6 py-2 bg-emerald-400 rounded-lg text-black text-base font-medium hover:bg-emerald-500 transition-colors cursor-pointer">Get Started</button>
           </div>
         </header>
@@ -129,12 +127,10 @@ const Header = () => {
             </DropdownMenuContent>
           </DropdownMenu>
           {/* Theme Toggle */}
-          <div><ModeToggle /></div>
         </>
         : null}
         { pathname==="/" ? 
         <div className="flex gap-4">
-          <div><ModeToggle /></div>
           <Button className="cursor-pointer" onClick={()=>redirect("/login")}>Log In</Button> 
           <Button className="cursor-pointer bg-background hidden md:block" 
           onClick={()=>redirect("/docs")} 

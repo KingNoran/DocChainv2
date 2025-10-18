@@ -1,7 +1,6 @@
 'use client';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
-import { ModeToggle } from '@/components/ui/toggle-mode';
 import InfoCarousel from '@/components/carousel/InfoCarousel';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -35,7 +34,6 @@ export const Home = () => {
           <span className="text-xl font-bold">DocChain</span>
         </div>
         <div className="flex items-center gap-4">
-          <ModeToggle />
           <Link href="/login">
             <button className="px-6 py-2 rounded-lg border border-foreground text-foreground text-base font-medium hover:bg-foreground/10 transition-colors cursor-pointer">Log In</button>
           </Link>

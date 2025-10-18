@@ -9,7 +9,7 @@ import { LogOut, Verified, VerifiedIcon } from 'lucide-react'
 import { logout } from '@/lib/actions/logout'
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { cn } from '@/lib/utils';
+import { CourseCode } from './admin/contexts/StudentFormContext';
 
 
 const StudentOverview = ({
@@ -31,6 +31,9 @@ const StudentOverview = ({
     nationality,
     address,
     birthday,
+    highschool,
+    major,
+    
 }: StudentOverviewTemplate) => {
 
   const joinedDate = (createdAt : string)=>
@@ -44,6 +47,18 @@ const StudentOverview = ({
 
   const router = useRouter();
   const {data: session} = useSession();
+  const lastActDate = `${lastActivityDate.getMonth()}${lastActivityDate.getDay()}${lastActivityDate.getFullYear()}`
+
+  const courses = {
+   BSIT: "BS Information Technology" ,
+   BSCS: "BS Computer Science" ,
+   BSCRIM: "BS Criminology" ,
+   BSHM: "BS Hospitality Management" ,
+   BSP: "BS Psychology" ,
+   BSED_M: "BSED Mathematics" ,
+   BSED_E: "BSED English" ,
+   BSBM_MM: "BS Business Management (Marketing Management)" ,
+  };
 
   const goToValidatePage = () => {
     router.push(`/student/verify?name=${encodeURIComponent(session?.user.name)}&email=${encodeURIComponent(session?.user.email)}`);
@@ -60,9 +75,6 @@ const StudentOverview = ({
           </div>
         </CardContent>
         <CardContent className='flex gap-4'>
-          <Button onClick={logout} className="bg-red-500 hover:bg-red-600 text-white">
-            <LogOut className="mr-2 h-4 w-4" /> Logout
-          </Button>
           {
             emailVerified ?
             null :
@@ -79,20 +91,19 @@ const StudentOverview = ({
           <Separator />
           <div className="px-5 grid grid-cols-2 gap-5">
             <div className='flex flex-col gap-5'>
-              <h3 className='text-muted-foreground'>Year:</h3>
-              <i></i>
+              <h3 className='text-muted-foreground'>Program: {courses[course!]}</h3>
             </div>
             <div className="flex flex-col gap-5">
-              <h3 className='text-muted-foreground'>Nationality:</h3>
-              <i>{nationality}</i>
+              <h3 className='text-muted-foreground'>Nationality: {nationality}</h3>
             </div>
             <div className='flex flex-col gap-5'>
-              <h3 className='text-muted-foreground'>Semester:</h3>
-              <i></i>
+              <h3 className='text-muted-foreground'>Major: { major === undefined || major === "null" || major === ""  ? "N/A" : major }</h3>
             </div>
             <div className='flex flex-col gap-5'>
-              <h3 className='text-muted-foreground'>Address:</h3>
-              <i>{address}</i>
+              <h3 className='text-muted-foreground'>Highschool: { highschool }</h3>
+            </div>
+            <div className='flex flex-col gap-5'>
+              <h3 className='text-muted-foreground'>Address: {address}</h3>
             </div>
           </div>
           <Separator />

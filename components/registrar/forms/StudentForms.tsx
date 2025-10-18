@@ -109,7 +109,7 @@ const RegistrarStudentForms = (
                   render={({field})=>(
                       <FormItem className='flex flex-col gap-1'>
                           <FormLabel className="text-base font-normal text-dark-500">
-                              Last Name
+                              Last Name <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                               <Input
@@ -133,7 +133,7 @@ const RegistrarStudentForms = (
                   render={({field})=>(
                       <FormItem className='flex flex-col gap-1'>
                           <FormLabel className="text-base font-normal text-dark-500">
-                              First Name
+                              First Name <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                               <Input
@@ -161,7 +161,7 @@ const RegistrarStudentForms = (
                           </FormLabel>
                           <FormControl>
                               <Input
-                                  placeholder="Middle Name"
+                                  placeholder="Middle Name (optional)"
                                   {...field}
                                   value={formData.middleName}
                                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -180,7 +180,7 @@ const RegistrarStudentForms = (
                     render={({field})=>(
                         <FormItem className='flex flex-col gap-1'>
                             <FormLabel className="text-base font-normal text-dark-500">
-                                Password
+                                Password <span className="text-red-500">*</span>
                             </FormLabel>
                             <FormControl>
                                 <Input
@@ -204,7 +204,7 @@ const RegistrarStudentForms = (
                   render={({field})=>(
                       <FormItem className='flex flex-col gap-1'>
                           <FormLabel className="text-base font-normal text-dark-500">
-                              Course
+                              Course <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                               <Select
@@ -236,7 +236,7 @@ const RegistrarStudentForms = (
                   render={({field})=>(
                       <FormItem className='flex flex-col gap-1'>
                           <FormLabel className="text-base font-normal text-dark-500">
-                              Email
+                              Email <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                               <Input
@@ -260,7 +260,7 @@ const RegistrarStudentForms = (
                   render={({field})=>(
                       <FormItem className='flex flex-col gap-1'>
                           <FormLabel className="text-base font-normal text-dark-500">
-                              Phone Number
+                              Phone Number <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                               <Input
@@ -285,7 +285,7 @@ const RegistrarStudentForms = (
   render={({field})=>(
       <FormItem className='flex flex-col gap-1'>
           <FormLabel className="text-base font-normal text-dark-500">
-              Highschool
+              Highschool <span className="text-red-500">*</span>
           </FormLabel>
           <FormControl>
               <Input
@@ -306,11 +306,11 @@ const RegistrarStudentForms = (
 
 <FormField 
   control={studentForms.control}
-  name={"major"}
+  name={"major"} 
   render={({field})=>(
       <FormItem className='flex flex-col gap-1'>
           <FormLabel className="text-base font-normal text-dark-500">
-              Major
+              Major <span className="text-red-500">*</span>
           </FormLabel>
           <FormControl>
               <Input
@@ -335,7 +335,7 @@ const RegistrarStudentForms = (
                               render={({ field }) => (
                                 <FormItem className="flex flex-col gap-1">
                                   <FormLabel className="text-base font-normal text-dark-500">
-                                    Nationality
+                                    Nationality <span className="text-red-500">*</span>
                                   </FormLabel>
                                   <FormControl>
                                     <NationalitySelect
@@ -383,7 +383,7 @@ const RegistrarStudentForms = (
                   render={({ field }) => (
                     <FormItem className="flex flex-col gap-1 w-full">
                       <FormLabel className="text-base font-normal text-dark-500">
-                        Address
+                        Address <span className="text-red-500">*</span>
                       </FormLabel>
                       <AddressSelect
                         onChange={(fullAddress: string) => {

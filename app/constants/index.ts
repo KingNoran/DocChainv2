@@ -13,6 +13,19 @@ export const navigationLinks = [
     }
 ];
 
+export const studentSidebarLinks = [
+  {
+    title: "Profile",
+    url: "/student/my-profile",
+    icon: Home,
+  },
+  {
+    title: "View TOR",
+    url: "/student/my-profile/tor",
+    icon: TablePropertiesIcon,
+  },
+];
+
 export const registrarSidebarLinks = [
   {
     title: "Dashboard",

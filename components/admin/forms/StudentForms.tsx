@@ -125,11 +125,11 @@ const StudentForms = () => {
                   render={({field})=>(
                       <FormItem className='flex flex-col gap-1'>
                           <FormLabel className="text-base font-normal text-dark-500">
-                              Middle Name <span className="text-red-500">*</span>
+                              Middle Name
                           </FormLabel>
                           <FormControl>
                               <Input
-                                  placeholder="Middle Name"
+                                  placeholder="Middle Name (optional)"
                                   {...field}
                                   value={formData.middleName}
                                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {

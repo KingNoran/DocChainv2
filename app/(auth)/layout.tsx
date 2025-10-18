@@ -1,5 +1,4 @@
 import { auth } from '@/auth';
-import { ThemeProvider } from '@/components/ThemeProvider';
 import { redirect } from 'next/navigation';
 import {ReactNode} from 'react'
 
@@ -18,11 +17,7 @@ const Layout = async ({children}:{children:ReactNode}) => {
       <section className="auth-form">
         <div className="auth-box">
           <div>
-            <ThemeProvider
-                defaultTheme="light"
-              >
             {children}
-            </ThemeProvider>
           </div>
         </div>
       </section>

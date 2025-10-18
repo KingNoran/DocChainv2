@@ -26,20 +26,8 @@ const Footer = () => {
           </p>
         </div>
         <div>
-          <ul>
-            <li className="font-bold pb-3">Company</li>
-            <li>
-              <Link href="/docs/about-us">About Us</Link>
-            </li>
-          </ul>
         </div>
         <div>
-          <ul>
-            <li className="font-bold pb-3">Resources</li>
-            <li>
-              <Link href="/docs">Documentation</Link>
-            </li>
-          </ul>
         </div>
         <div>
           <ul>
