@@ -5,12 +5,11 @@ import { db } from "@/database/drizzle";
 import { students, users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 
-export const getStudentData = async (email: string) => {
-  const user = await db.select().from(users).where(eq(users.email, email));
+export const getStudentData = async (userId: string) => {
   const student = await db
-    .select()
+    .select({studentId: students.studentId})
     .from(students)
-    .where(eq(students.userId, user[0].userId));
+    .where(eq(students.userId, userId));
 
-  return { ...student[0], ...user[0] };
+  return student[0];
 }

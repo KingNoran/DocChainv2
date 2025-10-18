@@ -29,7 +29,12 @@ interface DataTableProps<TData extends { id: number }, TValue> {
   onDelete?: (ids: number[]) => Promise<void>;
 }
 
-export function DataTable<TData extends { id: number }, TValue>({
+interface HasActivity {
+  id: number;
+  activity: string;
+}
+
+export function DataTable<TData extends { id: number } & HasActivity, TValue>({
   columns,
   data,
   onArchive,
@@ -55,6 +60,12 @@ export function DataTable<TData extends { id: number }, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
+
+  const selectedRows = table.getSelectedRowModel().rows;
+  const canValidate =
+    selectedRows.length > 0 &&
+    selectedRows.every((row) => row.original.activity === "create");
+
 
   const selectedIds = table.getSelectedRowModel().rows.map(
     (row) => row.original.id
@@ -118,7 +129,7 @@ export function DataTable<TData extends { id: number }, TValue>({
         variant="default"
         size="sm"
         onClick={handleValidate}
-        disabled={selectedIds.length === 0 || isProcessing}
+        disabled={selectedIds.length === 0 || isProcessing || !canValidate}
       >
         {isProcessing ? "Processing..." : "Validate Selected"}
       </Button>

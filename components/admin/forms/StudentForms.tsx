@@ -252,7 +252,7 @@ const StudentForms = () => {
                                                 value={formData.highschool}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                   field.onChange(e);
-                                                  setFormData({phone: e.target.value });
+                                                  setFormData({highschool: e.target.value });
                                                 }}
                                             />
                                         </FormControl>
@@ -276,7 +276,7 @@ const StudentForms = () => {
                                                 value={formData.major}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                   field.onChange(e);
-                                                  setFormData({phone: e.target.value });
+                                                  setFormData({major: e.target.value });
                                                 }}
                                             />
                                         </FormControl>

@@ -35,13 +35,12 @@ export async function POST(req: Request) {
         const type = r.activity?.toLowerCase();
 
         console.log("Validating request:", r.id, "activity:", type);
-        console.log(content);
         // 🧩 CREATE STUDENT
         if (type === "create") {
           // The content *is* the student info itself, not wrapped in userParams
           const userParams = {
             email: content.email,
-            password: `${content.last_name}${content.firstName})}`, // 🔒 you can replace this or generate one
+            password: `${content.lastName}${content.firstName}${String(new Date(content.birthday).getFullYear())}`, // 🔒 you can replace this or generate one
             firstName: content.firstName,
             middleName: content.middleName,
             lastName: content.lastName,
@@ -69,7 +68,7 @@ export async function POST(req: Request) {
         }
 
         // ✅ FINALIZE (mark TOR ready)
-        else if (type === "finalize") {
+        else if (type === "finalizeTor") {
           const studentId = content.studentId;
           if (!studentId) throw new Error("Missing studentId for finalize request");
 

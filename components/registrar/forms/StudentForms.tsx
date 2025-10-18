@@ -175,30 +175,6 @@ const RegistrarStudentForms = (
                     )} 
                   />
                   <FormField 
-                    control={studentForms.control}
-                    name={"password"}
-                    render={({field})=>(
-                        <FormItem className='flex flex-col gap-1'>
-                            <FormLabel className="text-base font-normal text-dark-500">
-                                Password <span className="text-red-500">*</span>
-                            </FormLabel>
-                            <FormControl>
-                                <Input
-                                    required
-                                    placeholder="Password"
-                                    {...field}
-                                    value={formData.password}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                      field.onChange(e);
-                                      setFormData({password: e.target.value });
-                                    }}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                      )} 
-                    />
-                  <FormField 
                   control={studentForms.control}
                   name={"course"}
                   render={({field})=>(

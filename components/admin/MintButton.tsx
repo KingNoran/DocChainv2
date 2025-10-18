@@ -59,12 +59,6 @@ const MintButton = ({
 
       console.log(`Success - ${tokenizerHash.hash}`);
 
-      await fetch("/api/mint-update-tor", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ studentId: tokenId, pdfHash }),
-      });
-
     } catch (error) {
       if (isCallException(error)) {
         const contract = await getSmartContract();

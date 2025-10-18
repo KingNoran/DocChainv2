@@ -1,7 +1,6 @@
 "use client"
 
 import { TOR } from '@/app/student/types';
-import Paper from '@/components/registrar/Paper';
 import Transcript from '@/components/Transcript';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
@@ -121,6 +120,7 @@ const Page = () => {
   return (
     <div>
       <h2 className="mt-6 font-bold">Transcript Data</h2>
+      <h2 className="mt-6 font-bold">Student ID: {studentData.studentId}</h2>
       {/* {!transcriptData ? (
         <p>No transcript data found</p>
       ) : (
@@ -149,7 +149,11 @@ const Page = () => {
       <Transcript 
       initialStudent={transcriptStudent} 
       initialTranscript={transcriptData!} 
-      initialGrades={courseGrades}/>
+      initialGrades={courseGrades}
+      isTorReady={studentData.torReady}
+      readOnly={true}
+      />
+      
     </div>
 
   );

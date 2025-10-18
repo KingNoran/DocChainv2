@@ -47,7 +47,7 @@ const BurnButton = ({ tokenId }: { tokenId: number }) => {
       await fetch("/api/burn-update-tor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ studentId: tokenId }),
+        body: JSON.stringify({ studentId: tokenId, torHash: tokenizerHash }),
       });
 
     } catch (error) {

@@ -148,7 +148,6 @@ const RegistrarForms = ({
                     </FormLabel>
                     <FormControl>
                         <Input
-                            required
                             placeholder="Middle Name"
                             {...field}
                             value={formData.middleName}

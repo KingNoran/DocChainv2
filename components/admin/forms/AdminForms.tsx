@@ -145,7 +145,6 @@ const AdminForms = ({
                     </FormLabel>
                     <FormControl>
                         <Input
-                            required
                             placeholder="Middle Name"
                             {...field}
                             value={formData.middleName}

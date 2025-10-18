@@ -24,6 +24,11 @@ export const studentSidebarLinks = [
     url: "/student/my-profile/tor",
     icon: TablePropertiesIcon,
   },
+  {
+    title: "Settings",
+    url: "/student/my-profile/settings",
+    icon: TablePropertiesIcon,
+  },
 ];
 
 export const registrarSidebarLinks = [

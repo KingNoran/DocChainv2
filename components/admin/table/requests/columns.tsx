@@ -2,8 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { getStudentData } from "@/lib/studentGet";
 import { Popover, PopoverTrigger, PopoverContent } from "@radix-ui/react-popover";
 import { ColumnDef } from "@tanstack/react-table"
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 
 export type Request = {
@@ -20,6 +23,29 @@ export type Request = {
   isArchived: boolean;
 };
 
+function ViewStudentButton({ requesterId }: { requesterId: string }) {
+  const [studentId, setStudentId] = useState<string | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const getStudent = async ()=>{
+        const studentId = await getStudentData(requesterId);
+        setStudentId(String(studentId.studentId));
+    }
+    getStudent()
+  }, [requesterId]);
+
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => studentId && router.push(`/admin/requests/${studentId}`)}
+      disabled={!studentId}
+    >
+      Click to view
+    </Button>
+  );
+}
 
 function toTitleCase(str: string) {
   return str
@@ -59,26 +85,28 @@ export const requestColumns: ColumnDef<Request>[] = [
         accessorKey: "requestContent",
         header: "Content",
         cell: ({ row }) => {
+            const activity = row.getValue("activity") as string;
             const value = row.getValue("requestContent") as Record<string, string>;
+
+            if (activity === "create") {
             return (
                 <Popover>
-                    <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm">
-                        Click to view
-                    </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="max-w-sm whitespace-pre-wrap text-sm bg-white p-4 border border-black rounded-2xl">
+                <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm">Click to view</Button>
+                </PopoverTrigger>
+                <PopoverContent className="max-w-sm whitespace-pre-wrap text-sm bg-white p-4 border border-black rounded-2xl">
                     {Object.entries(value).map(([key, val]) => (
-                        <div key={key} className="mb-1 text-left">
-                        <span className="font-medium">{toTitleCase(key)}:</span> {
-                        val === null || val === "" || val === undefined
-                        ? <span className="text-gray-400 italic">none</span> 
-                        : val}
-                        </div>
+                    <div key={key} className="mb-1 text-left">
+                        <span className="font-medium">{toTitleCase(key)}:</span>{" "}
+                        {val ?? <span className="text-gray-400 italic">none</span>}
+                    </div>
                     ))}
-                    </PopoverContent>
+                </PopoverContent>
                 </Popover>
             );
+            } else {
+            return <ViewStudentButton requesterId={row.original.requesterId} />;
+            }
         },
     },
     {

@@ -7,7 +7,7 @@ import { auth } from "@/auth";
 
 export const POST = async (req: Request) => {
     const session = await auth();
-    const { studentId } = await req.json();
+    const { studentId, pdfHash } = await req.json();
         
     if (!session || !["REGISTRAR", "ADMIN"].includes(session.user?.role || "")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -17,8 +17,8 @@ export const POST = async (req: Request) => {
       await db
         .update(students)
         .set({
-          torHash: "",
-          torReady: false,
+          torHash: pdfHash,
+          torReady: true,
         })
         .where(eq(students.studentId, studentId));
   

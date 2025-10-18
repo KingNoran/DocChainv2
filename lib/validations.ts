@@ -66,6 +66,24 @@ const personalFields = z.object({
   address: z.string().min(1, "Address is required"),
 });
 
+const registrarPersonalFields = z.object({
+  phone: z
+    .string()
+    .regex(/^(09\d{9}|\+639\d{9})$/, { message: "Invalid Filipino phone number" }),
+
+  email: z.string().email({ message: "Invalid email address" }),
+
+  nationality: z.string().min(1, "Nationality is required").default("Filipino"),
+
+  birthday: z
+    .date()
+    .refine(isAdult, { message: "Must be at least 18 years old" }),
+
+  address: z.string().min(1, "Address is required"),
+});
+
+
+
 //
 // ─── STUDENT SCHEMA ────────────────────────────────────────────────────────────
 //
@@ -95,7 +113,7 @@ export type StudentInputs = z.infer<typeof studentSchema>;
 // ─── REGISTRAR STUDENT SCHEMA ─────────────────────────────────────────────────
 //
 export const registrarStudentSchema = nameFields
-  .merge(personalFields)
+  .merge(registrarPersonalFields)
   .extend({
     course: z.enum([
       "BSIT",

@@ -63,18 +63,21 @@ if (typeof window !== "undefined") {
 }
 
 // Header component
+// Header component
 const TranscriptHeader: FC<{ 
   student: Student; 
   control: any; 
   isFirstPage?: boolean; 
   readOnly?: boolean;
   qrCodeDataUrl?: string;
+  isTorReady?: boolean; // add this prop
 }> = ({
   student,
   control,
   isFirstPage = true,
   readOnly = false,
   qrCodeDataUrl,
+  isTorReady = false,
 }) => {
   const courseNames = {
     BSIT: "BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY (BSIT)",
@@ -100,8 +103,8 @@ const TranscriptHeader: FC<{
         <p className="text-sm">Revised Curriculum SY 2013-2014</p>
         {!isFirstPage && <p className="text-sm font-semibold">(Continued)</p>}
         
-        {/* QR Code in top-right corner */}
-        {isFirstPage && qrCodeDataUrl && (
+        {/* ✅ QR Code in top-right corner only if torReady and torHash exists */}
+        {isFirstPage && isTorReady && student.torHash && qrCodeDataUrl && (
           <div className="absolute top-0 right-0">
             <img 
               src={qrCodeDataUrl} 
@@ -115,7 +118,7 @@ const TranscriptHeader: FC<{
       {isFirstPage && (
         <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm mb-6">
           {Object.entries(student).map(([key, value]) => {
-            if (key === "degree") return null;
+            if (key === "degree" || key === "torHash" || key === "studentId") return null;
             return (
               <div key={key} className="flex gap-2 justify-between">
                 <span className="font-semibold">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
@@ -146,6 +149,7 @@ const TranscriptHeader: FC<{
     </div>
   );
 };
+
 
 // Course Table
 const CourseTable: FC<{
@@ -276,21 +280,30 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
   generateQRCode();
 }, [initialStudent.studentId]);
 
-  const handleFinalizeTOR = async() => {
-    // Your finalize logic here
+  const handleFinalizeTOR = async(session: Session) => {
+    try{
+      const res = await sendRequest({}, session, 'finalizeTor');
+      if(res.success){
+        toast.success("Request to finalize sent to admin!")
+      } else {
+        throw new Error(res.error ?? res.message ?? "Unknown error")
+      }
+    }catch(error){
+      toast.error((error as Error).message);
+    }
   }
 
   const handleSendRequest = async(session: Session) => {
-    sendRequest({
-      firstName: "", 
-      lastName: "", 
-      phone: "", 
-      email: "",
-      nationality: "",
-      address: "",
-      birthday: new Date()
-    }, 
-      session, 'requestTor');
+    try {
+      const res = await sendRequest({}, session, 'requestTor');
+      if(res.success){
+        toast.success("Request to download sent to admin!")
+      } else {
+        throw new Error(res.error ?? res.message ?? "Unknown error")
+      }
+    }catch(error){
+      toast.error((error as Error).message);
+    }
   }
 
   const handleDownloadPdf = async () => {
@@ -323,37 +336,39 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
 
     // Helper to add header
     const addHeader = (isFirstPage = true) => {
-      pdf.setFontSize(12);
-      pdf.setFont("helvetica", "bold");
-      pdf.text("CAVITE STATE UNIVERSITY", pageWidth / 2, margin, { align: "center" });
-      
-      pdf.setFontSize(10);
-      pdf.setFont("helvetica", "normal");
-      pdf.text("BACOOR CAMPUS", pageWidth / 2, margin + 5, { align: "center" });
-      pdf.text("OFFICE OF THE REGISTRAR", pageWidth / 2, margin + 10, { align: "center" });
-      
-      pdf.setFontSize(11);
-      pdf.setFont("helvetica", "bold");
-      const courseTitle = courseNames[student.degree as keyof typeof courseNames] || student.degree;
-      const titleLines = pdf.splitTextToSize(`CHECKLIST FOR THE ${courseTitle}`, contentWidth);
-      pdf.text(titleLines, pageWidth / 2, margin + 18, { align: "center" });
-      
-      pdf.setFontSize(9);
-      pdf.setFont("helvetica", "normal");
-      pdf.text("Revised Curriculum SY 2013-2014", pageWidth / 2, margin + 28, { align: "center" });
-      
-      if (!isFirstPage) {
-        pdf.text("(Continued)", pageWidth / 2, margin + 33, { align: "center" });
-      }
-      
-      // Add QR code on first page
-      if (isFirstPage && qrCodeRef.current) {
-        const qrSize = 25; // 25mm
-        pdf.addImage(qrCodeRef.current, 'PNG', pageWidth - margin - qrSize, margin, qrSize, qrSize);
-      }
-      
-      return isFirstPage ? margin + 38 : margin + 38;
-    };
+  pdf.setFontSize(12);
+  pdf.setFont("helvetica", "bold");
+  pdf.text("CAVITE STATE UNIVERSITY", pageWidth / 2, margin, { align: "center" });
+  
+  pdf.setFontSize(10);
+  pdf.setFont("helvetica", "normal");
+  pdf.text("BACOOR CAMPUS", pageWidth / 2, margin + 5, { align: "center" });
+  pdf.text("OFFICE OF THE REGISTRAR", pageWidth / 2, margin + 10, { align: "center" });
+  
+  pdf.setFontSize(11);
+  pdf.setFont("helvetica", "bold");
+  const courseTitle = courseNames[student.degree as keyof typeof courseNames] || student.degree;
+  const titleLines = pdf.splitTextToSize(`CHECKLIST FOR THE ${courseTitle}`, contentWidth);
+  pdf.text(titleLines, pageWidth / 2, margin + 18, { align: "center" });
+  
+  pdf.setFontSize(9);
+  pdf.setFont("helvetica", "normal");
+  pdf.text("Revised Curriculum SY 2013-2014", pageWidth / 2, margin + 28, { align: "center" });
+  
+  if (!isFirstPage) {
+    pdf.text("(Continued)", pageWidth / 2, margin + 33, { align: "center" });
+  }
+  
+  // ✅ Only add QR code if torHash exists and TOR is ready
+  if (isFirstPage && qrCodeRef.current && isTorReady && student.torHash) {
+    const qrSize = 25; // 25mm
+    if (isFirstPage && qrCodeRef.current && isTorReady && student.torHash){
+      pdf.addImage(qrCodeRef.current, 'PNG', pageWidth - margin - qrSize, margin, qrSize, qrSize);
+    }
+  }
+  
+  return isFirstPage ? margin + 38 : margin + 38;
+};
 
     // Add first page header and student info
     let yPos = addHeader(true);
@@ -536,6 +551,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
       isFirstPage={true} 
       readOnly={readOnly}
       qrCodeDataUrl={qrCodeDataUrl}
+      isTorReady={isTorReady}
     />
   );
   estimatedHeight = 350;
@@ -553,6 +569,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
             control={control} 
             isFirstPage={false} 
             readOnly={readOnly}
+            isTorReady={isTorReady}
           />
         ];
         estimatedHeight = 150;
@@ -573,6 +590,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
               control={control} 
               isFirstPage={false} 
               readOnly={readOnly}
+              isTorReady={isTorReady}
             />,
             <h2 key={`${year}-title-${pageNumber}`} className="font-bold mt-4 mb-2 uppercase">{year} (Continued)</h2>,
           ];
@@ -643,7 +661,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
         }
       `}</style>
       <div className="text-center mt-4">
-      {!isTorReady ?
+      {isTorReady || pathname.includes("/admin")?
         <button
         type="button"
         onClick={handleDownloadPdf}
@@ -653,23 +671,11 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
       </button> : 
       <button
         type="button"
-        onClick={()=>handleSendRequest(session!)}
+        onClick={!isRegistrar ? ()=>handleSendRequest(session!) : ()=>handleFinalizeTOR(session!)}
         className="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 print:hidden"
       >
-        Request TOR
+        {!isRegistrar ? "Request TOR" : "Finalize TOR"}
       </button>
-      }
-      { isRegistrar ? 
-      <div className="mt-4">
-        <button
-        type="button"
-        onClick={handleFinalizeTOR}
-        className="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 print:hidden"
-      >
-        Finalize TOR
-      </button>
-      </div>
-      : null
       }
     </div>
     </form>
