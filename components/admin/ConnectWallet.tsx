@@ -3,34 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
-const switchToSepolia = async () => {
-  try {
-    await window.ethereum.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: '0xAA551' }], // Sepolia: 11155111 decimal = 0xAA551 hex
-    });
-  } catch (switchError: any) {
-    // This error code indicates the chain has not been added to MetaMask
-    if (switchError.code === 4902) {
-      await window.ethereum.request({
-        method: 'wallet_addEthereumChain',
-        params: [
-          {
-            chainId: '0xAA551',
-            chainName: 'Sepolia Testnet',
-            rpcUrls: ['https://rpc.sepolia.org'],
-            nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-            blockExplorerUrls: ['https://sepolia.etherscan.io'],
-          },
-        ],
-      });
-    } else {
-      console.error(switchError);
-    }
-  }
-};
-
-
 const ConnectWallet = () => {
   const [account, setAccount] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
@@ -38,7 +10,6 @@ const ConnectWallet = () => {
   const connectWallet = async () => {
 		setLoading(true);
     try {
-			await switchToSepolia();
 			const accounts = await window.ethereum.request({
 				method: "eth_requestAccounts",
 			});
