@@ -35,20 +35,25 @@ export async function POST(req: Request) {
         const type = r.activity?.toLowerCase();
 
         console.log("Validating request:", r.id, "activity:", type);
-
+        console.log(content);
         // 🧩 CREATE STUDENT
         if (type === "create") {
           // The content *is* the student info itself, not wrapped in userParams
           const userParams = {
             email: content.email,
-            password: "default123", // 🔒 you can replace this or generate one
+            password: `${content.last_name}${content.firstName})}`, // 🔒 you can replace this or generate one
             firstName: content.firstName,
             middleName: content.middleName,
             lastName: content.lastName,
             phone: content.phone,
             address: content.address,
-            birthday: content.birthday,
+            birthday: new Date(content.birthday),
             nationality: content.nationality,
+            major: content.major,
+            torHash: content.torHash,
+            highschool: content.highschool,
+            dateEntrance: new Date(content.dateEntrance),
+            course: content.course
           };
 
           const courseValue = content.course;

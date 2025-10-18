@@ -16,8 +16,6 @@ const StudentOverview = ({
     studentId,
     userId,
     course,
-    year,
-    semester,
     torReady,
     role,
     password,
@@ -34,27 +32,6 @@ const StudentOverview = ({
     address,
     birthday,
 }: StudentOverviewTemplate) => {
-
-  const studentYear = (year: number)=>{
-    switch(year!){
-      case 1:
-        return "First Year";
-      case 2:
-        return "Second Year";
-      case 3:
-        return "Third Year";
-      case 4:
-        return "Fourth Year";
-      default:
-        return "Invalid Input";
-    }
-  }
-
-  const studentSemester = (semester : number)=>{
-    if(semester == 1) return "First Sem";
-    else if (semester == 2) return "Second Sem";
-    else return "Invalid Input";
-  }
 
   const joinedDate = (createdAt : string)=>
     {
@@ -103,7 +80,7 @@ const StudentOverview = ({
           <div className="px-5 grid grid-cols-2 gap-5">
             <div className='flex flex-col gap-5'>
               <h3 className='text-muted-foreground'>Year:</h3>
-              <i>{studentYear(year!)}</i>
+              <i></i>
             </div>
             <div className="flex flex-col gap-5">
               <h3 className='text-muted-foreground'>Nationality:</h3>
@@ -111,7 +88,7 @@ const StudentOverview = ({
             </div>
             <div className='flex flex-col gap-5'>
               <h3 className='text-muted-foreground'>Semester:</h3>
-              <i>{studentSemester(semester!)}</i>
+              <i></i>
             </div>
             <div className='flex flex-col gap-5'>
               <h3 className='text-muted-foreground'>Address:</h3>

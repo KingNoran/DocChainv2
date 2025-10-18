@@ -8,16 +8,14 @@ import COURSES_ENUM from '../enums/COURSES_ENUM';
 const students = table("students",{
     studentId: t.integer('id').generatedAlwaysAsIdentity().primaryKey(),
     userId: t.uuid("user_id").references(()=>users.userId),
-    year: t.integer("year").default(1).notNull(),
-    semester: t.integer("semester").default(1).notNull(),
     course: COURSES_ENUM("course").notNull(),
-    finalGrade: t.decimal("final_grade").default("0").notNull(),
-    torReady: t.boolean("tor_ready").default(false).notNull(),
+    finalGrade: t.decimal("final_grade").default("0"),
+    torReady: t.boolean("tor_ready").default(false),
     torHash: t.text("tor_hash").default(""),
     major: t.text("major"),
     dateGraduated: t.date("date_graduated"),
-    highschool: t.text("highschool"),
-    dateEntrance: t.timestamp("date_entrace").defaultNow()
+    highschool: t.text("highschool").notNull(),
+    dateEntrance: t.timestamp("date_entrance").notNull()
 });
 
 export const studentsRelations = relations(students, ({one}) => ({

@@ -1,99 +1,131 @@
 import NextAuth, { User } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials"
+import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "./database/drizzle";
 import { users } from "./database/schema";
 import { compare } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { Roles } from "./types/global";
+import { UpstashRedisAdapter } from "@auth/upstash-redis-adapter";
+import redis from "./database/redis";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-    session:{
-        strategy: "jwt",
-    },
+  adapter: UpstashRedisAdapter(redis),
+
+  // We’ll still use JWTs — Redis can store sessions/tokens if you want later.
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 60, // default fallback (30 mins)
+  },
+
   providers: [
     CredentialsProvider({
-        name: "credentials",
-        credentials: {
-            email: {label: "Email", type: "email"},
-            password: { label: "Password", type: "password"}
-        },
-        async authorize(credentials){
-            if(!credentials?.email || !credentials?.password) return null;
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
 
-            const user = await db
-                .select()
-                .from(users)
-                .where(eq(users.email, credentials.email.toString()))
-                .limit(1);
+        const user = await db
+          .select()
+          .from(users)
+          .where(eq(users.email, credentials.email.toString()))
+          .limit(1);
 
-            if(user.length===0) return null;
+        if (user.length === 0) return null;
 
-            const isPasswordValid = await compare(
-                credentials.password.toString(), 
-                user[0].password,
-            );
+        const isPasswordValid = await compare(
+          credentials.password.toString(),
+          user[0].password
+        );
 
-            if(!isPasswordValid) return null;
+        if (!isPasswordValid) return null;
 
-            return{
-                id: user[0].userId.toString(),
-                email: user[0].email,
-                name: `${user[0].firstName} ${user[0].middleName} ${user[0].lastName}`,
-                role: user[0].role.toUpperCase()
-            } as User;
-        }
-    })
+        return {
+          id: user[0].userId.toString(),
+          email: user[0].email,
+          name: `${user[0].firstName} ${user[0].middleName ?? ""} ${user[0].lastName}`,
+          role: user[0].role.toUpperCase(),
+        } as User;
+      },
+    }),
   ],
+
   pages: {
     signIn: "/login",
   },
+
   callbacks: {
     async jwt({ token, user }) {
-    if (user) {
+      if (user) {
         token.id = user.id;
         token.name = user.name;
         token.email = user.email;
-        // normalize to uppercase and store
         const role = String(user.role).toUpperCase() as Roles;
         token.role = role;
 
+        // ✅ role-based expiry
         let expiresIn = 30 * 60;
         switch (role) {
-        case "ADMIN":
+          case "ADMIN":
             expiresIn = 15 * 60;
             break;
-        case "REGISTRAR":
+          case "REGISTRAR":
             expiresIn = 20 * 60;
             break;
-        case "STUDENT":
+          case "STUDENT":
             expiresIn = 30 * 60;
             break;
         }
 
         token.iat = Math.floor(Date.now() / 1000);
         token.exp = token.iat + expiresIn;
-    }
-    return token;
-    },
-    async session({session, token}){
-        if(session.user){
-            session.user.id = token.id as string;
-            session.user.role = token.role as string;
-            session.user.name = token.name as string;
-        }
-        return session;
-    }
-  },
-  events: {
-    async signOut(message) {
-        const session = (message as { session?: any }).session
-        const userId = session?.user?.id
-        if (!userId) return
+      }
 
-        await db
-        .update(users)
-        .set({ active: false })
-        .where(eq(users.userId, userId))
+      // Store the session in Redis (optional but recommended)
+      if (token.id && token.exp) {
+        const ttl = token.exp - Math.floor(Date.now() / 1000);
+        if (ttl > 0) {
+            await redis.set(
+            `session:${token.id}`,
+            {
+                id: token.id,
+                email: token.email,
+                role: token.role,
+                exp: token.exp,
+            },
+            { ex: ttl }
+            );
+        }
+        }
+
+      return token;
     },
-  }
-})
+
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+        session.user.name = token.name as string;
+      }
+      return session;
+    },
+  },
+
+  events: {
+  async signOut(message) {
+    // message could be { session } or { token }
+    const maybeSession = (message as { session?: any }).session;
+    const userId = maybeSession?.user?.id;
+
+    if (!userId) return;
+
+    await redis.del(`session:${userId}`);
+    await db
+      .update(users)
+      .set({ active: false })
+      .where(eq(users.userId, userId));
+  },
+},
+});

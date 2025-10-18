@@ -1,7 +1,7 @@
 "use server";
 
 import { AuthCredentials } from "@/app/student/types";
-import { signIn } from "@/auth";
+import { auth, signIn } from "@/auth";
 import { headers } from "next/headers";
 import ratelimit from "@/lib/ratelimit";
 import { redirect } from "next/navigation";
@@ -14,7 +14,6 @@ export const signInWithCredentials = async (
     params: Pick<AuthCredentials, "email" | "password">
 )=>{
     const { email, password } = params;
-
     const ip = (await headers()).get('x-forwarded-for') || '127.0.0.1';
     const { success } = await ratelimit.limit(ip);
 

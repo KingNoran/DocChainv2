@@ -33,11 +33,9 @@ export async function GET(request: Request) {
     const data = await db
       .select({
         studentId: students.studentId,
-        year: students.year,
         firstName: users.firstName,
         middleName: sql<string | undefined>`COALESCE(${users.middleName}, NULL)`,
         lastName: users.lastName,
-        semester: students.semester,
         course: students.course,
         torReady: students.torReady,
         nationality: users.nationality,

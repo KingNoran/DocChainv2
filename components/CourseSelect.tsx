@@ -13,7 +13,7 @@ interface CourseSelectProps {
   value?: string;
 }
 
-const courses = [
+export const courses = [
   { code: "BSIT", label: "BS Information Technology" },
   { code: "BSCS", label: "BS Computer Science" },
   { code: "BSCRIM", label: "BS Criminology" },

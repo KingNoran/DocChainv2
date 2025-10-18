@@ -1,18 +1,22 @@
 "use client";
 
+import { CourseCode } from "@/components/admin/contexts/StudentFormContext";
 import { createFormContext } from "@/components/FormContext";
 
 type RegistrarStudentContext = {
     firstName: string;
     middleName: string;
     lastName: string;
-    course: string;
+    course: CourseCode;
     phone: string;
     email: string;
     password: string;
-    nationality: string,
-    birthday: Date,
-    address: string,
+    nationality: string;
+    birthday: Date;
+    address: string;
+    highschool: string;
+    major: string;
+    
 }
 
 export const { Provider: RegistrarStudentFormProvider, useForm: useRegistrarStudentForms } =
@@ -20,11 +24,13 @@ export const { Provider: RegistrarStudentFormProvider, useForm: useRegistrarStud
     firstName: "",
     middleName: "",
     lastName: "",
-    course: "",
+    course: "BSCS",
     phone: "",
     email: "",
     password: "",
     nationality: "",
     birthday: new Date,
     address: "",
+    highschool: "",
+    major: ""
   });

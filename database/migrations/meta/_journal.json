@@ -5,57 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1757918274705,
-      "tag": "0000_ancient_spitfire",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1758370117257,
-      "tag": "0001_glamorous_demogoblin",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1758856699587,
-      "tag": "0002_minor_khan",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1759136602126,
-      "tag": "0003_reflective_lady_ursula",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1759717988855,
-      "tag": "0004_material_riptide",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1759719769527,
-      "tag": "0005_small_carmella_unuscione",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1760191999819,
-      "tag": "0006_confused_white_queen",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1760678560498,
-      "tag": "0007_eager_chamber",
+      "when": 1760752568792,
+      "tag": "0000_brave_xorn",
       "breakpoints": true
     }
   ]

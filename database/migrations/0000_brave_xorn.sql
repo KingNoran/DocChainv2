@@ -8,11 +8,40 @@ CREATE TABLE "admins" (
 	CONSTRAINT "admins_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
+CREATE TABLE "barangays" (
+	"brgy_code" varchar PRIMARY KEY NOT NULL,
+	"brgy_name" text,
+	"city_code" varchar,
+	"province_code" varchar,
+	"region_code" varchar
+);
+--> statement-breakpoint
+CREATE TABLE "cities" (
+	"city_code" varchar PRIMARY KEY NOT NULL,
+	"city_name" text,
+	"province_code" varchar,
+	"region_code" varchar,
+	"psgc_code" varchar
+);
+--> statement-breakpoint
+CREATE TABLE "provinces" (
+	"province_code" varchar PRIMARY KEY NOT NULL,
+	"province_name" text,
+	"psgc_code" varchar,
+	"region_code" varchar
+);
+--> statement-breakpoint
 CREATE TABLE "record" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"student_id" integer NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "regions" (
+	"region_code" varchar PRIMARY KEY NOT NULL,
+	"region_name" text,
+	"psgc_code" varchar
 );
 --> statement-breakpoint
 CREATE TABLE "registrars" (
@@ -22,12 +51,14 @@ CREATE TABLE "registrars" (
 --> statement-breakpoint
 CREATE TABLE "requests" (
 	"id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "requests_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START WITH 1 CACHE 1),
+	"request_content" jsonb NOT NULL,
 	"requester_id" uuid,
 	"validator_id" uuid,
 	"activity" text NOT NULL,
 	"status" "status" DEFAULT 'PENDING',
+	"archive" boolean DEFAULT false NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now(),
-	"validated_at" timestamp with time zone DEFAULT now()
+	"validated_at" timestamp with time zone
 );
 --> statement-breakpoint
 CREATE TABLE "transcript_semesters" (
@@ -41,11 +72,14 @@ CREATE TABLE "transcript_semesters" (
 CREATE TABLE "students" (
 	"id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "students_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START WITH 1 CACHE 1),
 	"user_id" uuid,
-	"year" integer DEFAULT 1,
-	"semester" integer DEFAULT 1,
-	"course" "course",
+	"course" "course" NOT NULL,
 	"final_grade" numeric DEFAULT '0',
-	"torReady" boolean DEFAULT false
+	"tor_ready" boolean DEFAULT false,
+	"tor_hash" text DEFAULT '',
+	"major" text,
+	"date_graduated" date,
+	"highschool" text NOT NULL,
+	"date_entrance" timestamp NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "subjects" (
@@ -74,23 +108,34 @@ CREATE TABLE "transactions" (
 --> statement-breakpoint
 CREATE TABLE "users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"role" text DEFAULT 'STUDENT',
+	"role" text DEFAULT 'STUDENT' NOT NULL,
 	"password" text NOT NULL,
 	"first_name" varchar(255) NOT NULL,
 	"middle_name" varchar(255) DEFAULT '',
 	"last_name" varchar(255) NOT NULL,
 	"email" text NOT NULL,
 	"phone" text NOT NULL,
-	"email_verified" boolean DEFAULT false,
-	"phone_verified" boolean DEFAULT false,
-	"last_activity_date" date DEFAULT now(),
-	"created_at" timestamp with time zone DEFAULT now(),
+	"nationality" text DEFAULT 'Filipino',
+	"birthday" date NOT NULL,
+	"address" text NOT NULL,
+	"active" boolean DEFAULT false NOT NULL,
+	"archive" boolean DEFAULT false NOT NULL,
+	"email_verified" boolean DEFAULT false NOT NULL,
+	"phone_verified" boolean DEFAULT false NOT NULL,
+	"last_activity_date" timestamp DEFAULT now() NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "users_id_unique" UNIQUE("id"),
 	CONSTRAINT "users_email_unique" UNIQUE("email"),
 	CONSTRAINT "users_phone_unique" UNIQUE("phone")
 );
 --> statement-breakpoint
 ALTER TABLE "admins" ADD CONSTRAINT "admins_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "barangays" ADD CONSTRAINT "barangays_city_code_cities_city_code_fk" FOREIGN KEY ("city_code") REFERENCES "public"."cities"("city_code") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "barangays" ADD CONSTRAINT "barangays_province_code_provinces_province_code_fk" FOREIGN KEY ("province_code") REFERENCES "public"."provinces"("province_code") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "barangays" ADD CONSTRAINT "barangays_region_code_regions_region_code_fk" FOREIGN KEY ("region_code") REFERENCES "public"."regions"("region_code") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "cities" ADD CONSTRAINT "cities_province_code_provinces_province_code_fk" FOREIGN KEY ("province_code") REFERENCES "public"."provinces"("province_code") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "cities" ADD CONSTRAINT "cities_region_code_regions_region_code_fk" FOREIGN KEY ("region_code") REFERENCES "public"."regions"("region_code") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "provinces" ADD CONSTRAINT "provinces_region_code_regions_region_code_fk" FOREIGN KEY ("region_code") REFERENCES "public"."regions"("region_code") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "record" ADD CONSTRAINT "record_student_id_students_id_fk" FOREIGN KEY ("student_id") REFERENCES "public"."students"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "registrars" ADD CONSTRAINT "registrars_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "requests" ADD CONSTRAINT "requests_requester_id_users_id_fk" FOREIGN KEY ("requester_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

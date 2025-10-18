@@ -25,6 +25,7 @@ export const createAdmin = async (
         const newAdmin = await db.insert(users).values({
             ...userparams,
             role: "REGISTRAR",
+            birthday: userparams.birthday.toISOString(),
             password: hashedPassword
         }).returning();
 

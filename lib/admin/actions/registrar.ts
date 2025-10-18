@@ -1,10 +1,9 @@
 "use server";
 
-import { course, roles, StudentParams, UserParams } from "@/app/student/types";
+import { UserParams } from "@/app/student/types";
 import { db } from "@/database/drizzle";
-import { registrars, students, users } from "@/database/schema";
+import { registrars, users } from "@/database/schema";
 import { hash } from "bcryptjs";
-import { error } from "console";
 import { eq } from 'drizzle-orm';
 
 export const createRegistrar = async (
@@ -26,6 +25,7 @@ export const createRegistrar = async (
         const newRegistrar = await db.insert(users).values({
             ...userparams,
             role: "REGISTRAR",
+            birthday: userparams.birthday.toISOString(),
             password: hashedPassword
         }).returning();
 

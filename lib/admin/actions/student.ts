@@ -23,25 +23,26 @@ function formatDateForSQL(date: Date | string | null): string | null {
   return `${year}-${month}-${day}`;
 }
 
-
-interface StudentTOR{
-  firstName: string;
-  middleName?: string;
-  lastName: string;
-  course: course; 
-  nationality: string | null;
-  address: string | null;
+interface StudentInputs{
   password: string;
-  birthday: Date; // optional
-  highschool: string | null;
-  entrance?: Date;    // optional
-  graduation: Date | null;
+  firstName: string;
+  middleName: string;
+  lastName: string;
   email: string;
   phone: string;
+  nationality: string;
+  birthday: Date;
+  address:string;
+
+  course: course;
+  torHash: string;
+  major: string;
+  highschool: string;
+  dateEntrance: Date;
 }
 
 export const createStudent = async (
-  userparams: UserParams,
+  userparams: StudentInputs,
   courseValue: course
 ) => {
   try {
@@ -65,12 +66,32 @@ export const createStudent = async (
     }
 
     const hashedPassword = await hash(userparams.password, 10);
+    const UserInputs = {
+      role: "STUDENT",
+      password: userparams.password,
+      firstName: userparams.firstName,
+      middleName: userparams.middleName,
+      lastName: userparams.lastName,
+      email: userparams.email,
+      phone: userparams.phone,
+      nationality: userparams.nationality,
+      birthday: userparams.birthday,
+      address: userparams.address
+    }
 
     // Create new User
     const [newUser] = await db
       .insert(users)
       .values({
-        ...userparams,
+        role: "STUDENT",
+        firstName: userparams.firstName,
+        middleName: userparams.middleName,
+        lastName: userparams.lastName,
+        email: userparams.email,
+        phone: userparams.phone,
+        nationality: userparams.nationality,
+        birthday: formatDateForSQL(userparams.birthday)!,
+        address: userparams.address,
         password: hashedPassword,
       })
       .returning();
@@ -81,12 +102,14 @@ export const createStudent = async (
     const [newStudent] = await db
       .insert(students)
       .values({
+        ...userparams,
         userId: newUser.userId,
         course: (courseValue as course) ?? "BSCS",
       })
       .returning({
         studentId: students.studentId,
         course: students.course,
+        userId: students.userId
       });
 
     console.log("✅ [createStudent] New student created:", newStudent);
@@ -111,7 +134,7 @@ export const createStudent = async (
   }
 };
 
-export const createStudentsBulk = async (records: StudentTOR[]) => {
+export const createStudentsBulk = async (records: StudentInputs[]) => {
   try {
     let successCount = 0;
 
@@ -134,22 +157,49 @@ export const createStudentsBulk = async (records: StudentTOR[]) => {
 
       // Insert User
       const [newUser] = await db.insert(users).values({
-      ...record,
-      birthday: formatDateForSQL(record.birthday),
-      password: hashedPassword
+      role: "STUDENT",
+      firstName: record.firstName,
+      middleName: record.middleName,
+      lastName: record.lastName,
+      email: record.email,
+      phone: record.phone,
+      nationality: record.nationality,
+      birthday: formatDateForSQL(record.birthday)!,
+      address: record.address,
+      password: hashedPassword,
     }).returning();
 
       // Insert Student
       const [newStudent] = await db
         .insert(students)
         .values({
+          highschool: record.highschool,
+          dateEntrance: record.dateEntrance,
           userId: newUser.userId,
           course: (record.course as course) ?? "BSCS",
+          torHash: ""
         })
         .returning();
 
+      const Student : Student = {
+        course: newStudent.course,
+        nationality: newUser.nationality,
+        address: newUser.address,
+        birthday: new Date(newUser.birthday),
+        highschool: newStudent.highschool,
+        dateEntrance: newStudent.dateEntrance,
+        dateGraduated: null,
+        studentId: 0,
+        userId: "",
+        year: 0,
+        semester: 0,
+        finalGrade: "",
+        torReady: false,
+        major: null
+      }
+
       // Create TOR per student
-      await createTOR(newStudent as Student);
+      await createTOR(Student);
       successCount++;
     }
 

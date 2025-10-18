@@ -23,6 +23,15 @@ import { Session } from "next-auth";
 import { sendRequest } from '@/lib/registrar/actions/sendRequest';
 import AddressSelect from '@/components/AddressSelect';
 import NationalitySelect from '@/components/NationalitiesSelect';
+import { courses } from '@/components/CourseSelect';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { CourseCode } from '@/components/admin/contexts/StudentFormContext';
 
 interface Props extends Partial<Student>{
   type: 'create' | 'update';
@@ -52,7 +61,7 @@ const RegistrarStudentForms = (
         },
       })
 
-      router.push(`/registrar/create/${result?.data}`);
+      router.push(`/registrar`);
 
     } else {
       toast.error(result.error, {
@@ -198,16 +207,24 @@ const RegistrarStudentForms = (
                               Course
                           </FormLabel>
                           <FormControl>
-                              <Input
-                                  required
-                                  placeholder="Course"
-                                  {...field}
-                                  value={formData.course}
-                                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                    field.onChange(e);
-                                    setFormData({course: e.target.value });
-                                  }}
-                              />
+                              <Select
+                              onValueChange={(value) => {
+                                field.onChange(value);
+                                setFormData({ ...formData, course: value as CourseCode }); // ✅ keep your formData in sync
+                              }}
+                              value={field.value || formData.course || ""}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a course" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {courses.map((course) => (
+                                  <SelectItem key={course.code} value={course.code}>
+                                    {course.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </FormControl>
                           <FormMessage />
                       </FormItem>
@@ -263,6 +280,56 @@ const RegistrarStudentForms = (
                   />
               </div>
               <FormField 
+  control={studentForms.control}
+  name={"highschool"}
+  render={({field})=>(
+      <FormItem className='flex flex-col gap-1'>
+          <FormLabel className="text-base font-normal text-dark-500">
+              Highschool
+          </FormLabel>
+          <FormControl>
+              <Input
+                  required
+                  placeholder="Highschool"
+                  {...field}
+                  value={formData.highschool}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    field.onChange(e);
+                    setFormData({ highschool: e.target.value }); // ✅ fixed
+                  }}
+              />
+          </FormControl>
+          <FormMessage />
+      </FormItem>
+    )} 
+  />
+
+<FormField 
+  control={studentForms.control}
+  name={"major"}
+  render={({field})=>(
+      <FormItem className='flex flex-col gap-1'>
+          <FormLabel className="text-base font-normal text-dark-500">
+              Major
+          </FormLabel>
+          <FormControl>
+              <Input
+                  required
+                  placeholder="Major"
+                  {...field}
+                  value={formData.major}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    field.onChange(e);
+                    setFormData({ major: e.target.value }); // ✅ fixed
+                  }}
+              />
+          </FormControl>
+          <FormMessage />
+      </FormItem>
+    )} 
+  />
+              
+              <FormField 
                               control={studentForms.control}
                               name="nationality"
                               render={({ field }) => (
@@ -283,31 +350,33 @@ const RegistrarStudentForms = (
                                 </FormItem>
                               )}
                             />
-                <FormField 
-                  control={studentForms.control}
-                  name="birthday"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-base font-normal text-dark-500">
-                        Birthday
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          required
-                          type="date"
-                          {...field}
-                          value={formData.birthday ? new Date(formData.birthday).toISOString().split("T")[0] : ""}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            const dateValue = e.target.value ? new Date(e.target.value) : new Date();
-                            field.onChange(dateValue);
-                            setFormData({ birthday: dateValue });
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormField
+                              control={studentForms.control}
+                              name="birthday"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-col gap-1">
+                                  <FormLabel>
+                                    Birthday <span className="text-red-500">*</span>
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="date"
+                                      value={
+                                        field.value instanceof Date 
+                                          ? field.value.toISOString().split("T")[0] 
+                                          : field.value // if string, use as-is or fallback to ""
+                                      }
+                                      onChange={(e) => {
+                                        const dateValue = e.target.value ? new Date(e.target.value) : undefined;
+                                        field.onChange(dateValue);
+                                        setFormData({ birthday: dateValue });
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
                 <FormField
                   control={studentForms.control}
                   name={"address"}

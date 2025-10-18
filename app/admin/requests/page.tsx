@@ -5,6 +5,7 @@ import { Request, requestColumns } from "@/components/admin/table/requests/colum
 import { archiveRequests } from "@/lib/actions/archiveRequests";
 import { validateRequests } from "@/lib/actions/validateRequests";
 import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const Page = () => {
   const [requests, setRequests] = useState<Request[]>([]);
@@ -29,10 +30,16 @@ const Page = () => {
   // Handle validation (and automatic archiving)
   const handleValidate = async (ids: number[]) => {
     try {
-      await validateRequests(ids);
+      const result = await validateRequests(ids);
 
       // When validated, they’re automatically archived too
       setRequests((prev) => prev.filter((req) => !ids.includes(req.id)));
+
+      if(result.success){
+        toast.success("Request validated successfully!")
+      } else {
+        toast.error("Request validated unsuccessfully.");
+      }
     } catch (err) {
       console.error(err);
       alert("Failed to validate requests.");

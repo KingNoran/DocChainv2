@@ -48,7 +48,7 @@ const AdminForms = ({
         },
       })
 
-      router.push(`/admin/create/${result.data.id}`)
+      router.push(`/admin`)
     } else {
       toast.error(result.error, {
         description: `Date: ${date}`,

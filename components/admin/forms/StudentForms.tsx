@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { useRouter } from 'next/navigation';
 import { course, Student } from '@/app/student/types';
-import { studentSchema } from '@/lib/validations';
+import { StudentInputs, studentSchema } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
 import { createStudent } from '@/lib/admin/actions/student';
 import { toast } from 'sonner';
@@ -23,17 +23,8 @@ import { CourseCode, useStudentForms } from '../contexts/StudentFormContext';
 import AddressSelect from "@/components/AddressSelect";
 import CourseSelect from '@/components/CourseSelect';
 import NationalitySelect from '@/components/NationalitiesSelect';
-import dynamic from "next/dynamic";
 
-interface Props extends Partial<Student>{
-  type?: 'create' | 'update';
-}
-
-
-const StudentForms = ({
-  type, 
-  ...user
-}: Props) => {
+const StudentForms = () => {
   const router = useRouter();
   const { formData, setFormData } = useStudentForms();
 
@@ -50,7 +41,7 @@ const StudentForms = ({
         },
       })
 
-      router.push(`/admin/create/${result?.data}`);
+      router.push(`/admin`);
 
     } else {
       toast.error(result.error, {
@@ -63,7 +54,7 @@ const StudentForms = ({
     }
   }
 
-  const studentForms = useForm<z.infer<typeof studentSchema>>({
+  const studentForms = useForm<StudentInputs>({
     resolver: zodResolver(studentSchema),
     defaultValues: {
       ...formData,
@@ -246,6 +237,54 @@ const StudentForms = ({
                   />
               </div>
               <FormField 
+                                control={studentForms.control}
+                                name={"highschool"}
+                                render={({field})=>(
+                                    <FormItem className='flex flex-col gap-1'>
+                                        <FormLabel className="text-base font-normal text-dark-500">
+                                            Highschool
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                required
+                                                placeholder="Highschool"
+                                                {...field}
+                                                value={formData.highschool}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                  field.onChange(e);
+                                                  setFormData({phone: e.target.value });
+                                                }}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                  )} 
+                                />
+                                <FormField 
+                                control={studentForms.control}
+                                name={"major"}
+                                render={({field})=>(
+                                    <FormItem className='flex flex-col gap-1'>
+                                        <FormLabel className="text-base font-normal text-dark-500">
+                                            Major
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                required
+                                                placeholder="Major"
+                                                {...field}
+                                                value={formData.major}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                  field.onChange(e);
+                                                  setFormData({phone: e.target.value });
+                                                }}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                  )} 
+                                />
+              <FormField 
                 control={studentForms.control}
                 name="nationality"
                 render={({ field }) => (
@@ -286,6 +325,33 @@ const StudentForms = ({
                         const dateValue = e.target.value ? new Date(e.target.value) : undefined;
                         field.onChange(dateValue);
                         setFormData({ birthday: dateValue });
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={studentForms.control}
+              name="dateEntrance"
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-1">
+                  <FormLabel>
+                    Entrance <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      value={
+                        field.value instanceof Date 
+                          ? field.value.toISOString().split("T")[0] 
+                          : field.value // if string, use as-is or fallback to ""
+                      }
+                      onChange={(e) => {
+                        const dateValue = e.target.value ? new Date(e.target.value) : undefined;
+                        field.onChange(dateValue);
+                        setFormData({ dateEntrance: dateValue });
                       }}
                     />
                   </FormControl>

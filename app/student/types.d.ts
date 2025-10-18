@@ -82,6 +82,10 @@ interface UserParams{
     password: string;
     address: string;
     phone: string;
+    nationality: string;
+    birthday: Date;
+    major?: string
+
 }
 
 interface RegistrarUserParams{
@@ -108,9 +112,7 @@ interface StudentOverviewTemplate{
   studentId: number;
   userId: string;
   course: course;
-  year: number;
-  semester: number;
-  torReady: boolean;
+  torReady: boolean | null;
   role: string;
   password: string;
   firstName: string;

@@ -16,6 +16,7 @@
     "seed:addresses": "npx tsx scripts/seedaddresses.ts"
   },
   "dependencies": {
+    "@auth/upstash-redis-adapter": "^2.11.0",
     "@emailjs/browser": "^4.4.1",
     "@hookform/resolvers": "^3.10.0",
     "@neondatabase/serverless": "^1.0.0",
@@ -80,7 +81,7 @@
     "@typescript-eslint/parser": "^8.46.0",
     "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
-    "drizzle-kit": "^0.31.0",
+    "drizzle-kit": "^0.31.5",
     "eslint": "^9.37.0",
     "eslint-config-next": "15.2.4",
     "eslint-config-prettier": "^10.1.8",

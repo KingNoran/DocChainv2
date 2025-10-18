@@ -49,7 +49,7 @@ const RegistrarForms = ({
         },
       })
 
-      router.push(`/admin/create/${result.data.id}`)
+      router.push(`/admin`)
     } else {
       toast.error(result.error, {
         description: `Date: ${date}`,
@@ -63,7 +63,9 @@ const RegistrarForms = ({
 
   const registrarForms = useForm<z.infer<typeof registrarSchema>>({
     resolver: zodResolver(registrarSchema),
-    defaultValues: formData
+    defaultValues: {
+      ...formData
+    }
   });
 
   useEffect(()=>{
