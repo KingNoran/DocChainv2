@@ -3,7 +3,6 @@ import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import config from "@/lib/config";
 import { auth } from "@/auth";
 
 export async function POST(req: NextRequest) {
