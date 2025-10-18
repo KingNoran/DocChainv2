@@ -38,7 +38,10 @@ const nameFields = z.object({
   middleName: z
     .string()
     .max(50)
-    .regex(nameRegex, { message: "Middle name must only contain letters, spaces, or hyphens" })
+    .refine((val) => !val || nameRegex.test(val), {
+      message: "Middle name must only contain letters, spaces, or hyphens",
+    })
+    .optional()
     .default(""),
 
   lastName: z
