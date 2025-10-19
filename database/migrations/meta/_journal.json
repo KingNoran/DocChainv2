@@ -8,6 +8,13 @@
       "when": 1760752568792,
       "tag": "0000_brave_xorn",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1760832405232,
+      "tag": "0001_breezy_phalanx",
+      "breakpoints": true
     }
   ]
 }

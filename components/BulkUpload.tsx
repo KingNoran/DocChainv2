@@ -16,14 +16,29 @@ import {
 import { Label } from "@/components/ui/label";
 
 function excelDateToISO(serial: any): string {
+  // Case 1: Excel serial number (e.g., 45123)
   if (typeof serial === "number") {
     const epoch = new Date(Date.UTC(1899, 11, 30));
     const date = new Date(epoch.getTime() + serial * 86400000);
     return date.toISOString().split("T")[0];
   }
-  if (typeof serial === "string" && /^\d{4}-\d{2}-\d{2}$/.test(serial)) return serial;
+
+  // Case 2: Already ISO format (YYYY-MM-DD)
+  if (typeof serial === "string" && /^\d{4}-\d{2}-\d{2}$/.test(serial)) {
+    return serial;
+  }
+
+  // Case 3: Year/Month/Day format (YYYY/MM/DD)
+  if (typeof serial === "string" && /^\d{4}\/\d{1,2}\/\d{1,2}$/.test(serial)) {
+    const [year, month, day] = serial.split("/").map(Number);
+    const date = new Date(Date.UTC(year, month - 1, day));
+    return date.toISOString().split("T")[0];
+  }
+
+  // Default fallback
   return "1970-01-01";
 }
+
 
 const BulkStudentUpload = () => {
   const [file, setFile] = useState<File | null>(null);
