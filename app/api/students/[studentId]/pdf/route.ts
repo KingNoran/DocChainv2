@@ -28,6 +28,7 @@ export async function POST(req: Request, { params }: { params: any }) {
         .set({
           finalGrade: grade.finalRating,
           instructor: grade.instructor,
+          syTaken: grade.syTaken
         })
         .where(eq(subjects.courseCode, courseCode)); 
         // optionally: add transcriptId filtering if multiple transcripts exist

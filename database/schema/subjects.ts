@@ -9,6 +9,7 @@ const subjects = table("subjects", {
     transcriptId: t.uuid('transcript_id').references(() => record.id, { onDelete: 'cascade' }).notNull(),
     semesterId: t.uuid('semester_id').references(()=> semesters.id, { onDelete: 'cascade' }).notNull(),
     courseCode: t.text('course_code').notNull(),
+    syTaken: t.text('school_year'),
     courseTitle: t.text('course_title').notNull(),
     creditUnit: t.jsonb('credit_unit').notNull(),
     contactHours: t.jsonb('contact_hours'),
