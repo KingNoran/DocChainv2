@@ -14,6 +14,8 @@ import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import QRCode from "qrcode";
 import { StringHeaderIdentifier } from "@tanstack/react-table";
+import { hashPdf } from "@/utils/hash-pdf";
+import { mintPdf } from "@/utils/mint-pdf";
 
 // Types
 export interface Student {
@@ -482,6 +484,24 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
     }
 
     pdf.save(`${student.name}-transcript.pdf`);
+
+    const buffer = pdf.output("arraybuffer");
+    const studentPdfHash = hashPdf(buffer);
+
+    const res = await mintPdf(student.studentId, studentPdfHash);
+    
+    if (!res.success) {
+      toast.error("Mint failed", { description: res.message });
+    } else {
+      toast.success("Mint successful!", { description: `Tx hash: ${res.hash}` });
+
+      await fetch("/api/mint-update-tor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studentId: student.studentId, torHash: res.hash as string }),
+    });
+
+    }
   }
 
   const onSubmit = async () => {
