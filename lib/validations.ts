@@ -1,21 +1,12 @@
 import { z } from "zod";
 
-//
-// ─── LOGIN SCHEMA ──────────────────────────────────────────────────────────────
-//
 export const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().min(8, { message: "Password must be at least 8 characters long" }),
 });
 
-//
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
-//
-
-// Allow only letters, spaces, hyphens, and apostrophes
 const nameRegex = /^[A-Za-z\s'-]+$/;
 
-// Check if date makes user at least 18 years old
 const isAdult = (date: Date) => {
   const today = new Date();
   const age = today.getFullYear() - date.getFullYear();
@@ -23,10 +14,6 @@ const isAdult = (date: Date) => {
   const dayDiff = today.getDate() - date.getDate();
   return age > 18 || (age === 18 && (monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0)));
 };
-
-//
-// ─── COMMON FIELD GROUPS ───────────────────────────────────────────────────────
-//
 
 const nameFields = z.object({
   firstName: z
@@ -85,12 +72,6 @@ const registrarPersonalFields = z.object({
   address: z.string().min(1, "Address is required"),
 });
 
-
-
-//
-// ─── STUDENT SCHEMA ────────────────────────────────────────────────────────────
-//
-
 export const studentSchema = nameFields
   .merge(personalFields)
   .extend({
@@ -134,26 +115,13 @@ export const registrarStudentSchema = nameFields
     torHash: z.string().default("")
   });
 
-//
-// ─── TOR FORM SCHEMA ──────────────────────────────────────────────────────────
-//
 export const TORFormsSchema = z.object({
   studentUUID: z.string().uuid({ message: "Invalid UUID format" }),
 });
 
-//
-// ─── REGISTRAR SCHEMA ─────────────────────────────────────────────────────────
-//
 export const registrarSchema = nameFields.merge(personalFields);
 
-//
-// ─── ADMIN SCHEMA ─────────────────────────────────────────────────────────────
-//
 export const adminSchema = nameFields.merge(personalFields);
-
-//
-// ─── TOR STRUCTURE SCHEMAS ────────────────────────────────────────────────────
-//
 
 export const creditUnit = z.object({
   lecture: z.number(),
@@ -190,10 +158,6 @@ export const TORSchema = z.object({
   thirdYear: TOR_year,
   fourthYear: TOR_year,
 });
-
-//
-// ─── TRANSCRIPT FORM ──────────────────────────────────────────────────────────
-//
 
 export const transcriptFormSchema = z.object({
   student: z.object({
