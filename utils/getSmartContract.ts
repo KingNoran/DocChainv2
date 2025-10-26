@@ -1,20 +1,25 @@
-import { BrowserProvider, JsonRpcSigner, Contract } from "ethers";
+import { JsonRpcProvider, Contract, Wallet } from "ethers";
 import { contractABI, contractAddress } from "@/app/constants/contractDetails";
-import { checkMetaMask } from "./checkMetamask";
+import dotenv from "dotenv";
+
+
+dotenv.config();
 
 export const getSmartContract = async (): Promise<Contract> => {
-	if (!checkMetaMask()) {
-    	throw new Error("Ethereum provider not available");
-  	}
+    const privateKey = process.env.METAMASK_PRIVATE_KEY;
 
-	const ethProvider: BrowserProvider = new BrowserProvider(window.ethereum);
-	const ethSigner: JsonRpcSigner = await ethProvider.getSigner();
+    if (!privateKey) {
+        throw new Error("Missing PRIVATE_KEY in environment variables");
+    }
+    
+    const provider: JsonRpcProvider = new JsonRpcProvider("https://sepolia.era.zksync.dev");
+    const wallet: Wallet = new Wallet(privateKey, provider)
 
-	const contract: Contract = new Contract(
-		contractAddress,
-		contractABI,
-		ethSigner
-	);
+    const contract: Contract = new Contract(
+        contractAddress,
+        contractABI,
+        wallet
+    );
 
-	return contract;
+    return contract;
 };
