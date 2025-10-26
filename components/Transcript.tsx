@@ -352,6 +352,25 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
   }
 };
 
+const handleDownloadQRCode = () => {
+  try {
+    if (!qrCodeRef.current) {
+      toast.error("QR code not available yet");
+      return;
+    }
+
+    const link = document.createElement("a");
+    link.href = qrCodeRef.current;
+    link.download = `${student.name.replace(/\s+/g, "_")}_QR_Code.png`;
+    link.click();
+
+    toast.success("QR code downloaded!");
+  } catch (error) {
+    console.error("QR Download Error:", error);
+    toast.error("Failed to download QR code");
+  }
+};
+
   const handleDownloadPdf = async () => {
     const pdf = new jsPDF("p", "mm", "a4");
     const pageWidth = pdf.internal.pageSize.getWidth();
@@ -698,35 +717,45 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
           }
         }
       `}</style>
-      <div className="text-center mt-4">
-      {isTorReady ?
-        <button
+      <div className="text-center mt-4 flex gap-4 items-center justify-center">
+  {isTorReady ? (
+    <>
+      <button
         type="button"
         onClick={handleDownloadPdf}
         className="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 print:hidden"
       >
         Download PDF
-      </button>      
-      : 
+      </button>
       <button
         type="button"
-        onClick={!isRegistrar ? ()=>handleSendRequest(session!) : ()=>handleFinalizeTOR(session!)}
-        className="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 print:hidden"
+        onClick={handleDownloadQRCode}
+        className="bg-purple-600 text-white px-8 py-3 rounded hover:bg-purple-700 ml-2 print:hidden"
       >
-        {!isRegistrar ? "Request TOR" : "Finalize TOR"}
+        Download QR Code
       </button>
-      }
-      {isTorReady && pathname.includes("/admin") ? 
-      <button 
+    </>
+  ) : (
+    <button
+      type="button"
+      onClick={!isRegistrar ? () => handleSendRequest(session!) : () => handleFinalizeTOR(session!)}
+      className="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 print:hidden"
+    >
+      {!isRegistrar ? "Request TOR" : "Finalize TOR"}
+    </button>
+  )}
+
+  {isTorReady && pathname.includes("/admin") && (
+    <button
       type="button"
       onClick={handleAutoMint}
-      className="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 print:hidden"
-      >
-        Hash
-      </button> : 
-      null  
-    }
-    </div>
+      className="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 print:hidden ml-2"
+    >
+      Hash
+    </button>
+  )}
+</div>
+
     </form>
   );
 };
