@@ -8,10 +8,10 @@ import { EventLog, JsonRpcProvider } from "ethers";
 
 // THIS IS A PUBLIC API ENDPOINT
 export const POST = async (req: Request) => {
-    const { pdfHash } = await req.json();
+    const { txLink } = await req.json();
 
-    if (!pdfHash) {
-        return NextResponse.json({ error: "Invalid File Input" }, { status: 400 });
+    if (!txLink) {
+        return NextResponse.json({ error: "Invalid Input" }, { status: 400 });
     }
 
     const tokenizerContract = getSmartContractViewOnly();
@@ -25,9 +25,8 @@ export const POST = async (req: Request) => {
     let matchedEvent = null;
 
     for (let i = mintedTokenEvents.length - 1; i >= 0; i--) {
-        const { args } = mintedTokenEvents[i] as EventLog;
-        const [, hash] = args;
-        if (hash === pdfHash) {
+        const { transactionHash } = mintedTokenEvents[i] as EventLog;
+        if (txLink === transactionHash) {
             matchedEvent = mintedTokenEvents[i];
             break;
         }
