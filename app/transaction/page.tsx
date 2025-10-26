@@ -6,8 +6,9 @@ import LatestTransactions from '@/components/LatestTransactions'
 import TransactionCard from '@/components/TransactionCard';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
+import QrScanner from "qr-scanner";
+import { toast } from "sonner";
 import { Card, CardContent } from '@/components/ui/card';
-import { hashPdf } from '@/utils/hashPdf';
 import { checkFileType } from '@/utils/checkFileType';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ type TransactionData = {
 const GuestTransactionPage = () => {
   const [file, setFile] = useState<File | null | undefined>(null);
   const [filename, setFilename] = useState('');
+  const [preview, setPreview] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -33,13 +35,16 @@ const GuestTransactionPage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      if (!checkFileType(event.target.files[0])) {
+    const file = event.target.files?.[0];
+
+    if (file) {
+      if (!checkFileType(file)) {
         setFilename("Please select a PDF file format.")
-      } else {
-        setFile(event.target.files[0])
-        setFilename(event.target.files[0].name)
-      }  
+      } 
+
+      setFilename(file.name);
+      setFile(file);
+      setPreview(URL.createObjectURL(file));
     }
 	};
 
@@ -47,29 +52,38 @@ const GuestTransactionPage = () => {
     setLoading(true);
 
 		if (!file) {
-			alert("Please select a file first");
+      toast.error("Verification failed", { description: "Upload a QR first." });
+    
       setLoading(false);
 			return;
 		}
 
-    const pdfHash = await hashPdf(file);
+    try {
+      const result = await QrScanner.scanImage(file, { returnDetailedScanResult: true });
+      const qrText = result.data;
 
-    const res = await fetch('/api/fetch-data', {
-      method: 'POST',
-      body: JSON.stringify({ pdfHash }),
-      headers: { 'Content-Type': 'application/json' },
-    });
-  
-    const data = await res.json();
+      console.log("QR content:", qrText);
 
-    console.log(`Data: ${data.data}`);
-    console.log(`Status: ${data.status}`)
+      const txLink = qrText.split("/tx/")[1];
 
-    if (data.status == 200) {
-      setTransactionData(data.data);  
-    }
-    else {
-      setTransactionData(null);
+      const res = await fetch('/api/fetch-data', {
+        method: 'POST',
+        body: JSON.stringify({ txLink }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+    
+      const data = await res.json();
+
+      console.log(`Status: ${data.status}`)
+
+      if (data.status == 200) {
+        setTransactionData(data.data);  
+      }
+      else {
+        setTransactionData(null);
+      }
+    } catch (error) {
+      toast.error("Invalid Image Input", { description: "No QR code found." });
     }
 
     setHasSearched(true)
@@ -110,15 +124,25 @@ const GuestTransactionPage = () => {
               className="bg-emerald-400 mx-auto px-auto hover:bg-green-800 x-auto cursor-pointer text-white"
               onClick={() => fileInputRef.current?.click()}
             >
-              Upload PDF
+              Upload QR
             </Button>
             <Input className='w-full' readOnly value={filename} />
           </div>
+
+          {preview && (
+              <div className="w-100 h-100 mt-4 flex justify-center">
+                <img
+                  src={preview}
+                  alt="QR Preview"
+                  className="object-contain border border-emerald-300 rounded-lg"
+                />
+              </div>
+          )}
           
           <Input
             type="file"
-            accept="application/pdf"
-            placeholder="Upload TOR file"
+            accept="image/*"
+            placeholder="Upload QR file"
             className="w-full hidden h-14 px-4 pt-6 pb-2 bg-card rounded-lg border border-border text-muted-foreground text-base font-normal font-['Inter'] focus:outline-none focus:border-emerald-400"
             onChange={handleFileInput}
             ref={fileInputRef}
