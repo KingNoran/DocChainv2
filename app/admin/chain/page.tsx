@@ -8,6 +8,7 @@ import BurnButton from "@/components/admin/BurnButton";
 import MintCount from "@/components/admin/MintCount";
 import LatestTransactions from "@/components/LatestTransactions";
 import { Input } from "@/components/ui/input";
+import { checkMetaMask } from "@/utils/checkMetamask";
 import { Card, CardContent } from "@/components/ui/card";
 import { EventLogs, columns } from "@/components/ui/columns";
 import { DataTable } from "@/components/ui/data-table";
@@ -85,6 +86,7 @@ const Page = () => {
   };
 
   useEffect(() => {
+    setHasMetamask(checkMetaMask());
     loadTransactionsTable();
 
     // ⚡ Detect incoming file from Transcript page
