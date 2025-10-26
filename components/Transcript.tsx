@@ -326,21 +326,25 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
     // Step 1: Generate PDF Blob in memory
     const blob = await generateTranscriptPdfBlob();
     const file = new File([blob], `${student.name}-transcript.pdf`, { type: "application/pdf" });
+    
+    // Step 2: Convert file into ArrayBuffer
+    const arrayBuffer = await file.arrayBuffer();
 
-    // Step 2: Convert to base64 (to pass through sessionStorage)
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64Pdf = reader.result as string;
+    // Step 3: Hash and Mint the ArrayBuffer
+    const studentPdfHash = hashPdf(arrayBuffer);
+    const res = await mintPdf(student.studentId, studentPdfHash);
+    
+    if (!res.success) {
+      toast.error("Mint failed", { description: res.message });
+    } else {
+      toast.success("Mint successful!", { description: `Tx hash: ${res.hash}` });
 
-      // Step 3: Save to sessionStorage so next page can access it
-      sessionStorage.setItem("autoMintPdf", base64Pdf);
-      sessionStorage.setItem("autoMintFilename", file.name);
-
-      // Step 4: Redirect to minting page
-      router.push("/admin/chain/");
-    };
-
-    reader.readAsDataURL(file);
+      await fetch("/api/mint-update-tor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studentId: student.studentId, torHash: res.hash as string }),
+      });
+    }
 
   } catch (err) {
     console.error(err);
@@ -516,23 +520,6 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
 
     pdf.save(`${student.name}-transcript.pdf`);
 
-    const buffer = pdf.output("arraybuffer");
-    const studentPdfHash = hashPdf(buffer);
-
-    const res = await mintPdf(student.studentId, studentPdfHash);
-    
-    if (!res.success) {
-      toast.error("Mint failed", { description: res.message });
-    } else {
-      toast.success("Mint successful!", { description: `Tx hash: ${res.hash}` });
-
-      await fetch("/api/mint-update-tor", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ studentId: student.studentId, torHash: res.hash as string }),
-    });
-
-    }
   }
 
   const onSubmit = async () => {
