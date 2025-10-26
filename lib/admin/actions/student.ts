@@ -143,29 +143,34 @@ export const createStudentsBulk = async (records: StudentInputs[]) => {
         console.warn("Skipping row without email:", record);
         continue; // skip this row
       }
+      const normalizedRecord = {
+        ...record,
+        birthday: new Date(record.birthday),
+        dateEntrance: new Date(record.dateEntrance),
+      };
 
       // Check if user already exists
       const existing = await db
         .select()
         .from(users)
-        .where(eq(users.email, record.email))
+        .where(eq(users.email, normalizedRecord.email))
         .limit(1);
 
       if (existing.length > 0) continue; // Skip duplicates
-      const newPassword = `${record.lastName}${record.firstName}`
+      const newPassword = `${normalizedRecord.lastName}${normalizedRecord.firstName}`
       const hashedPassword = await hash(newPassword, 10);
 
       // Insert User
       const [newUser] = await db.insert(users).values({
       role: "STUDENT",
-      firstName: record.firstName,
-      middleName: record.middleName,
-      lastName: record.lastName,
-      email: record.email,
-      phone: record.phone,
-      nationality: record.nationality,
-      birthday: formatDateForSQL(record.birthday)!,
-      address: record.address,
+      firstName: normalizedRecord.firstName,
+      middleName: normalizedRecord.middleName,
+      lastName: normalizedRecord.lastName,
+      email: normalizedRecord.email,
+      phone: normalizedRecord.phone,
+      nationality: normalizedRecord.nationality,
+      birthday: formatDateForSQL(normalizedRecord.birthday)!,
+      address: normalizedRecord.address,
       password: hashedPassword,
     }).returning();
 
@@ -173,10 +178,10 @@ export const createStudentsBulk = async (records: StudentInputs[]) => {
       const [newStudent] = await db
         .insert(students)
         .values({
-          highschool: record.highschool,
-          dateEntrance: record.dateEntrance,
+          highschool: normalizedRecord.highschool,
+          dateEntrance: normalizedRecord.dateEntrance,
           userId: newUser.userId,
-          course: (record.course as course) ?? "BSCS",
+          course: (normalizedRecord.course as course) ?? "BSCS",
           torHash: ""
         })
         .returning();
