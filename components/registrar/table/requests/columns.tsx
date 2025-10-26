@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 
 
 export type Request = {
+    studentId: number;
   id: number;
   requestContent: Record<string, string>;
   requesterId: string;
@@ -39,7 +40,7 @@ function ViewStudentButton({ requesterId }: { requesterId: string }) {
     <Button
       variant="outline"
       size="sm"
-      onClick={() => studentId && router.push(`/admin/requests/${studentId}`)}
+      onClick={() => studentId && router.push(`/registrar/requests/${studentId}`)}
       disabled={!studentId}
     >
       Click to view

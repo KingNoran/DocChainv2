@@ -7,7 +7,7 @@ import { subjectChecklists } from "@/app/constants/checklists";
 import { Input } from "@/components/ui/input";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { sendRequest } from "@/lib/registrar/actions/sendRequest";
 import { Session } from "next-auth";
@@ -54,6 +54,17 @@ function formatDateForInput(date?: Date | string | null) {
   const day = String(d.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
+
+const generateTranscriptPdfBlob = async (): Promise<Blob> => {
+  const pdf = new jsPDF("p", "mm", "a4");
+  // ... (keep your full PDF generation logic)
+  // DO NOT call pdf.save()
+
+  const pdfBlob = pdf.output("blob");
+  return pdfBlob;
+};
+
+
 
 let Paged: any;
 if (typeof window !== "undefined") {
@@ -250,7 +261,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
   
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const qrCodeRef = useRef<string>("");
-
+  const router = useRouter();
   // Generate QR Code
   useEffect(() => {
   const generateQRCode = async () => {
@@ -306,16 +317,36 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
     }
   }
 
+  const handleAutoMint = async () => {
+  try {
+    toast.info("Generating transcript...");
+
+    // Step 1: Generate PDF Blob in memory
+    const blob = await generateTranscriptPdfBlob();
+    const file = new File([blob], `${student.name}-transcript.pdf`, { type: "application/pdf" });
+
+    // Step 2: Convert to base64 (to pass through sessionStorage)
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64Pdf = reader.result as string;
+
+      // Step 3: Save to sessionStorage so next page can access it
+      sessionStorage.setItem("autoMintPdf", base64Pdf);
+      sessionStorage.setItem("autoMintFilename", file.name);
+
+      // Step 4: Redirect to minting page
+      router.push("/admin/chain/");
+    };
+
+    reader.readAsDataURL(file);
+
+  } catch (err) {
+    console.error(err);
+    toast.error("Error generating transcript PDF");
+  }
+};
+
   const handleDownloadPdf = async () => {
-    /* if(!isTorReady && session?.user.role === "STUDENT"){
-      toast.error("Invalid transaction", {
-        description: "TOR not yet ready. Please contact your registrar."
-      })  
-      return;
-    } */
-
-      //later logic
-
     const pdf = new jsPDF("p", "mm", "a4");
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
@@ -632,7 +663,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
           </div>
         ))}
       </div>
-      {isRegistrar ? 
+      {isRegistrar && isTorReady ? 
       <div className="text-center mt-6">
         <button type="submit" className="bg-blue-600 text-white px-8 py-3 rounded hover:bg-blue-700 print:hidden">
           Update Transcript
@@ -661,14 +692,15 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
         }
       `}</style>
       <div className="text-center mt-4">
-      {isTorReady || pathname.includes("/admin")?
+      {isTorReady ?
         <button
         type="button"
         onClick={handleDownloadPdf}
         className="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 print:hidden"
       >
         Download PDF
-      </button> : 
+      </button>      
+      : 
       <button
         type="button"
         onClick={!isRegistrar ? ()=>handleSendRequest(session!) : ()=>handleFinalizeTOR(session!)}
@@ -677,6 +709,16 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
         {!isRegistrar ? "Request TOR" : "Finalize TOR"}
       </button>
       }
+      {isTorReady && pathname.includes("/admin") ? 
+      <button 
+      type="button"
+      onClick={handleAutoMint}
+      className="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 print:hidden"
+      >
+        Hash
+      </button> : 
+      null  
+    }
     </div>
     </form>
   );

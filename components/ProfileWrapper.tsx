@@ -1,9 +1,8 @@
 "use client";
 
-import { StudentOverviewTemplate } from "@/app/student/types";
 import React, { createContext, useContext } from "react";
 
-type ProfileContextType = StudentOverviewTemplate; // you can replace `any` with a proper type
+type ProfileContextType = any; // you can replace `any` with a proper type
 
 const ProfileContext = createContext<ProfileContextType | null>(null);
 

@@ -1,4 +1,4 @@
-import { Box, Home, Inbox, Settings, Link, CloudLightning, TablePropertiesIcon, Archive } from "lucide-react";
+import { Box, Home, Inbox, Settings, Link, CloudLightning, TablePropertiesIcon, Archive, GitPullRequestIcon } from "lucide-react";
 
 export const navigationLinks = [
     {
@@ -48,6 +48,11 @@ export const registrarSidebarLinks = [
     icon: TablePropertiesIcon,
   },
   {
+    title: "View Requests",
+    url: "/registrar/requests",
+    icon: GitPullRequestIcon,
+  },
+  {
     title: "Settings",
     url: "/registrar/settings",
     icon: Settings,
@@ -57,6 +62,7 @@ export const registrarSidebarLinks = [
     url: "/registrar/archive",
     icon: Archive,
   },
+  
 ];
 
 export const adminSidebarLinks = [

@@ -22,18 +22,20 @@ import { usePathname, useRouter } from "next/navigation";
 import { TablePagination } from "./TablePagination";
 import { cn } from "@/lib/utils";
 
-interface DataTableProps<TData extends { studentId: number }, TValue> {
+interface DataTableProps<TData extends { id: number }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   onArchive?: (ids: number[]) => Promise<void>;
   onDelete?: (ids: number[]) => Promise<void>;
+  onValidate?: (ids: number[]) => Promise<void>;
 }
 
-export function DataTable<TData extends { studentId: number }, TValue>({
+export function DataTable<TData extends { id: number }, TValue>({
   columns,
   data,
   onArchive,
   onDelete,
+  onValidate,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
   const [isProcessing, setIsProcessing] = useState(false);
@@ -62,7 +64,7 @@ export function DataTable<TData extends { studentId: number }, TValue>({
   });
 
   const selectedIds = table.getSelectedRowModel().rows.map(
-    (row) => row.original.studentId
+    (row) => row.original.id
   );
 
   // detect if on archive page
@@ -86,6 +88,14 @@ export function DataTable<TData extends { studentId: number }, TValue>({
     if (!onDelete) return;
     setIsProcessing(true);
     await onDelete(selectedIds);
+    setIsProcessing(false);
+    setRowSelection({});
+  }
+
+  const handleValidate = async() =>{
+    if (!onValidate) return;
+    setIsProcessing(true);
+    await onValidate(selectedIds);
     setIsProcessing(false);
     setRowSelection({});
   }
@@ -119,6 +129,8 @@ export function DataTable<TData extends { studentId: number }, TValue>({
             {isProcessing ? "Deleting..." : "Delete Permanently"}
           </Button>
 
+          
+
           {!isArchivePage && (
             <Button
               variant="default"
@@ -132,6 +144,19 @@ export function DataTable<TData extends { studentId: number }, TValue>({
           )}
         </div>
       )}
+      {pathname === "/registrar/requests" || isArchivePage ?
+      <div className="flex justify-end mb-5 gap-4">
+        <Button
+          variant="default"
+          size="sm"
+          onClick={handleValidate}
+          className="bg-primary-admin"
+        >
+          Validate Requests
+        </Button>
+      </div>
+      : null
+      }
 
       <div className="overflow-x-auto max-w-full rounded-md border bg-white shadow-sm">
         <Table className="min-w-full table-auto">

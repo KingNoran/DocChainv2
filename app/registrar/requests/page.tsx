@@ -1,7 +1,7 @@
 "use client";
 
-import { DataTable } from "@/components/admin/table/DataTable";
-import { Request, requestColumns } from "@/components/admin/table/requests/columns";
+import { DataTable } from "@/components/registrar/table/DataTable";
+import { Request, requestColumns } from "@/components/registrar/table/requests/columns";
 import { archiveRequests } from "@/lib/actions/archiveRequests";
 import { validateRequests } from "@/lib/actions/validateRequests";
 import React, { useEffect, useState } from "react";
@@ -17,7 +17,7 @@ const Page = () => {
       if (!res.ok) throw new Error("Failed to fetch requests");
 
       const data = await res.json();
-      const filtered = data.filter((r: Request)=>r.activity !== "requestTor");
+      const filtered = data.filter((r: Request)=>r.activity === "requestTor")
       setRequests(filtered);
     } catch (err) {
       console.error("Fetch failed:", err);

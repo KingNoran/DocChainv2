@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
   // Only Registrar or Admin can validate
   if (!session || !["REGISTRAR", "ADMIN"].includes(session.user?.role || "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: `Unauthorized role ${session?.user.role}` }, { status: 401 });
   }
 
   try {
@@ -68,7 +68,7 @@ export async function POST(req: Request) {
         }
 
         // ✅ FINALIZE (mark TOR ready)
-        else if (type === "finalizeTor") {
+        else if (type === "finalizetor") {
           const studentId = content.studentId;
           if (!studentId) throw new Error("Missing studentId for finalize request");
 
@@ -82,6 +82,31 @@ export async function POST(req: Request) {
             throw new Error(`Student not found or update failed for ID: ${studentId}`);
           }
         }
+        else if (type === "requesttor"){
+          const userId = r.requesterId
+          if(!userId) throw new Error("Missing userId for requesting TOR");
+
+          const updated = await tx
+            .update(requests)
+            .set({ 
+              validatorId: session.user.id,
+              validatedAt: new Date().toISOString(),
+              activity: "finalizeTor",
+              requestContent: { UUID: r.requesterId }
+            })
+            .where(eq(requests.id, r.id))
+            .returning()
+
+          await tx.update(students)
+            .set({
+              torReady: true
+            })
+            .where(eq(students.userId, userId))
+
+            if (!updated.length) {
+            throw new Error(`Student not found or update failed for ID: ${userId}`);
+          }
+        }
 
         // ❌ Unknown type
         else {
@@ -89,7 +114,8 @@ export async function POST(req: Request) {
         }
 
         // ✅ Mark request as validated + archived
-        await tx
+        if(r.activity !== "requesttor"){
+          await tx
           .update(requests)
           .set({
             status: "APPROVED",
@@ -98,6 +124,7 @@ export async function POST(req: Request) {
             isArchived: true,
           })
           .where(eq(requests.id, r.id));
+        }
       }
     });
 
