@@ -1,12 +1,11 @@
 import { JsonRpcProvider, Contract, Wallet } from "ethers";
 import { contractABI, contractAddress } from "@/app/constants/contractDetails";
-import dotenv from "dotenv";
 
-
-dotenv.config();
 
 export const getSmartContract = async (): Promise<Contract> => {
-    const privateKey = process.env.METAMASK_PRIVATE_KEY;
+    const privateKey = "f746124bf7bc64462d29b17f3c62d32081c5d13c994531907a8b97d3e7652dfa";
+
+    console.log(privateKey);
 
     if (!privateKey) {
         throw new Error("Missing PRIVATE_KEY in environment variables");
