@@ -140,71 +140,110 @@ export const createStudentsBulk = async (records: StudentInputs[]) => {
 
     for (const record of records) {
       if (!record.email) {
-        console.warn("Skipping row without email:", record);
-        continue; // skip this row
+        console.warn("⚠️ Skipping row without email:", record);
+        continue;
       }
+
       const normalizedRecord = {
         ...record,
         birthday: new Date(record.birthday),
         dateEntrance: new Date(record.dateEntrance),
       };
 
-      // Check if user already exists
-      const existing = await db
+      // 1️⃣ Check if user exists
+      const existingUsers = await db
         .select()
         .from(users)
         .where(eq(users.email, normalizedRecord.email))
         .limit(1);
 
-      if (existing.length > 0) continue; // Skip duplicates
-      const newPassword = `${normalizedRecord.lastName}${normalizedRecord.firstName}`
-      const hashedPassword = await hash(newPassword, 10);
+      let userId: string;
+      let userRow;
 
-      // Insert User
-      const [newUser] = await db.insert(users).values({
-      role: "STUDENT",
-      firstName: normalizedRecord.firstName,
-      middleName: normalizedRecord.middleName,
-      lastName: normalizedRecord.lastName,
-      email: normalizedRecord.email,
-      phone: normalizedRecord.phone,
-      nationality: normalizedRecord.nationality,
-      birthday: formatDateForSQL(normalizedRecord.birthday)!,
-      address: normalizedRecord.address,
-      password: hashedPassword,
-    }).returning();
+      if (existingUsers.length > 0) {
+        userRow = existingUsers[0];
+        userId = userRow.userId;
+        console.log(`⚠️ User already exists: ${normalizedRecord.email}`);
+      } else {
+        // 2️⃣ Create user
+        const newPassword = `${normalizedRecord.lastName}${normalizedRecord.firstName}`;
+        const hashedPassword = await hash(newPassword, 10);
 
-      // Insert Student
-      const [newStudent] = await db
-        .insert(students)
-        .values({
-          highschool: normalizedRecord.highschool,
-          dateEntrance: normalizedRecord.dateEntrance,
-          userId: newUser.userId,
-          course: (normalizedRecord.course as course) ?? "BSCS",
-          torHash: ""
-        })
-        .returning();
+        const [newUser] = await db
+          .insert(users)
+          .values({
+            role: "STUDENT",
+            firstName: normalizedRecord.firstName,
+            middleName: normalizedRecord.middleName ?? "",
+            lastName: normalizedRecord.lastName,
+            email: normalizedRecord.email,
+            phone: normalizedRecord.phone,
+            nationality: normalizedRecord.nationality ?? "Filipino",
+            birthday: formatDateForSQL(normalizedRecord.birthday)!, // 👈 string form
+            address: normalizedRecord.address,
+            password: hashedPassword,
+          })
+          .returning();
 
-      const Student : Student = {
-        course: newStudent.course,
-        nationality: newUser.nationality,
-        address: newUser.address,
-        birthday: new Date(newUser.birthday),
-        highschool: newStudent.highschool,
-        dateEntrance: newStudent.dateEntrance,
-        dateGraduated: null,
-        studentId: 0,
-        userId: "",
+        console.log("✅ Created new user:", newUser.userId);
+        userId = newUser.userId;
+        userRow = newUser;
+      }
+
+      // 3️⃣ Check if student exists for this user
+      const existingStudents = await db
+        .select()
+        .from(students)
+        .where(eq(students.userId, userId))
+        .limit(1);
+
+      let studentRow;
+
+      if (existingStudents.length > 0) {
+        studentRow = existingStudents[0];
+        console.log(`⚠️ Student already exists for user: ${normalizedRecord.email}`);
+      } else {
+        // 4️⃣ Create student record
+        const [newStudent] = await db
+          .insert(students)
+          .values({
+            highschool: normalizedRecord.highschool,
+            dateEntrance: normalizedRecord.dateEntrance,
+            userId,
+            course: (normalizedRecord.course as course) ?? "BSCS",
+            torHash: "",
+          })
+          .returning();
+
+        console.log("✅ Created new student:", newStudent.studentId);
+        studentRow = newStudent;
+      }
+
+      // 5️⃣ Ensure TOR exists (always runs)
+      const studentObj: Student = {
+        course: studentRow.course,
+        nationality: userRow.nationality,
+        address: userRow.address,
+        birthday: new Date(userRow.birthday),
+        highschool: studentRow.highschool,
+        dateEntrance: studentRow.dateEntrance,
+        dateGraduated: new Date(studentRow.dateGraduated ?? ""),
+        studentId: studentRow.studentId,
+        userId,
         year: 0,
         semester: 0,
         finalGrade: "",
         torReady: false,
-        major: null
+        major: studentRow.major ?? null,
+      };
+
+      const torResult = await createTOR(studentObj);
+      if (!torResult.success) {
+        console.error(`❌ TOR creation failed for student ${studentObj.studentId}: ${torResult.message}`);
+      } else {
+        console.log(`✅ TOR created for student ${studentObj.studentId}`);
       }
 
-      // Create TOR per student
-      await createTOR(Student);
       successCount++;
     }
 
@@ -214,3 +253,4 @@ export const createStudentsBulk = async (records: StudentInputs[]) => {
     return { success: false, message: "Bulk student insert failed." };
   }
 };
+

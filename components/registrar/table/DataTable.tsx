@@ -22,30 +22,35 @@ import { usePathname, useRouter } from "next/navigation";
 import { TablePagination } from "./TablePagination";
 import { cn } from "@/lib/utils";
 
-interface DataTableProps<TData extends { id: number }, TValue> {
+interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  getRowId: (row: TData) => number; // 👈 NEW
   onArchive?: (ids: number[]) => Promise<void>;
   onDelete?: (ids: number[]) => Promise<void>;
   onValidate?: (ids: number[]) => Promise<void>;
 }
 
-export function DataTable<TData extends { id: number }, TValue>({
+
+export function DataTable<TData, TValue>({
   columns,
   data,
   onArchive,
   onDelete,
   onValidate,
+  getRowId
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
-  const [isProcessing, setIsProcessing] = useState(false);
-  
-  // Add pagination state
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
-  
+
+  // ✅ Independent loading states
+  const [isArchiving, setIsArchiving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
+
   const pathname = usePathname();
   const router = useRouter();
 
@@ -54,63 +59,64 @@ export function DataTable<TData extends { id: number }, TValue>({
     columns,
     state: {
       rowSelection,
-      pagination, // Use the state variable
+      pagination,
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPagination, // Add this handler
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  const selectedIds = table.getSelectedRowModel().rows.map(
-    (row) => row.original.id
-  );
+const selectedIds = table.getSelectedRowModel().rows.map(
+  (row) => getRowId(row.original)
+);
 
-  // detect if on archive page
+
   const isArchivePage = pathname.includes("/archive");
 
   const handleArchive = async () => {
     if (!onArchive) return;
-    setIsProcessing(true);
+    setIsArchiving(true);
     await onArchive(selectedIds);
-    setIsProcessing(false);
+    setIsArchiving(false);
     setRowSelection({});
   };
 
   const handleViewStudent = () => {
-    if (selectedIds.length !== 1) return;
+    if (selectedIds.length !== 1 && pathname.includes("/students")) return;
     const studentId = selectedIds[0];
     router.push(`/registrar/students/${studentId}`);
   };
 
   const handleDelete = async () => {
     if (!onDelete) return;
-    setIsProcessing(true);
+    setIsDeleting(true);
     await onDelete(selectedIds);
-    setIsProcessing(false);
+    setIsDeleting(false);
     setRowSelection({});
-  }
+  };
 
-  const handleValidate = async() =>{
+  const handleValidate = async () => {
     if (!onValidate) return;
-    setIsProcessing(true);
+    setIsValidating(true);
     await onValidate(selectedIds);
-    setIsProcessing(false);
+    setIsValidating(false);
     setRowSelection({});
-  }
+  };
 
   return (
     <div className="p-6 w-full">
       {(pathname === "/registrar/students" || isArchivePage) && (
         <div className="flex justify-end mb-5 gap-4">
+          {/* 📦 Archive / Unarchive */}
           <Button
             variant="destructive"
             size="sm"
             onClick={handleArchive}
-            disabled={selectedIds.length === 0 || isProcessing}
+            disabled={selectedIds.length === 0 || isArchiving}
           >
-            {isProcessing
+            {isArchiving
               ? isArchivePage
                 ? "Unarchiving..."
                 : "Archiving..."
@@ -119,18 +125,18 @@ export function DataTable<TData extends { id: number }, TValue>({
               : "Archive Selected"}
           </Button>
 
+          {/* 🗑️ Delete */}
           <Button
             className={cn(!isArchivePage ? "hidden" : "")}
             variant="destructive"
             size="sm"
             onClick={handleDelete}
-            disabled={selectedIds.length === 0 || isProcessing}
+            disabled={selectedIds.length === 0 || isDeleting}
           >
-            {isProcessing ? "Deleting..." : "Delete Permanently"}
+            {isDeleting ? "Deleting..." : "Delete Permanently"}
           </Button>
 
-          
-
+          {/* 👁️ View Student */}
           {!isArchivePage && (
             <Button
               variant="default"
@@ -144,20 +150,23 @@ export function DataTable<TData extends { id: number }, TValue>({
           )}
         </div>
       )}
-      {pathname === "/registrar/requests" || isArchivePage ?
-      <div className="flex justify-end mb-5 gap-4">
-        <Button
-          variant="default"
-          size="sm"
-          onClick={handleValidate}
-          className="bg-primary-admin"
-        >
-          Validate Requests
-        </Button>
-      </div>
-      : null
-      }
 
+      {(pathname === "/registrar/requests" && isArchivePage) && (
+        <div className="flex justify-end mb-5 gap-4">
+          {/* ✅ Validate */}
+          <Button
+            variant="default"
+            size="sm"
+            onClick={handleValidate}
+            className="bg-primary-admin"
+            disabled={selectedIds.length === 0 || isValidating}
+          >
+            {isValidating ? "Validating..." : "Validate Requests"}
+          </Button>
+        </div>
+      )}
+
+      {/* 🧾 Table */}
       <div className="overflow-x-auto max-w-full rounded-md border bg-white shadow-sm">
         <Table className="min-w-full table-auto">
           <TableHeader>

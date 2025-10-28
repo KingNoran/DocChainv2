@@ -14,86 +14,98 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress"; // ✅ Add this from shadcn/ui
 
-/**
- * Converts Excel date (serial or text) to YYYY-MM-DD string
- */
 function excelDateToISO(serial: any): string {
   if (typeof serial === "number") {
     const epoch = new Date(Date.UTC(1899, 11, 30));
     const date = new Date(epoch.getTime() + serial * 86400000);
     return date.toISOString().split("T")[0];
   }
-
-  if (typeof serial === "string" && /^\d{4}-\d{2}-\d{2}$/.test(serial)) {
-    return serial;
-  }
-
+  if (typeof serial === "string" && /^\d{4}-\d{2}-\d{2}$/.test(serial)) return serial;
   if (typeof serial === "string" && /^\d{4}\/\d{1,2}\/\d{1,2}$/.test(serial)) {
     const [year, month, day] = serial.split("/").map(Number);
     const date = new Date(Date.UTC(year, month - 1, day));
     return date.toISOString().split("T")[0];
   }
-
   return "1970-01-01";
 }
 
 const BulkStudentUpload = () => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0); // ✅ new
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) setFile(selectedFile);
   };
 
-const handleUpload = async () => {
-  if (!file) return toast.error("Please select an Excel file first.");
+  const simulateProgress = (target: number) => {
+    // Smoothly animate progress bar
+    let value = progress;
+    const step = () => {
+      value += Math.random() * 10;
+      if (value < target) {
+        setProgress(Math.min(value, 95));
+        setTimeout(step, 100);
+      }
+    };
+    step();
+  };
 
-  setLoading(true);
-  try {
-    const data = await file.arrayBuffer();
-    const workbook = XLSX.read(data);
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
+  const handleUpload = async () => {
+    if (!file) return toast.error("Please select an Excel file first.");
 
-    const raw = XLSX.utils.sheet_to_json(sheet);
+    setLoading(true);
+    setProgress(5);
+    simulateProgress(70);
 
-    // ✅ Use exact column names from your Excel file (lowercase, no spaces)
-    const json = raw.map((row: any) => ({
-      firstName: row["firstName"],
-      middleName: row["middleName"] || "",
-      lastName: row["lastName"],
-      email: row["email"],
-      phone: row["phone"] || "0000000000",
-      nationality: row["nationality"] || "Filipino",
-      birthday: excelDateToISO(row["birthday"]),
-      address: row["address"] || "Unknown",
-      highschool: row["highschool"] || "Unknown",
-      course: row["course"] || "BSCS",
-      major: row["major"] || "",
-      dateEntrance: excelDateToISO(row["entrance"]),
-      dateGraduated: excelDateToISO(row["graduation"]),
-      torHash: row["torHash"] || "",
-    }));
+    try {
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
 
-    console.log("🧩 Parsed JSON:", json);
+      const raw = XLSX.utils.sheet_to_json(sheet);
 
-    const res = await createStudentsBulk(JSON.parse(JSON.stringify(json)));
+      const json = raw.map((row: any) => ({
+        firstName: row["firstName"],
+        middleName: row["middleName"] || "",
+        lastName: row["lastName"],
+        email: row["email"],
+        phone: row["phone"] || "0000000000",
+        nationality: row["nationality"] || "Filipino",
+        birthday: excelDateToISO(row["birthday"]),
+        address: row["address"] || "Unknown",
+        highschool: row["highschool"] || "Unknown",
+        course: row["course"] || "BSCS",
+        major: row["major"] || "",
+        dateEntrance: excelDateToISO(row["entrance"]),
+        dateGraduated: excelDateToISO(row["graduation"]),
+        torHash: row["torHash"] || "",
+      }));
 
-    if (res.success) {
-      toast.success(`Inserted ${res.count} students successfully!`);
-    } else {
-      toast.error(res.message || "Bulk insert failed");
+      setProgress(85);
+
+      const res = await createStudentsBulk(JSON.parse(JSON.stringify(json)));
+
+      setProgress(100);
+      if (res.success) {
+        toast.success(`Inserted ${res.count} students successfully!`);
+      } else {
+        toast.error(res.message || "Bulk insert failed");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error parsing Excel file.");
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+        setProgress(0);
+      }, 500);
     }
-  } catch (error) {
-    console.error(error);
-    toast.error("Error parsing Excel file.");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   return (
     <Card className="w-full max-w-md">
@@ -123,6 +135,13 @@ const handleUpload = async () => {
             />
           </div>
         </div>
+
+        {loading && (
+          <div className="flex flex-col gap-2">
+            <Label>Processing...</Label>
+            <Progress value={progress} className="w-full" />
+          </div>
+        )}
       </CardContent>
 
       <CardFooter>
@@ -131,7 +150,7 @@ const handleUpload = async () => {
           disabled={!file || loading}
           className="w-full bg-primary-admin text-white"
         >
-          {loading ? "Uploading..." : "Upload and Insert Students"}
+          {loading ? "Processing..." : "Upload and Insert Students"}
         </Button>
       </CardFooter>
     </Card>

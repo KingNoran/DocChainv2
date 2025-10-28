@@ -34,7 +34,10 @@ interface HasActivity {
   activity: string;
 }
 
-export function DataTable<TData extends { id: number } & HasActivity, TValue>({
+export function DataTable<
+  TData extends { id: number } & HasActivity,
+  TValue
+>({
   columns,
   data,
   onArchive,
@@ -42,9 +45,14 @@ export function DataTable<TData extends { id: number } & HasActivity, TValue>({
   onDelete,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
-  const [isProcessing, setIsProcessing] = useState(false);
-  const pathname = usePathname();
   
+  // ✅ Separate loading states
+  const [isArchiving, setIsArchiving] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const pathname = usePathname();
+
   const table = useReactTable({
     data,
     columns,
@@ -62,80 +70,87 @@ export function DataTable<TData extends { id: number } & HasActivity, TValue>({
   });
 
   const selectedRows = table.getSelectedRowModel().rows;
+  const selectedIds = selectedRows.map((row) => row.original.id);
+
   const canValidate =
     selectedRows.length > 0 &&
     selectedRows.every((row) => row.original.activity === "create");
 
-
-  const selectedIds = table.getSelectedRowModel().rows.map(
-    (row) => row.original.id
-  );
   const isArchivePage = pathname.includes("/archive");
+
+  // ✅ Independent handlers
   const handleArchive = async () => {
     if (!onArchive) return;
-    setIsProcessing(true);
+    setIsArchiving(true);
     await onArchive(selectedIds);
-    setIsProcessing(false);
+    setIsArchiving(false);
     setRowSelection({});
   };
 
   const handleValidate = async () => {
     if (!onValidate) return;
-    setIsProcessing(true);
+    setIsValidating(true);
     await onValidate(selectedIds);
-    setIsProcessing(false);
+    setIsValidating(false);
     setRowSelection({});
   };
 
   const handleDelete = async () => {
     if (!onDelete) return;
-    setIsProcessing(true);
+    setIsDeleting(true);
     await onDelete(selectedIds);
-    setIsProcessing(false);
+    setIsDeleting(false);
     setRowSelection({});
   };
 
   return (
     <div className="p-6 w-full">
-      
-{(pathname === "/admin/requests" || isArchivePage) && (
-  <div className="flex justify-end mb-5 gap-2">
-    <Button
-        className={cn(!isArchivePage ? "hidden" : "")}
-        variant="destructive"
-        size="sm"
-        onClick={handleDelete}
-        disabled={selectedIds.length === 0 || isProcessing}
-      >
-        {isProcessing ? "Deleting..." : "Delete Permanently"}
-      </Button>
-    <Button
-      variant="destructive"
-      size="sm"
-      onClick={handleArchive}
-      disabled={selectedIds.length === 0 || isProcessing}
-    >
-      {isProcessing
-        ? isArchivePage
-          ? "Unarchiving..."
-          : "Archiving..."
-        : isArchivePage
-        ? "Unarchive Selected"
-        : "Archive Selected"}
-    </Button>
+      {(pathname === "/admin/requests" || isArchivePage) && (
+        <div className="flex justify-end mb-5 gap-2">
+          {/* 🗑️ Delete */}
+          <Button
+            className={cn(!isArchivePage ? "hidden" : "")}
+            variant="destructive"
+            size="sm"
+            onClick={handleDelete}
+            disabled={selectedIds.length === 0 || isDeleting}
+          >
+            {isDeleting ? "Deleting..." : "Delete Permanently"}
+          </Button>
 
-    {!isArchivePage && (
-      <Button
-        variant="default"
-        size="sm"
-        onClick={handleValidate}
-        disabled={selectedIds.length === 0 || isProcessing || !canValidate}
-      >
-        {isProcessing ? "Processing..." : "Validate Selected"}
-      </Button>
-    )}
-  </div>
-)}
+          {/* 📦 Archive / Unarchive */}
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={handleArchive}
+            disabled={selectedIds.length === 0 || isArchiving}
+          >
+            {isArchiving
+              ? isArchivePage
+                ? "Unarchiving..."
+                : "Archiving..."
+              : isArchivePage
+              ? "Unarchive Selected"
+              : "Archive Selected"}
+          </Button>
+
+          {/* ✅ Validate */}
+          {!isArchivePage && (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={handleValidate}
+              disabled={
+                selectedIds.length === 0 ||
+                isValidating ||
+                !canValidate
+              }
+            >
+              {isValidating ? "Processing..." : "Validate Selected"}
+            </Button>
+          )}
+        </div>
+      )}
 
       <div className="overflow-x-auto max-w-full rounded-md border bg-white shadow-sm">
         <Table className="min-w-full table-auto">
@@ -158,6 +173,7 @@ export function DataTable<TData extends { id: number } & HasActivity, TValue>({
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (

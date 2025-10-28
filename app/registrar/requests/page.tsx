@@ -66,6 +66,7 @@ const Page = () => {
         data={requests}
         onArchive={handleArchive}
         onValidate={handleValidate}
+        getRowId={(row)=>row.id}
       />
     </div>
   );

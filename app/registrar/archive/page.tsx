@@ -46,6 +46,7 @@ const ArchivedStudentsPage = () => {
         data={archivedStudents}
         onArchive={handleUnarchive} // reuse existing archive button as unarchive
         onDelete={handleDelete} // ✅ new delete handler
+        getRowId={(row)=>row.studentId}
       />
     </div>
   );

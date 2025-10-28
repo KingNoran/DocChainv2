@@ -41,7 +41,7 @@ const Page = () => {
   return (
     <div className="p-6 space-y-4">
       <h1 className="text-xl font-bold">Active Students</h1>
-      <DataTable columns={studentColumns} data={students} onArchive={handleArchive} />
+      <DataTable columns={studentColumns} data={students} onArchive={handleArchive} getRowId={(row)=>row.studentId} />
     </div>
   );
 };
