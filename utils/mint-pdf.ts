@@ -1,7 +1,7 @@
 import { getSmartContract } from "@/utils/getSmartContract";
 
 
-export const mintPdf = async (tokenId: number, pdfHash: string) => {
+export const mintPdf = async ( tokenId: number, pdfHash: string) => {
     try {
         const tokenizerContract = await getSmartContract();
 
@@ -9,7 +9,7 @@ export const mintPdf = async (tokenId: number, pdfHash: string) => {
         if (!tokenId) throw new Error('Invalid token ID');        
         if (!pdfHash) throw new Error('Invalid hash');
 
-        const tokenizerHash = await tokenizerContract.mint(tokenId, pdfHash);
+        const tokenizerHash = await tokenizerContract.mint( tokenId, pdfHash);
 
         console.log(`Loading - ${tokenizerHash.hash}`);
 

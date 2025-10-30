@@ -77,13 +77,14 @@ if (typeof window !== "undefined") {
 
 // Header component
 // Header component
-const TranscriptHeader: FC<{ 
-  student: Student; 
-  control: any; 
-  isFirstPage?: boolean; 
+const TranscriptHeader: FC<{
+  student: Student;
+  control: any;
+  isFirstPage?: boolean;
   readOnly?: boolean;
   qrCodeDataUrl?: string;
-  isTorReady?: boolean; // add this prop
+  isTorReady?: boolean;
+  headerRef?: React.RefObject<HTMLDivElement>;
 }> = ({
   student,
   control,
@@ -91,6 +92,7 @@ const TranscriptHeader: FC<{
   readOnly = false,
   qrCodeDataUrl,
   isTorReady = false,
+  headerRef,
 }) => {
   const courseNames = {
     BSIT: "BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY (BSIT)",
@@ -105,7 +107,7 @@ const TranscriptHeader: FC<{
   };
 
   return (
-    <div>
+    <div ref={headerRef} className="transcript-header relative bg-white">
       <div className="text-center mb-6 relative">
         <h2 className="font-bold text-lg">CAVITE STATE UNIVERSITY</h2>
         <h3 className="font-semibold">BACOOR CAMPUS</h3>
@@ -115,19 +117,28 @@ const TranscriptHeader: FC<{
         </h1>
         <p className="text-sm">Revised Curriculum SY 2013-2014</p>
         {!isFirstPage && <p className="text-sm font-semibold">(Continued)</p>}
-        
-        {/* ✅ QR Code in top-right corner only if torReady and torHash exists */}
-        {isFirstPage && isTorReady && student.torHash && qrCodeDataUrl && (
-          <div className="absolute top-0 right-0">
-            <img 
-              src={qrCodeDataUrl} 
-              alt="Transcript QR Code" 
-              className="w-24 h-24"
-            />
-          </div>
-        )}
       </div>
 
+      {/* QR in a boxed badge placed to the top-right but inside the header container so we can measure and never overlap */}
+      {isFirstPage && isTorReady && student.torHash && qrCodeDataUrl && (
+        <div
+          className="absolute right-6"
+          style={{
+            top: 16, // we'll override/adjust from parent by measuring header height in Transcript if needed
+            zIndex: 20,
+            background: "white",
+            borderRadius: 6,
+            padding: 6,
+            boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+            border: "1px solid rgba(0,0,0,0.06)",
+          }}
+        >
+          <img src={qrCodeDataUrl} alt="Transcript QR Code" className="w-20 h-20 object-contain" />
+          <div style={{ fontSize: 9, textAlign: "center", marginTop: 4, color: "#444" }}>Verify</div>
+        </div>
+      )}
+
+      {/* Student fields grid (first page only) */}
       {isFirstPage && (
         <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm mb-6">
           {Object.entries(student).map(([key, value]) => {
@@ -141,9 +152,7 @@ const TranscriptHeader: FC<{
                   render={({ field }) =>
                     readOnly ? (
                       <span className="text-sm text-gray-800">
-                        {key.includes("date")
-                          ? formatDateForInput(field.value)
-                          : field.value || "—"}
+                        {key.includes("date") ? formatDateForInput(field.value) : field.value || "—"}
                       </span>
                     ) : (
                       <Input
@@ -263,7 +272,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
   
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const qrCodeRef = useRef<string>("");
-  const router = useRouter();
+
   // Generate QR Code
   useEffect(() => {
   const generateQRCode = async () => {
@@ -322,14 +331,19 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
   const handleAutoMint = async () => {
   try {
     toast.info("Generating transcript...");
+    if (student.torHash){
+      toast.error(`${student.name}'s TOR is already minted!`);
+      return;
+    }
 
     // Step 1: Generate PDF Blob in memory
     const blob = await generateTranscriptPdfBlob();
     const file = new File([blob], `${student.name}-transcript.pdf`, { type: "application/pdf" });
+    if (!blob || !file)console.log("Error generating pdf as Blob")
     
     // Step 2: Convert file into ArrayBuffer
     const arrayBuffer = await file.arrayBuffer();
-
+    if (!arrayBuffer) console.log("Error in buffering file");
     // Step 3: Hash and Mint the ArrayBuffer
     const studentPdfHash = hashPdf(arrayBuffer);
     const res = await mintPdf(student.studentId, studentPdfHash);
@@ -354,7 +368,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
 
 const handleDownloadQRCode = () => {
   try {
-    if (!qrCodeRef.current) {
+    if (!qrCodeRef.current || !student.torHash) {
       toast.error("QR code not available yet");
       return;
     }
@@ -696,27 +710,37 @@ const handleDownloadQRCode = () => {
         </button>
       </div> : null}
       <style>{`
+      .page-container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+      .avoid-break {
+        break-inside: avoid;
+      }
+
+      /* Make header printed only on first physical page */
+      @media print {
+        /* The header container is outside the individual pages — only the first page shows it */
+        .transcript-pages {
+          margin-top: 0;
+        }
+
+        /* Hide the header repeated on print for subsequent boxes if they contain header-like content */
+        .transcript-header { 
+          /* ensure header sits at top of printed doc, but we only rendered it once anyway */
+        }
+
         .page-container {
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          position: relative;
+          break-after: page;
         }
-        .avoid-break {
-          break-inside: avoid;
+        .page-container:last-child {
+          break-after: auto;
         }
-        @media print {
-          .transcript-pages {
-            break-inside: auto;
-          }
-          .page-container {
-            break-after: page;
-          }
-          .page-container:last-child {
-            break-after: auto;
-          }
-        }
-      `}</style>
+      }
+    `}</style>
+
       <div className="text-center mt-4 flex gap-4 items-center justify-center">
   {isTorReady ? (
     <>
