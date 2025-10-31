@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { isCallException } from 'ethers'; 
-import { getSmartContract } from '@/utils/getSmartContract';
+import { getSmartContract } from '@/utils/getSmartContractClient';
 import { handleRevertError } from '@/utils/handleRevertError';
 
 import { Button } from '@/components/ui/button';

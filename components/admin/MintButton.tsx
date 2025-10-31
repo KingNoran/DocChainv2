@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { isCallException } from "ethers";
-import { getSmartContract } from "@/utils/getSmartContract";
+import { getSmartContract } from "@/utils/getSmartContractClient";
 import { handleRevertError } from "@/utils/handleRevertError";
 import { toast } from "sonner";
 
@@ -69,9 +69,15 @@ const MintButton = ({
       if (isCallException(error)) {
         const contract = await getSmartContract();
 
-        await handleRevertError(contract, error);
+        const decoded = await handleRevertError(contract, error);
+
+        toast.error(`Error: ${decoded.name}`, {
+          description: decoded.message,
+        });
       } else {
-        console.log(error);
+        toast.error("Mint Failed", {
+          description: "Unexpected Error.",
+        });
       }
     } finally {
       setLoading(false);

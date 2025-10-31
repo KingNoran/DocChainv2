@@ -3,7 +3,7 @@ import { db } from "@/database/drizzle";
 import { students, users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { getSmartContractViewOnly } from "@/utils/getSmartContractViewOnly";
-import { EventLog, JsonRpcProvider } from "ethers";
+import { EventLog, BytesLike, Contract } from "ethers";
 
 
 // THIS IS A PUBLIC API ENDPOINT
@@ -14,19 +14,23 @@ export const POST = async (req: Request) => {
         return NextResponse.json({ error: "Invalid Input" }, { status: 400 });
     }
 
-    const tokenizerContract = getSmartContractViewOnly();
+    const tokenizerContract: Contract = getSmartContractViewOnly();
 
-    const provider = tokenizerContract.runner?.provider as JsonRpcProvider;
-    const latestBlock = await provider.getBlockNumber();
-    const fromBlock = Math.max(latestBlock - 5000, 0);
+    const checkIfHashStored = async (hash: BytesLike): Promise<boolean> => {
+        return await tokenizerContract.getStoredHashValue(hash);
+    } 
 
-    const mintedTokenEvents = await tokenizerContract.queryFilter("TokenMinted", fromBlock, latestBlock);
+    const mintedTokenEvents = await tokenizerContract.queryFilter("TokenMinted");
 
     let matchedEvent = null;
 
     for (let i = mintedTokenEvents.length - 1; i >= 0; i--) {
-        const { transactionHash } = mintedTokenEvents[i] as EventLog;
+        const { args, transactionHash } = mintedTokenEvents[i] as EventLog;
+        const [,hash,] = args;
+        
         if (txLink === transactionHash) {
+            if (!(await checkIfHashStored(hash))) break;
+            
             matchedEvent = mintedTokenEvents[i];
             break;
         }
@@ -46,7 +50,10 @@ export const POST = async (req: Request) => {
         };
     }
 
-    if (!verificationResult) return NextResponse.json({ error: "No matching blockchain event found" }, { status: 404 });
+    console.log(matchedEvent);
+    console.log(verificationResult);
+
+    if (!verificationResult) return NextResponse.json({ error: "No matching blockchain event found", status: 404 });
 
     const result = await db
         .select({ studentId: students.studentId, userId: students.userId })
@@ -54,7 +61,7 @@ export const POST = async (req: Request) => {
         .where(eq(students.studentId, verificationResult.tokenId));
 
     if (!result) {
-        return NextResponse.json({ error: "Student ID not found" }, { status: 404 });
+        return NextResponse.json({ error: "Student ID not found", status: 404 });
     }
 
     const studentId = result[0]?.studentId;
