@@ -15,7 +15,10 @@ import { useSession } from "next-auth/react";
 import QRCode from "qrcode";
 import { StringHeaderIdentifier } from "@tanstack/react-table";
 import { hashPdf } from "@/utils/hash-pdf";
-import { mintPdf } from "@/utils/mint-pdf";
+import { mintPdf } from "@/lib/actions/mint-pdf";
+import { getSmartContract } from "@/utils/getSmartContractClient";
+import { handleRevertError } from "@/utils/handleRevertError";
+import { isCallException } from "ethers";
 
 // Types
 export interface Student {
@@ -348,9 +351,7 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
     const studentPdfHash = hashPdf(arrayBuffer);
     const res = await mintPdf(student.studentId, studentPdfHash);
     
-    if (!res.success) {
-      toast.error("Mint failed", { description: res.message });
-    } else {
+    if (res.success) {
       toast.success("Mint successful!", { description: `Tx hash: ${res.hash}` });
 
       await fetch("/api/mint-update-tor", {
@@ -358,11 +359,21 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ studentId: student.studentId, torHash: res.hash as string }),
       });
+    } else {
+      toast.error(`${res.errorName}`, { description: res.errorMsg });
     }
 
-  } catch (err) {
-    console.error(err);
-    toast.error("Error generating transcript PDF");
+  } catch (error) {
+    if (isCallException(error)) {
+      const contract = await getSmartContract();
+
+      const decoded = await handleRevertError(contract, error);
+      toast.error(`${decoded.name}`, { description: decoded.message });
+    } else {
+      toast.error("Mint Failed", {
+        description: "Unexpected Error.",
+      });
+    }
   }
 };
 
