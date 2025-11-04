@@ -108,13 +108,13 @@ All document interactions follow strict access control logic.
 # 👥 Contributors
 
 <br>Reyes, Ken Jervis G.
-<br> — Project Lead / Full-Stack Developer
+<br> — Project Lead / Full-Stack Developer<br>
 <br>Requioma, Ronald John
-<br> — Blockchain Developer
+<br> — Blockchain Developer<br>
 <br>Justo, John Dave
-<br> — Designer
+<br> — Designer<br>
 <br>Ilagan, Mark Vincent
-<br> — Documentation
+<br> — Documentation<br>
 
 Team of 4 developers under the guidance of Cavite State University – Bacoor Branch
 
