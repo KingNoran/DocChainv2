@@ -66,8 +66,8 @@ cp .env.example .env.local
 # 4. Run the development server
 npm run dev
 
-App runs locally at http://localhost:3000.
-Database runs at local.drizzle.studio
+# App runs locally at http://localhost:3000.
+# Database runs at local.drizzle.studio
 ```
 
 Each TOR is hashed before being recorded on the blockchain, maintaining privacy while ensuring verifiable authenticity.  
