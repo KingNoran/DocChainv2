@@ -24,7 +24,7 @@ The system aims to modernize document management in academic institutions by ens
 **Frontend:** Next.js (React), TailwindCSS, shadcn/ui  
 **Backend:** Node.js, Drizzle ORM, Neon Postgres, Upstash Redis  
 **Blockchain:** Solidity, ZkSync Sepolia, Keccak-256  
-**Authentication:** Auth.js, EmailJS  
+**Authentication:** Auth.js, EmailJS, nodemailer  
 **Utilities:** jsPDF, qrcode, Git/GitHub  
 **Deployment:** Vercel  
 
