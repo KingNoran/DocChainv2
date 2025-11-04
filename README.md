@@ -107,7 +107,7 @@ All document interactions follow strict access control logic.
 
 # 👥 Contributors
 
-<br>Reyes, Ken Jervis G.
+<br>$(Reyes, Ken Jervis G.)[https://www.linkedin.com/in/ken-reyes-20958227b/]
 <br> — Project Lead / Full-Stack Developer<br>
 <br>Requioma, Ronald John
 <br> — Blockchain Developer<br>
