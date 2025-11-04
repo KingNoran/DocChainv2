@@ -83,7 +83,7 @@ Each TOR is hashed before being recorded on the blockchain, maintaining privacy 
 
 ---
 
-🔒 Blockchain Functionality
+# 🔒 Blockchain Functionality
 
 Each generated TOR is hashed with Keccak-256.
 
@@ -93,7 +93,7 @@ Verifiers can confirm document authenticity by comparing the hash on-chain with 
 
 The actual TOR data is never stored on-chain, ensuring compliance with data privacy laws.
 
-📜 Data Privacy & Security
+# 📜 Data Privacy & Security
 
 DocChain was designed with data protection in mind:
 
@@ -105,10 +105,16 @@ Smart contracts are written with gas optimization and security best practices.
 
 All document interactions follow strict access control logic.
 
-👥 Contributors
+# 👥 Contributors
 
-Your Name Here
+Reyes, Ken Jervis G.
  — Project Lead / Full-Stack Developer
+Requioma, Ronald John
+ — Blockchain Developer
+Justo, John Dave
+ — Designer
+Ilagan, Mark Vincent
+ — Documentation
 
 Team of 4 developers under the guidance of Cavite State University – Bacoor Branch
 
