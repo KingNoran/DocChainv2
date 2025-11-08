@@ -1,36 +1,126 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧾 DocChain — Blockchain-Supported Digitized Transcript of Records Managing System
 
-## Getting Started
+**DocChain** is a full-stack web application designed to securely manage and verify **Transcripts of Records (TORs)** using **blockchain technology**.  
+The system aims to modernize document management in academic institutions by ensuring **authenticity**, **transparency**, and **privacy compliance**, while preventing tampering or falsification.
 
-First, run the development server:
+## 🚀 Features
+
+- 🔐 **Blockchain Verification** – Each TOR is hashed (via **Keccak-256**) and stored on the blockchain, ensuring immutability and authenticity.  
+- 🧾 **PDF Generation** – Generate previewable and downloadable TORs in PDF format using **jsPDF**.  
+- 👥 **User Roles** – Four access levels: **Guest**, **Student**, **Registrar**, and **Admin**, each with specific permissions and views.  
+- 🧠 **Smart Contracts** – Built with **Solidity** on **ZkSync Sepolia** for secure, decentralized transaction recording.  
+- 🗂️ **Full CRUD Functionality** – Manage records with create, read, update, delete, and archiving capabilities.  
+- ⚙️ **Relational Data Model** – Entity relationships managed with **Drizzle ORM** on **Neon Postgres**.  
+- ⚡ **Performance & Caching** – Utilizes **Upstash Redis** for optimized caching and session control.  
+- 📩 **Secure Authentication** – Managed with **Auth.js** and **EmailJS** for user verification and route protection.  
+- 🎨 **Responsive UI/UX** – Built using **Next.js (React)**, **TailwindCSS**, and **shadcn/ui** for a clean, modern interface.  
+- 🧾 **QR Code Verification** – Each TOR includes a verifiable QR code linked to its blockchain hash.  
+- ☁️ **Deployment** – Hosted on **Vercel** for seamless accessibility and scalability.  
+
+---
+
+## 🏗️ Tech Stack
+
+**Frontend:** Next.js (React), TailwindCSS, shadcn/ui  
+**Backend:** Node.js, Drizzle ORM, Neon Postgres, Upstash Redis  
+**Blockchain:** Solidity, ZkSync Sepolia, Keccak-256  
+**Authentication:** Auth.js, EmailJS, nodemailer  
+**Utilities:** jsPDF, qrcode, Git/GitHub  
+**Deployment:** Vercel  
+
+---
+
+## 🧩 System Architecture Overview
+
+DocChain follows a **modular full-stack architecture**:
+
+Frontend (Next.js + TailwindCSS)
+↓
+API Routes (Node.js + Next.js)
+↓
+Database (Neon Postgres via Drizzle ORM)
+↓
+Blockchain Layer (Solidity Smart Contracts on ZkSync Sepolia)
+
+## 🛠️ Installation & Setup
+
+### Prerequisites
+- Node.js v18+  
+- PostgreSQL database (Neon Postgres recommended)  
+- Metamask (for blockchain interaction)  
+
+### Steps
 
 ```bash
+# 1. Clone the repository
+git clone https://github.com/KingNoran/DocChainv2.git
+cd DocChainv2
+
+# 2. Install dependencies
+npm install
+
+# 3. Configure environment variables
+cp .env.example .env.local
+# Fill in your database credentials, Auth.js secrets, Redis, and blockchain settings.
+
+# 4. Run the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# App runs locally at http://localhost:3000.
+# Database runs at local.drizzle.studio
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Each TOR is hashed before being recorded on the blockchain, maintaining privacy while ensuring verifiable authenticity.  
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🧑‍💻 Roles and Access Control
 
-## Learn More
+| Role       | Permissions                                                                 |
+|-------------|------------------------------------------------------------------------------|
+| **Guest**   | Can view general information and verify TOR hashes.                         |
+| **Student** | Can request and download their verified TOR.                                |
+| **Registrar** | Can create, update, and archive TOR records.                              |
+| **Admin**   | Has full control over the system, user management, and transaction approval. |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# 🔒 Blockchain Functionality
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Each generated TOR is hashed with Keccak-256.
 
-## Deploy on Vercel
+The resulting hash is stored on ZkSync Sepolia via Solidity smart contracts.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Verifiers can confirm document authenticity by comparing the hash on-chain with the locally generated one.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The actual TOR data is never stored on-chain, ensuring compliance with data privacy laws.
+
+# 📜 Data Privacy & Security
+
+DocChain was designed with data protection in mind:
+
+No personal data or full documents are stored on the blockchain.
+
+Only hashed identifiers are used for verification.
+
+Smart contracts are written with gas optimization and security best practices.
+
+All document interactions follow strict access control logic.
+
+# 👥 Contributors
+
+<br>[Reyes, Ken Jervis G.](https://www.linkedin.com/in/ken-reyes-20958227b/)
+<br> — Project Lead / Full-Stack Developer<br>
+<br>Requioma, Ronald John
+<br> — Blockchain Developer<br>
+<br>Justo, John Dave
+<br> — Designer<br>
+<br>Ilagan, Mark Vincent
+<br> — Documentation<br>
+
+Team of 4 developers under the guidance of Cavite State University – Bacoor Branch
+
+📄 License
+
+This project is for academic and educational purposes under the supervision of STI College Las Piñas.
+All rights reserved © 2025.

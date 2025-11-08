@@ -39,7 +39,7 @@ const GuestTransactionPage = () => {
 
     if (file) {
       if (!checkFileType(file)) {
-        setFilename("Please select a PDF file format.")
+        setFilename("Please select a Image file format.")
       } 
 
       setFilename(file.name);
@@ -66,6 +66,8 @@ const GuestTransactionPage = () => {
 
       const txLink = qrText.split("/tx/")[1];
 
+      console.log(txLink);
+
       const res = await fetch('/api/fetch-data', {
         method: 'POST',
         body: JSON.stringify({ txLink }),
@@ -74,7 +76,8 @@ const GuestTransactionPage = () => {
     
       const data = await res.json();
 
-      console.log(`Status: ${data.status}`)
+      console.log(`Status: ${data.status}`);
+      console.log(`Error: ${data.error}`);
 
       if (data.status == 200) {
         setTransactionData(data.data);  
@@ -130,7 +133,7 @@ const GuestTransactionPage = () => {
           </div>
 
           {preview && (
-              <div className="w-100 h-100 mt-4 flex justify-center">
+              <div className="w-25 h-25 mx-auto mt-4 flex justify-center">
                 <img
                   src={preview}
                   alt="QR Preview"

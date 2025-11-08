@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 const contractInterface = new Interface(contractABI);
 
-export const handleRevertError = async (contract: Contract | null, error: CallExceptionError): Promise<string | number> => {
+export const handleRevertError = async (contract: Contract | null, error: CallExceptionError): Promise<{ name: string; message: string }> => {
     const errorData: BytesLike = error.data!;
     
     const errorName = contractInterface.parseError(errorData);
@@ -25,16 +25,10 @@ export const handleRevertError = async (contract: Contract | null, error: CallEx
         Tokenizer__TokenNotMinted: {name: 'Token not yet minted', message: `The Token ID: ${errorArgs.tokenId}, is not yet minted.`},
         Tokenizer__InvalidHash: {name: 'Invalid hash', message:``},
         Tokenizer__InvalidTokenId: {name: 'Invalid token ID', message:``},
-        Tokenizer__HashAlreadyStored: {name: 'PDF hash already stored', message: `The TOR hash ${errorArgs.pdfHash}, is already stored on-chain with the Token ID: ${errorName!.name === "Tokenizer__HashAlreadyStored" ?await contract?.getTokenIdByHash(errorArgs.pdfHash): 'N/A'}.`},
+        Tokenizer__HashAlreadyStored: {name: 'PDF hash already stored', message: `The TOR hash ${errorArgs.pdfHash}, is already stored on-chain with the Token ID: ${errorName!.name === "Tokenizer__HashAlreadyStored" ? await contract?.getTokenIdByHash(errorArgs.pdfHash): 'N/A'}.`},
     };
     
-    return (
-        toast.error(`Error: ${errorMessages[errorName!.name].name}`, {
-            description: `${errorMessages[errorName!.name].message}`,
-            action: {
-                label: "Got it",
-                onClick: () => console.log("Error"),
-            }
-        })
-    );
+    const selected = errorMessages[errorName!.name];
+
+    return selected ? { name: selected.name, message: selected.message } : { name: 'Unknown error', message: 'An unknown revert error occurred.' };
 };

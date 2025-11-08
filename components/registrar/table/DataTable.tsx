@@ -151,7 +151,7 @@ const selectedIds = table.getSelectedRowModel().rows.map(
         </div>
       )}
 
-      {(pathname === "/registrar/requests" && isArchivePage) && (
+      {(pathname === "/registrar/requests" && !isArchivePage) && (
         <div className="flex justify-end mb-5 gap-4">
           {/* ✅ Validate */}
           <Button
