@@ -114,7 +114,8 @@ const Page = () => {
     address: s.address ?? "",
     entrance: dateEntrance.toLocaleDateString(),
     studentId: s.studentId,
-    torHash: s.torHash
+    torHash: s.torHash,
+    torReady: s.torReady
   });
   
   const transcriptStudent = mapStudentToTranscript(studentData!);
@@ -149,7 +150,9 @@ const Page = () => {
       <Transcript 
       initialStudent={transcriptStudent} 
       initialTranscript={transcriptData!} 
-      initialGrades={courseGrades}/>
+      initialGrades={courseGrades}
+      isTorReady={studentData.torReady}
+      />
     </div>
 
   );

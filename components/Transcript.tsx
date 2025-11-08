@@ -119,7 +119,6 @@ const TranscriptHeader: FC<{
         {!isFirstPage && <p className="text-sm font-semibold">(Continued)</p>}
       </div>
 
-      {/* QR in a boxed badge placed to the top-right but inside the header container so we can measure and never overlap */}
       {isFirstPage && isTorReady && student.torHash && qrCodeDataUrl && (
         <div
           className="absolute right-6"
@@ -279,7 +278,6 @@ const Transcript: FC<TranscriptProps> = ({ initialStudent, initialTranscript, in
     try {
       // Replace with your blockchain transaction link
       const hash = student.torHash; // Get this from your data
-      console.log(`TOR HASH NOTICE!!!: ${hash}`)
       const verificationUrl = `https://zksync-sepolia.blockscout.com/tx/${hash}`;
       
       // Generate QR code as data URL

@@ -113,14 +113,16 @@ const Page = () => {
     address: s.address ?? "",
     entrance: dateEntrance.toLocaleDateString(),
     studentId: s.studentId,
-    torHash: s.torHash
+    torHash: s.torHash,
+    torReady: s.torReady
   });
   
   const transcriptStudent = mapStudentToTranscript(studentData!);
   return (
     <div>
+      
       <h2 className="mt-6 font-bold">Transcript Data</h2>
-      <h2 className="mt-6 font-bold">Student ID: {studentData.studentId}</h2>
+      <h2 className="mt-6 font-bold">Student ID: {studentData.studentId}</h2> 
       {/* {!transcriptData ? (
         <p>No transcript data found</p>
       ) : (
